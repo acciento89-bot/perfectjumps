@@ -1,0 +1,41 @@
+{
+  "name": "PerfectJump",
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": false
+      }
+    },
+    "ReplicatedStorage": {
+      "PerfectJump": {
+        "$className": "Folder",
+        "Shared": {
+          "$path": "src/shared"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "PerfectJumpServer": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "PerfectJumpClient": {
+          "$path": "src/client"
+        }
+      },
+      "$properties": {
+        "CameraMode": "Classic",
+        "CameraMinZoomDistance": 7,
+        "CameraMaxZoomDistance": 18
+      }
+    },
+    "StarterGui": {
+      "$properties": {
+        "ScreenOrientation": "Sensor"
+      }
+    }
+  }
+}

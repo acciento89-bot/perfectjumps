@@ -1,0 +1,15 @@
+return function()
+	local rules = require("../src/shared/game/JumpRules")
+
+	assert(math.abs(rules.NormalizeCharge(0) - 0.28) < 0.0001, "minimum charge mismatch")
+	assert(math.abs(rules.NormalizeCharge(9) - 1.0) < 0.0001, "maximum charge mismatch")
+	assert(rules.GradeLanding(0.2, 10) == "Perfect", "center landing must be Perfect")
+	assert(rules.GradeLanding(1.5, 10) == "Good", "near-center landing must be Good")
+	assert(rules.GradeLanding(3.2, 10) == "Safe", "inside-edge landing must be Safe")
+	assert(rules.GradeLanding(4.7, 10) == "Miss", "outside safe radius must miss")
+	assert(rules.NextCombo(4, "Perfect") == 5, "Perfect must grow combo")
+	assert(rules.NextCombo(4, "Good") == 0, "non-Perfect must reset combo")
+	assert(rules.ScoreForLanding("Perfect", 0) == 100, "base Perfect score mismatch")
+	assert(rules.ScoreForLanding("Perfect", 30) == 300, "combo multiplier must cap")
+	assert(rules.CoinsForLanding("Miss") == 0, "miss must not grant coins")
+end

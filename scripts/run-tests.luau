@@ -1,5 +1,6 @@
 local tests = {
 	require("../tests/jump-rules.spec"),
+	require("../tests/launch-rules.spec"),
 	require("../tests/round-state-rules.spec"),
 	require("../tests/readiness.spec"),
 }

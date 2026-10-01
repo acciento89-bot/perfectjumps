@@ -97,13 +97,8 @@ local function buildGui()
 	corner(chargePanel, 18)
 	stroke(chargePanel, 0.75)
 
-	local hint = makeLabel(
-		chargePanel,
-		"Hint",
-		"HOLD  •  RELEASE",
-		UDim2.fromScale(0.92, 0.34),
-		UDim2.fromScale(0.04, 0.08)
-	)
+	local hint =
+		makeLabel(chargePanel, "Hint", "HOLD  •  RELEASE", UDim2.fromScale(0.92, 0.34), UDim2.fromScale(0.04, 0.08))
 	hint.TextXAlignment = Enum.TextXAlignment.Center
 	hint.TextColor3 = Color3.fromRGB(222, 227, 235)
 
@@ -134,23 +129,13 @@ local function buildGui()
 	corner(resultPanel, 24)
 	stroke(resultPanel, 0.55)
 
-	local title = makeLabel(
-		resultPanel,
-		"Title",
-		"ROUND OVER",
-		UDim2.fromScale(0.86, 0.18),
-		UDim2.fromScale(0.07, 0.10)
-	)
+	local title =
+		makeLabel(resultPanel, "Title", "ROUND OVER", UDim2.fromScale(0.86, 0.18), UDim2.fromScale(0.07, 0.10))
 	title.TextXAlignment = Enum.TextXAlignment.Center
 	title.TextColor3 = Color3.fromRGB(255, 184, 76)
 
-	resultScore = makeLabel(
-		resultPanel,
-		"ResultScore",
-		"SCORE  0",
-		UDim2.fromScale(0.86, 0.16),
-		UDim2.fromScale(0.07, 0.34)
-	)
+	resultScore =
+		makeLabel(resultPanel, "ResultScore", "SCORE  0", UDim2.fromScale(0.86, 0.16), UDim2.fromScale(0.07, 0.34))
 	resultScore.TextXAlignment = Enum.TextXAlignment.Center
 
 	local retryButton = Instance.new("TextButton")
@@ -212,12 +197,14 @@ function HudController.start()
 		refreshFromAttributes()
 	end)
 
-	for _, attribute in {
-		"PerfectJumpScore",
-		"PerfectJumpCombo",
-		"PerfectJumpBestScore",
-		"PerfectJumpPhase",
-	} do
+	for _, attribute in
+		{
+			"PerfectJumpScore",
+			"PerfectJumpCombo",
+			"PerfectJumpBestScore",
+			"PerfectJumpPhase",
+		}
+	do
 		player:GetAttributeChangedSignal(attribute):Connect(refreshFromAttributes)
 	end
 	refreshFromAttributes()

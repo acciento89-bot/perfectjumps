@@ -84,8 +84,9 @@ function CameraController.start()
 		end
 		local direction = horizontal.Unit
 
-		local cameraPosition =
-			focus - direction * GameConfig.Camera.Distance + Vector3.new(0, GameConfig.Camera.Height, 0)
+		local cameraPosition = focus
+			- direction * GameConfig.Camera.Distance
+			+ Vector3.new(0, GameConfig.Camera.Height, 0)
 		local desired = CFrame.lookAt(cameraPosition, focus)
 
 		local alpha = 1 - math.exp(-GameConfig.Camera.Smoothness * math.max(deltaTime, 0))

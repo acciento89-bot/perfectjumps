@@ -22,54 +22,59 @@ Mandatory V1 rules:
 - QA captures use `/tmp/perfectjumps-qa`.
 
 ## P00 Product lock
-- [ ] P00-T01 Lock “Perfect Jump” identity and score vocabulary
-- [ ] P00-T02 Lock charge duration, min/max impulse and air-control rules
-- [ ] P00-T03 Lock target/sweet-zone sizes and Perfect/Good/Miss thresholds
-- [ ] P00-T04 Lock platform spacing/difficulty bands and fail/revive rules
-- [ ] P00-T05 Lock monetization fairness and cosmetic categories
-- [ ] P00-T06 Measurable feel/release acceptance criteria
+- [x] P00-T01 Lock “Perfect Jump” identity and score vocabulary
+- [x] P00-T02 Lock charge duration, min/max impulse and air-control rules
+- [x] P00-T03 Lock target/sweet-zone sizes and Perfect/Good/Miss thresholds
+- [x] P00-T04 Lock platform spacing/difficulty bands and fail/revive rules
+- [x] P00-T05 Lock monetization fairness and cosmetic categories
+- [x] P00-T06 Measurable feel/release acceptance criteria
 
 ## P01 Technical foundation
-- [ ] P01-T01 Rojo client/server/shared layout
-- [ ] P01-T02 Shared config/remotes/state
-- [ ] P01-T03 Pure jump/round/scoring rule modules
-- [ ] P01-T04 Selene/StyLua/tests/build tooling
-- [ ] P01-T05 CI + release-readiness checks
-- [ ] P01-T06 Dev/prod place and canonical-build policy
+- [x] P01-T01 Rojo client/server/shared layout
+- [x] P01-T02 Shared config/remotes/state
+- [x] P01-T03 Pure jump/round/scoring rule modules
+- [x] P01-T04 Selene/StyLua/tests/build tooling
+- [x] P01-T05 CI + release-readiness checks
+- [x] P01-T06 Dev/prod place and canonical-build policy
+
+
+P00/P01 verification note (2026-10-01): product vocabulary, charge/air-control rules, landing thresholds, difficulty bands, revive/fairness rules and measurable feel criteria are locked in `docs/plans/P00-product-definition.md`. Rojo/source layout, centralized config/remotes/state, pure rule modules, pinned toolchain, CI and canonical platform-ID policy are present. Commit `ac2ac618...` passed GitHub Actions; the current docs-only P00 follow-up does not alter runtime code. Local verification on the canonical main source also passes StyLua, Selene (0 errors/0 warnings), Rojo build and 4 pure-Luau test files. Release-readiness correctly reports only the three external Roblox ID blockers.
+
+P02/P03 implementation note (2026-10-01): `main` now contains a per-player authored safe lane, unified touch/mouse/keyboard/controller charge input, focus/death charge cleanup, scriptable avatar+target camera, server-timed hold/release, deterministic launch speeds, server-only landing grade/score, duplicate-state guards, failure boundary and immediate Retry. Runtime/device acceptance remains intentionally unclaimed until Studio QA is run.
 
 ## P02 Character, camera and input
-- [ ] P02-T01 Safe spawn and starting platform
-- [ ] P02-T02 Charge input abstraction for touch/mouse/keyboard/controller
-- [ ] P02-T03 Input state cleans up correctly on focus loss, death and retry
-- [ ] P02-T04 Camera frames avatar + current platform + target platform during charge
-- [ ] P02-T05 Flight camera follows arc without losing target or inducing excessive motion
-- [ ] P02-T06 Landing camera settles cleanly before next jump
+- [~] P02-T01 Safe spawn and starting platform
+- [~] P02-T02 Charge input abstraction for touch/mouse/keyboard/controller
+- [~] P02-T03 Input state cleans up correctly on focus loss, death and retry
+- [~] P02-T04 Camera frames avatar + current platform + target platform during charge
+- [~] P02-T05 Flight camera follows arc without losing target or inducing excessive motion
+- [~] P02-T06 Landing camera settles cleanly before next jump
 - [ ] P02-T07 Runtime spawn → charge → jump → land → fail → retry → respawn
 
 ## P03 Precision jump mechanic
-- [ ] P03-T01 Deterministic charge-to-impulse mapping
-- [ ] P03-T02 Server validates legal charge duration/action sequence
-- [ ] P03-T03 Jump launch prevents duplicate release or stale input
-- [ ] P03-T04 Stable air/landing state detection
-- [ ] P03-T05 Edge landings, bounces and sliding cannot double-score
-- [ ] P03-T06 Failure boundary triggers once
+- [x] P03-T01 Deterministic charge-to-impulse mapping
+- [~] P03-T02 Server validates legal charge duration/action sequence
+- [~] P03-T03 Jump launch prevents duplicate release or stale input
+- [~] P03-T04 Stable air/landing state detection
+- [~] P03-T05 Edge landings, bounces and sliding cannot double-score
+- [~] P03-T06 Failure boundary triggers once
 - [ ] P03-T07 Runtime tuning at min/mid/max charge
 - [ ] P03-T08 100-jump repeatability sample shows no unexplained impulse drift
 
 ## P04 Landing grade, score and combo
-- [ ] P04-T01 Server computes landing center distance from platform sweet zone
-- [ ] P04-T02 Perfect/Good/Safe/Miss thresholds are explicit and tested
-- [ ] P04-T03 Combo/multiplier rules and break conditions
+- [~] P04-T01 Server computes landing center distance from platform sweet zone
+- [x] P04-T02 Perfect/Good/Safe/Miss thresholds are explicit and tested
+- [x] P04-T03 Combo/multiplier rules and break conditions
 - [ ] P04-T04 PB/highest-platform persistence
-- [ ] P04-T05 Grade feedback appears at landing without hiding next target
-- [ ] P04-T06 Anti-replay/duplicate-score guards
+- [~] P04-T05 Grade feedback appears at landing without hiding next target
+- [~] P04-T06 Anti-replay/duplicate-score guards
 
 ## P05 Platform generation and difficulty
 - [ ] P05-T01 Reachability envelope derived from actual jump model
-- [ ] P05-T02 Horizontal/vertical spacing by difficulty band
-- [ ] P05-T03 Platform size/sweet-zone progression
-- [ ] P05-T04 Pattern variety without blind/impossible jumps
-- [ ] P05-T05 Deterministic QA seed
+- [~] P05-T02 Horizontal/vertical spacing by difficulty band
+- [~] P05-T03 Platform size/sweet-zone progression
+- [~] P05-T04 Pattern variety without blind/impossible jumps
+- [~] P05-T05 Deterministic QA seed
 - [ ] P05-T06 1,000+ generated targets all satisfy reachability model
 - [ ] P05-T07 Runtime sample across early/mid/late difficulty
 
@@ -100,10 +105,10 @@ Mandatory V1 rules:
 - [!] P08-T08 Real Developer Product receipt + rejoin verification
 
 ## P09 Production UI/UX
-- [ ] P09-T01 Charge meter is legible and responsive
+- [~] P09-T01 Charge meter is legible and responsive
 - [ ] P09-T02 Target/sweet-zone visual is clear without excessive Neon
-- [ ] P09-T03 Score/combo/PB hierarchy
-- [ ] P09-T04 Result/retry flow
+- [~] P09-T03 Score/combo/PB hierarchy
+- [~] P09-T04 Result/retry flow
 - [ ] P09-T05 Shop/cosmetic previews
 - [ ] P09-T06 Compact phone/tablet/desktop layouts
 - [ ] P09-T07 Controller focus and accessibility/reduced-motion
@@ -125,9 +130,9 @@ Mandatory V1 rules:
 - [ ] P11-T06 Owned/Roblox-safe assets and reduced-motion/audio QA
 
 ## P12 Security and persistence hardening
-- [ ] P12-T01 Remote/rate-limit audit
-- [ ] P12-T02 Client cannot submit impulse, landing grade or score
-- [ ] P12-T03 Position/teleport/NaN/extreme-value validation
+- [~] P12-T01 Remote/rate-limit audit
+- [~] P12-T02 Client cannot submit impulse, landing grade or score
+- [~] P12-T03 Position/teleport/NaN/extreme-value validation
 - [ ] P12-T04 Economy/purchase mutation serialization
 - [ ] P12-T05 DataStore migration/lock/recovery
 - [ ] P12-T06 Structured diagnostic logging

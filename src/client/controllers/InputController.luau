@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui") :: PlayerGui
 local remotes = ReplicatedStorage:WaitForChild("PerfectJumpRemotes")
 local roundAction = remotes:WaitForChild("RoundAction") :: RemoteEvent
 
@@ -16,6 +17,30 @@ local RETRY_ACTION = "PerfectJumpRetry"
 local ACTION_PRIORITY = Enum.ContextActionPriority.High.Value + 80
 
 local charging = false
+
+local function hideDefaultJumpButton()
+	if not UserInputService.TouchEnabled then
+		return
+	end
+
+	task.spawn(function()
+		local touchGui = playerGui:WaitForChild("TouchGui", 10)
+		if not touchGui then
+			return
+		end
+
+		local function hide(instance: Instance)
+			if instance.Name == "JumpButton" and instance:IsA("GuiObject") then
+				instance.Visible = false
+			end
+		end
+
+		for _, descendant in touchGui:GetDescendants() do
+			hide(descendant)
+		end
+		touchGui.DescendantAdded:Connect(hide)
+	end)
+end
 
 local function send(action: string)
 	roundAction:FireServer(action)
@@ -102,7 +127,11 @@ function InputController.start()
 	end)
 
 	player:GetAttributeChangedSignal("PerfectJumpPhase"):Connect(refreshTouchButtons)
+	player.CharacterAdded:Connect(function()
+		task.defer(hideDefaultJumpButton)
+	end)
 	task.defer(refreshTouchButtons)
+	task.defer(hideDefaultJumpButton)
 end
 
 return InputController

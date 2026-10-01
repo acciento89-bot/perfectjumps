@@ -11,6 +11,30 @@ local GameConfig = {
 		MaximumPower = 1.00,
 	},
 
+	Movement = {
+		PlatformWalkSpeed = 8,
+		AirWalkSpeed = 0,
+		MinimumHorizontalSpeed = 22,
+		MaximumHorizontalSpeed = 48,
+		MinimumVerticalSpeed = 34,
+		MaximumVerticalSpeed = 52,
+		LandingVerticalSpeedLimit = 18,
+	},
+
+	Failure = {
+		KillPlaneY = -28,
+		MaximumHorizontalDistanceFromLane = 80,
+		RetryDelaySeconds = 0.2,
+	},
+
+	Camera = {
+		FieldOfView = 68,
+		Distance = 18,
+		Height = 9,
+		TargetLead = 0.58,
+		Smoothness = 10,
+	},
+
 	Platform = {
 		InitialWidth = 10,
 		MinimumWidth = 4.5,
@@ -25,6 +49,9 @@ local GameConfig = {
 		GapGrowthPerLanding = 0.28,
 		WidthShrinkPerLanding = 0.10,
 		LateralSpread = 5.5,
+		VerticalStep = 1.35,
+		LaneSpacing = 120,
+		VisiblePlatformHistory = 4,
 	},
 
 	Landing = {

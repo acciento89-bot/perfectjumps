@@ -89,11 +89,7 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 	local inset = makePart(
 		model,
 		"LandingDeck",
-		Vector3.new(
-			math.max(1, width - 0.5),
-			0.16,
-			math.max(1, GameConfig.Platform.Depth - 0.5)
-		),
+		Vector3.new(math.max(1, width - 0.5), 0.16, math.max(1, GameConfig.Platform.Depth - 0.5)),
 		CFrame.new(center + Vector3.new(0, GameConfig.Platform.Height / 2 + 0.1, 0)),
 		Enum.Material.SmoothPlastic,
 		Color3.fromRGB(79, 88, 102),

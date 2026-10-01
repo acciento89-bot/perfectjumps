@@ -3,6 +3,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local GameConfig = require(shared.config.GameConfig)
@@ -122,11 +123,16 @@ local function setGroundMovement(player: Player, enabled: boolean)
 end
 
 local function setNetworkOwner(root: BasePart, player: Player?)
+	if not root:IsDescendantOf(Workspace) then
+		return
+	end
 	local ok = pcall(function()
 		root:SetNetworkOwner(player)
 	end)
-	if not ok then
-		root:SetNetworkOwnershipAuto()
+	if not ok and root:IsDescendantOf(Workspace) then
+		pcall(function()
+			root:SetNetworkOwnershipAuto()
+		end)
 	end
 end
 

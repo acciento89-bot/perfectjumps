@@ -250,9 +250,12 @@ local function prepareCharacter(round: Round, character: Model)
 	setNetworkOwner(root, round.Player)
 	setGroundMovement(round.Player, true)
 
-	table.insert(round.CharacterConnections, humanoid.Died:Connect(function()
-		failRound(round, "CharacterDied")
-	end))
+	table.insert(
+		round.CharacterConnections,
+		humanoid.Died:Connect(function()
+			failRound(round, "CharacterDied")
+		end)
+	)
 
 	emitState(round)
 end
@@ -344,11 +347,8 @@ local function releaseCharge(round: Round)
 
 	setGroundMovement(round.Player, false)
 	setNetworkOwner(root, nil)
-	root.AssemblyLinearVelocity = Vector3.new(
-		direction.X * horizontalSpeed,
-		verticalSpeed,
-		direction.Z * horizontalSpeed
-	)
+	root.AssemblyLinearVelocity =
+		Vector3.new(direction.X * horizontalSpeed, verticalSpeed, direction.Z * horizontalSpeed)
 
 	emitState(round, {
 		ChargeSeconds = heldSeconds,

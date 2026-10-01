@@ -1,0 +1,472 @@
+--!strict
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
+local GameConfig = require(shared.config.GameConfig)
+local JumpRules = require(shared.game.JumpRules)
+local LaunchRules = require(shared.game.LaunchRules)
+local RoundStateRules = require(shared.game.RoundStateRules)
+
+local WorldService = require(script.Parent.WorldService)
+
+local RoundService = {}
+
+type Round = {
+	Player: Player,
+	Lane: WorldService.Lane,
+	LaneIndex: number,
+	Phase: RoundStateRules.Phase,
+	ChargeStartedAt: number?,
+	ActionToken: number,
+	Score: number,
+	Combo: number,
+	BestScore: number,
+	Coins: number,
+	FailedAt: number?,
+	TargetConnection: RBXScriptConnection?,
+	CharacterConnections: { RBXScriptConnection },
+	RateWindowStartedAt: number,
+	RateCount: number,
+}
+
+local remotes: Folder
+local roundAction: RemoteEvent
+local roundState: RemoteEvent
+local getPlayerState: RemoteFunction
+
+local rounds: { [Player]: Round } = {}
+local nextLaneIndex = 0
+
+local function getRoot(player: Player): BasePart?
+	local character = player.Character
+	if not character then
+		return nil
+	end
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if root and root:IsA("BasePart") then
+		return root
+	end
+	return nil
+end
+
+local function getHumanoid(player: Player): Humanoid?
+	local character = player.Character
+	if not character then
+		return nil
+	end
+	return character:FindFirstChildOfClass("Humanoid")
+end
+
+local function statePayload(round: Round, extra: { [string]: any }?)
+	local payload = {
+		Phase = round.Phase,
+		Score = round.Score,
+		Combo = round.Combo,
+		BestScore = round.BestScore,
+		Coins = round.Coins,
+		CurrentPlatformId = round.Lane.CurrentId,
+		TargetPlatformId = round.Lane.TargetId,
+		CurrentPosition = round.Lane.CurrentCollision.Position,
+		TargetPosition = round.Lane.TargetCollision.Position,
+		TargetWidth = round.Lane.TargetCollision.Size.X,
+	}
+	if extra then
+		for key, value in extra do
+			payload[key] = value
+		end
+	end
+	return payload
+end
+
+local function syncAttributes(round: Round)
+	local player = round.Player
+	player:SetAttribute("PerfectJumpPhase", round.Phase)
+	player:SetAttribute("PerfectJumpScore", round.Score)
+	player:SetAttribute("PerfectJumpCombo", round.Combo)
+	player:SetAttribute("PerfectJumpBestScore", round.BestScore)
+	player:SetAttribute("PerfectJumpCoins", round.Coins)
+	player:SetAttribute("PerfectJumpCurrentPlatform", round.Lane.CurrentId)
+	player:SetAttribute("PerfectJumpTargetPlatform", round.Lane.TargetId)
+end
+
+local function emitState(round: Round, extra: { [string]: any }?)
+	syncAttributes(round)
+	roundState:FireClient(round.Player, statePayload(round, extra))
+end
+
+local function transition(round: Round, nextPhase: RoundStateRules.Phase): boolean
+	if round.Phase == nextPhase then
+		return true
+	end
+	if not RoundStateRules.CanTransition(round.Phase, nextPhase) then
+		return false
+	end
+	round.Phase = nextPhase
+	syncAttributes(round)
+	return true
+end
+
+local function setGroundMovement(player: Player, enabled: boolean)
+	local humanoid = getHumanoid(player)
+	if not humanoid then
+		return
+	end
+	humanoid.UseJumpPower = true
+	humanoid.JumpPower = 0
+	humanoid.JumpHeight = 0
+	humanoid.WalkSpeed = if enabled then GameConfig.Movement.PlatformWalkSpeed else GameConfig.Movement.AirWalkSpeed
+	humanoid.AutoRotate = true
+end
+
+local function setNetworkOwner(root: BasePart, player: Player?)
+	local ok = pcall(function()
+		root:SetNetworkOwner(player)
+	end)
+	if not ok then
+		root:SetNetworkOwnershipAuto()
+	end
+end
+
+local function failRound(round: Round, reason: string)
+	if round.Phase == "GameOver" then
+		return
+	end
+	if round.Phase == "Charging" then
+		round.ChargeStartedAt = nil
+	end
+
+	round.Phase = "GameOver"
+	round.Combo = 0
+	round.FailedAt = os.clock()
+	round.ActionToken += 1
+	setGroundMovement(round.Player, false)
+	emitState(round, {
+		Reason = reason,
+	})
+end
+
+local function landingDistance(root: BasePart, target: BasePart): number
+	local delta = root.Position - target.Position
+	return Vector2.new(delta.X, delta.Z).Magnitude
+end
+
+local connectTarget: (Round) -> ()
+
+local function handleLanding(round: Round)
+	if round.Phase ~= "Airborne" then
+		return
+	end
+
+	local root = getRoot(round.Player)
+	if not root then
+		return
+	end
+	if root.AssemblyLinearVelocity.Y > GameConfig.Movement.LandingVerticalSpeedLimit then
+		return
+	end
+
+	local distance = landingDistance(root, round.Lane.TargetCollision)
+	local grade = JumpRules.GradeLanding(distance, round.Lane.TargetCollision.Size.X)
+	if grade == "Miss" then
+		failRound(round, "Miss")
+		return
+	end
+
+	if not transition(round, "Landed") then
+		return
+	end
+
+	setNetworkOwner(root, round.Player)
+	setGroundMovement(round.Player, true)
+
+	local nextCombo = JumpRules.NextCombo(round.Combo, grade)
+	local scoreDelta = JumpRules.ScoreForLanding(grade, nextCombo)
+	round.Combo = nextCombo
+	round.Score += scoreDelta
+	round.BestScore = math.max(round.BestScore, round.Score)
+	round.Coins += JumpRules.CoinsForLanding(grade)
+
+	WorldService.advanceLane(round.Lane)
+	connectTarget(round)
+
+	emitState(round, {
+		Grade = grade,
+		ScoreDelta = scoreDelta,
+		LandingDistance = distance,
+	})
+
+	local token = round.ActionToken
+	task.delay(0.12, function()
+		if rounds[round.Player] ~= round or round.ActionToken ~= token or round.Phase ~= "Landed" then
+			return
+		end
+		if transition(round, "Ready") then
+			emitState(round)
+		end
+	end)
+end
+
+connectTarget = function(round: Round)
+	if round.TargetConnection then
+		round.TargetConnection:Disconnect()
+	end
+
+	local expectedTargetId = round.Lane.TargetId
+	round.TargetConnection = round.Lane.TargetCollision.Touched:Connect(function(hit: BasePart)
+		if round.Phase ~= "Airborne" or round.Lane.TargetId ~= expectedTargetId then
+			return
+		end
+		local character = hit:FindFirstAncestorOfClass("Model")
+		if character ~= round.Player.Character then
+			return
+		end
+		handleLanding(round)
+	end)
+end
+
+local function clearCharacterConnections(round: Round)
+	for _, connection in round.CharacterConnections do
+		connection:Disconnect()
+	end
+	table.clear(round.CharacterConnections)
+end
+
+local function prepareCharacter(round: Round, character: Model)
+	clearCharacterConnections(round)
+	round.ActionToken += 1
+	round.ChargeStartedAt = nil
+	round.Phase = "Ready"
+	round.Combo = 0
+	round.FailedAt = nil
+
+	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+	local root = character:WaitForChild("HumanoidRootPart") :: BasePart
+	character:PivotTo(round.Lane.Spawn.CFrame)
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	setNetworkOwner(root, round.Player)
+	setGroundMovement(round.Player, true)
+
+	table.insert(round.CharacterConnections, humanoid.Died:Connect(function()
+		failRound(round, "CharacterDied")
+	end))
+
+	emitState(round)
+end
+
+local function rebuildLane(round: Round)
+	if round.TargetConnection then
+		round.TargetConnection:Disconnect()
+		round.TargetConnection = nil
+	end
+	WorldService.destroyLane(round.Lane)
+	round.Lane = WorldService.createLane(round.Player, round.LaneIndex)
+	connectTarget(round)
+end
+
+local function retryRound(round: Round)
+	if round.Phase ~= "GameOver" then
+		return
+	end
+	if round.FailedAt and os.clock() - round.FailedAt < GameConfig.Failure.RetryDelaySeconds then
+		return
+	end
+
+	round.ActionToken += 1
+	round.Score = 0
+	round.Combo = 0
+	round.ChargeStartedAt = nil
+	rebuildLane(round)
+	round.Player.RespawnLocation = round.Lane.Spawn
+	round.Player:LoadCharacter()
+end
+
+local function beginCharge(round: Round)
+	if round.Phase ~= "Ready" then
+		return
+	end
+	if not transition(round, "Charging") then
+		return
+	end
+	round.ChargeStartedAt = os.clock()
+	round.ActionToken += 1
+	emitState(round, {
+		ChargeStartedAt = round.ChargeStartedAt,
+	})
+end
+
+local function cancelCharge(round: Round)
+	if round.Phase ~= "Charging" then
+		return
+	end
+	round.ChargeStartedAt = nil
+	if transition(round, "Ready") then
+		emitState(round)
+	end
+end
+
+local function releaseCharge(round: Round)
+	if round.Phase ~= "Charging" or round.ChargeStartedAt == nil then
+		return
+	end
+
+	local heldSeconds = os.clock() - round.ChargeStartedAt
+	round.ChargeStartedAt = nil
+	if not LaunchRules.IsLegalChargeSeconds(heldSeconds) then
+		cancelCharge(round)
+		return
+	end
+
+	local root = getRoot(round.Player)
+	if not root then
+		failRound(round, "MissingRoot")
+		return
+	end
+
+	local directionDelta = round.Lane.TargetCollision.Position - root.Position
+	local horizontal = Vector3.new(directionDelta.X, 0, directionDelta.Z)
+	if horizontal.Magnitude < 0.001 then
+		cancelCharge(round)
+		return
+	end
+
+	if not transition(round, "Airborne") then
+		return
+	end
+
+	local normalized = JumpRules.NormalizeCharge(heldSeconds)
+	local horizontalSpeed = LaunchRules.HorizontalSpeed(normalized)
+	local verticalSpeed = LaunchRules.VerticalSpeed(normalized)
+	local direction = horizontal.Unit
+
+	setGroundMovement(round.Player, false)
+	setNetworkOwner(root, nil)
+	root.AssemblyLinearVelocity = Vector3.new(
+		direction.X * horizontalSpeed,
+		verticalSpeed,
+		direction.Z * horizontalSpeed
+	)
+
+	emitState(round, {
+		ChargeSeconds = heldSeconds,
+		ChargePower = normalized,
+	})
+end
+
+local function allowAction(round: Round): boolean
+	local now = os.clock()
+	if now - round.RateWindowStartedAt >= 1 then
+		round.RateWindowStartedAt = now
+		round.RateCount = 0
+	end
+	round.RateCount += 1
+	return round.RateCount <= 12
+end
+
+local function onRoundAction(player: Player, action: any)
+	local round = rounds[player]
+	if not round or not allowAction(round) or type(action) ~= "string" then
+		return
+	end
+
+	if action == "ChargeStart" then
+		beginCharge(round)
+	elseif action == "ChargeRelease" then
+		releaseCharge(round)
+	elseif action == "CancelCharge" then
+		cancelCharge(round)
+	elseif action == "Retry" then
+		retryRound(round)
+	end
+end
+
+local function addPlayer(player: Player)
+	nextLaneIndex += 1
+	local lane = WorldService.createLane(player, nextLaneIndex)
+	local round: Round = {
+		Player = player,
+		Lane = lane,
+		LaneIndex = nextLaneIndex,
+		Phase = "Ready",
+		ChargeStartedAt = nil,
+		ActionToken = 0,
+		Score = 0,
+		Combo = 0,
+		BestScore = 0,
+		Coins = 0,
+		FailedAt = nil,
+		TargetConnection = nil,
+		CharacterConnections = {},
+		RateWindowStartedAt = os.clock(),
+		RateCount = 0,
+	}
+	rounds[player] = round
+	player.RespawnLocation = lane.Spawn
+	connectTarget(round)
+
+	player.CharacterAdded:Connect(function(character)
+		prepareCharacter(round, character)
+	end)
+	if player.Character then
+		task.defer(prepareCharacter, round, player.Character)
+	end
+	syncAttributes(round)
+end
+
+local function removePlayer(player: Player)
+	local round = rounds[player]
+	if not round then
+		return
+	end
+	clearCharacterConnections(round)
+	if round.TargetConnection then
+		round.TargetConnection:Disconnect()
+	end
+	WorldService.destroyLane(round.Lane)
+	rounds[player] = nil
+end
+
+function RoundService.start()
+	remotes = ReplicatedStorage:WaitForChild("PerfectJumpRemotes") :: Folder
+	roundAction = remotes:WaitForChild("RoundAction") :: RemoteEvent
+	roundState = remotes:WaitForChild("RoundState") :: RemoteEvent
+	getPlayerState = remotes:WaitForChild("GetPlayerState") :: RemoteFunction
+
+	roundAction.OnServerEvent:Connect(onRoundAction)
+	getPlayerState.OnServerInvoke = function(player: Player)
+		local round = rounds[player]
+		if not round then
+			return nil
+		end
+		return statePayload(round)
+	end
+
+	Players.PlayerAdded:Connect(addPlayer)
+	Players.PlayerRemoving:Connect(removePlayer)
+	for _, player in Players:GetPlayers() do
+		addPlayer(player)
+	end
+
+	RunService.Heartbeat:Connect(function()
+		for player, round in rounds do
+			if round.Phase ~= "GameOver" then
+				local root = getRoot(player)
+				if root then
+					local current = round.Lane.CurrentCollision.Position
+					local horizontalDistance =
+						Vector2.new(root.Position.X - current.X, root.Position.Z - current.Z).Magnitude
+					if root.Position.Y < math.max(GameConfig.Failure.KillPlaneY, current.Y - 24) then
+						failRound(round, "Fall")
+					elseif horizontalDistance > GameConfig.Failure.MaximumHorizontalDistanceFromLane then
+						failRound(round, "OutOfBounds")
+					end
+				end
+			end
+		end
+	end)
+end
+
+return RoundService

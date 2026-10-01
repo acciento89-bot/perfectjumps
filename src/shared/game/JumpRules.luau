@@ -10,15 +10,10 @@ function JumpRules.NormalizeCharge(heldSeconds: number): number
 	if heldSeconds ~= heldSeconds or heldSeconds == math.huge or heldSeconds == -math.huge then
 		return GameConfig.Charge.MinimumPower
 	end
-	local duration = math.clamp(
-		heldSeconds,
-		GameConfig.Charge.MinimumSeconds,
-		GameConfig.Charge.MaximumSeconds
-	)
+	local duration = math.clamp(heldSeconds, GameConfig.Charge.MinimumSeconds, GameConfig.Charge.MaximumSeconds)
 	local span = GameConfig.Charge.MaximumSeconds - GameConfig.Charge.MinimumSeconds
 	local alpha = if span <= 0 then 1 else (duration - GameConfig.Charge.MinimumSeconds) / span
-	return GameConfig.Charge.MinimumPower
-		+ (GameConfig.Charge.MaximumPower - GameConfig.Charge.MinimumPower) * alpha
+	return GameConfig.Charge.MinimumPower + (GameConfig.Charge.MaximumPower - GameConfig.Charge.MinimumPower) * alpha
 end
 
 function JumpRules.SafeRadius(platformWidth: number): number
@@ -49,10 +44,8 @@ function JumpRules.ScoreForLanding(grade: LandingGrade, combo: number): number
 		return 0
 	end
 	local base = GameConfig.Score[grade]
-	local multiplier = math.min(
-		GameConfig.Score.MaximumComboMultiplier,
-		1 + math.max(0, combo) * GameConfig.Score.ComboStep
-	)
+	local multiplier =
+		math.min(GameConfig.Score.MaximumComboMultiplier, 1 + math.max(0, combo) * GameConfig.Score.ComboStep)
 	return math.floor(base * multiplier + 0.5)
 end
 

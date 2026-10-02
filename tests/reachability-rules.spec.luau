@@ -8,8 +8,7 @@ return function()
 		local distance = math.sqrt(lateral * lateral + gap * gap)
 		local width = math.max(
 			GameConfig.Platform.MinimumWidth,
-			GameConfig.Platform.InitialWidth
-				- math.max(0, platformId - 1) * GameConfig.Generation.WidthShrinkPerLanding
+			GameConfig.Platform.InitialWidth - math.max(0, platformId - 1) * GameConfig.Generation.WidthShrinkPerLanding
 		)
 		local landingRadius = math.max(0.8, width / 2 - GameConfig.Platform.EdgeSafetyMargin)
 		assert(

@@ -7,10 +7,12 @@ local Workspace = game:GetService("Workspace")
 
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local GameConfig = require(shared.config.GameConfig)
+local MonetizationConfig = require(shared.config.MonetizationConfig)
 local JumpRules = require(shared.game.JumpRules)
 local LaunchRules = require(shared.game.LaunchRules)
 local RoundStateRules = require(shared.game.RoundStateRules)
 
+local ProfileService = require(script.Parent.ProfileService)
 local WorldService = require(script.Parent.WorldService)
 
 local RoundService = {}
@@ -24,9 +26,9 @@ type Round = {
 	ActionToken: number,
 	Score: number,
 	Combo: number,
-	BestScore: number,
-	Coins: number,
+	Assisted: boolean,
 	FailedAt: number?,
+	RespawnCFrame: CFrame?,
 	TargetConnection: RBXScriptConnection?,
 	CharacterConnections: { RBXScriptConnection },
 	RateWindowStartedAt: number,
@@ -62,12 +64,16 @@ local function getHumanoid(player: Player): Humanoid?
 end
 
 local function statePayload(round: Round, extra: { [string]: any }?)
+	local profile = ProfileService.GetSnapshot(round.Player)
 	local payload = {
 		Phase = round.Phase,
 		Score = round.Score,
 		Combo = round.Combo,
-		BestScore = round.BestScore,
-		Coins = round.Coins,
+		Assisted = round.Assisted,
+		BestScore = if profile then profile.BestScore else 0,
+		HighestPlatform = if profile then profile.HighestPlatform else 0,
+		Coins = if profile then profile.Coins else 0,
+		Revives = if profile then profile.Inventory.Revives else 0,
 		CurrentPlatformId = round.Lane.CurrentId,
 		TargetPlatformId = round.Lane.TargetId,
 		CurrentPosition = round.Lane.CurrentCollision.Position,
@@ -87,8 +93,7 @@ local function syncAttributes(round: Round)
 	player:SetAttribute("PerfectJumpPhase", round.Phase)
 	player:SetAttribute("PerfectJumpScore", round.Score)
 	player:SetAttribute("PerfectJumpCombo", round.Combo)
-	player:SetAttribute("PerfectJumpBestScore", round.BestScore)
-	player:SetAttribute("PerfectJumpCoins", round.Coins)
+	player:SetAttribute("PerfectJumpAssisted", round.Assisted)
 	player:SetAttribute("PerfectJumpCurrentPlatform", round.Lane.CurrentId)
 	player:SetAttribute("PerfectJumpTargetPlatform", round.Lane.TargetId)
 end
@@ -140,10 +145,7 @@ local function failRound(round: Round, reason: string)
 	if round.Phase == "GameOver" then
 		return
 	end
-	if round.Phase == "Charging" then
-		round.ChargeStartedAt = nil
-	end
-
+	round.ChargeStartedAt = nil
 	round.Phase = "GameOver"
 	round.Combo = 0
 	round.FailedAt = os.clock()
@@ -175,7 +177,17 @@ local function handleLanding(round: Round)
 	end
 
 	local distance = landingDistance(root, round.Lane.TargetCollision)
-	local grade = JumpRules.GradeLanding(distance, round.Lane.TargetCollision.Size.X)
+	local perfectRadius = GameConfig.Landing.PerfectRadius
+	if ProfileService.IsWidePerfectActive(round.Player) then
+		perfectRadius *= MonetizationConfig.DeveloperProducts.WidePerfect5m.RadiusMultiplier
+		round.Assisted = true
+	end
+
+	local grade = JumpRules.GradeLandingWithPerfectRadius(
+		distance,
+		round.Lane.TargetCollision.Size.X,
+		perfectRadius
+	)
 	if grade == "Miss" then
 		failRound(round, "Miss")
 		return
@@ -188,12 +200,20 @@ local function handleLanding(round: Round)
 	setNetworkOwner(root, round.Player)
 	setGroundMovement(round.Player, true)
 
+	local landedPlatformId = round.Lane.TargetId
 	local nextCombo = JumpRules.NextCombo(round.Combo, grade)
 	local scoreDelta = JumpRules.ScoreForLanding(grade, nextCombo)
 	round.Combo = nextCombo
 	round.Score += scoreDelta
-	round.BestScore = math.max(round.BestScore, round.Score)
-	round.Coins += JumpRules.CoinsForLanding(grade)
+
+	local reward = ProfileService.RecordLanding(
+		round.Player,
+		grade,
+		round.Score,
+		landedPlatformId,
+		round.Combo,
+		not round.Assisted
+	)
 
 	WorldService.advanceLane(round.Lane)
 	connectTarget(round)
@@ -202,6 +222,7 @@ local function handleLanding(round: Round)
 		Grade = grade,
 		ScoreDelta = scoreDelta,
 		LandingDistance = distance,
+		Reward = reward,
 	})
 
 	local token = round.ActionToken
@@ -244,17 +265,22 @@ local function prepareCharacter(round: Round, character: Model)
 	clearCharacterConnections(round)
 	round.ActionToken += 1
 	round.ChargeStartedAt = nil
-	round.Phase = "Ready"
-	round.Combo = 0
-	round.FailedAt = nil
 
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 	local root = character:WaitForChild("HumanoidRootPart") :: BasePart
-	character:PivotTo(round.Lane.Spawn.CFrame)
+	local spawnCFrame = round.RespawnCFrame or round.Lane.Spawn.CFrame
+	round.RespawnCFrame = nil
+	character:PivotTo(spawnCFrame)
 	root.AssemblyLinearVelocity = Vector3.zero
 	root.AssemblyAngularVelocity = Vector3.zero
 	setNetworkOwner(root, round.Player)
-	setGroundMovement(round.Player, true)
+
+	if round.Phase == "GameOver" then
+		setGroundMovement(round.Player, false)
+	else
+		round.Phase = "Ready"
+		setGroundMovement(round.Player, true)
+	end
 
 	table.insert(
 		round.CharacterConnections,
@@ -287,9 +313,27 @@ local function retryRound(round: Round)
 	round.ActionToken += 1
 	round.Score = 0
 	round.Combo = 0
+	round.Assisted = false
 	round.ChargeStartedAt = nil
+	round.FailedAt = nil
+	round.Phase = "Ready"
+	round.RespawnCFrame = nil
 	rebuildLane(round)
 	round.Player.RespawnLocation = round.Lane.Spawn
+	round.Player:LoadCharacter()
+end
+
+local function reviveRound(round: Round)
+	if round.Phase ~= "GameOver" or not ProfileService.ConsumeRevive(round.Player) then
+		return
+	end
+	round.ActionToken += 1
+	round.Combo = 0
+	round.Assisted = true
+	round.ChargeStartedAt = nil
+	round.FailedAt = nil
+	round.Phase = "Ready"
+	round.RespawnCFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
 	round.Player:LoadCharacter()
 end
 
@@ -351,6 +395,10 @@ local function releaseCharge(round: Round)
 	local verticalSpeed = LaunchRules.VerticalSpeed(normalized)
 	local direction = horizontal.Unit
 
+	if ProfileService.IsWidePerfectActive(round.Player) then
+		round.Assisted = true
+	end
+
 	setGroundMovement(round.Player, false)
 	setNetworkOwner(root, nil)
 	root.AssemblyLinearVelocity =
@@ -386,10 +434,17 @@ local function onRoundAction(player: Player, action: any)
 		cancelCharge(round)
 	elseif action == "Retry" then
 		retryRound(round)
+	elseif action == "UseRevive" then
+		reviveRound(round)
 	end
 end
 
 local function addPlayer(player: Player)
+	local profile = ProfileService.WaitForProfile(player)
+	if not profile or not player.Parent then
+		return
+	end
+
 	nextLaneIndex += 1
 	local lane = WorldService.createLane(player, nextLaneIndex)
 	local round: Round = {
@@ -401,9 +456,9 @@ local function addPlayer(player: Player)
 		ActionToken = 0,
 		Score = 0,
 		Combo = 0,
-		BestScore = 0,
-		Coins = 0,
+		Assisted = false,
 		FailedAt = nil,
+		RespawnCFrame = nil,
 		TargetConnection = nil,
 		CharacterConnections = {},
 		RateWindowStartedAt = os.clock(),
@@ -450,10 +505,12 @@ function RoundService.start()
 		return statePayload(round)
 	end
 
-	Players.PlayerAdded:Connect(addPlayer)
+	Players.PlayerAdded:Connect(function(player)
+		task.spawn(addPlayer, player)
+	end)
 	Players.PlayerRemoving:Connect(removePlayer)
 	for _, player in Players:GetPlayers() do
-		addPlayer(player)
+		task.spawn(addPlayer, player)
 	end
 
 	RunService.Heartbeat:Connect(function()

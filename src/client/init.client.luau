@@ -10,6 +10,7 @@ local CosmeticPresentationController = require(controllers.CosmeticPresentationC
 local FeedbackController = require(controllers.FeedbackController)
 local GraphicsQualityController = require(controllers.GraphicsQualityController)
 local HudController = require(controllers.HudController)
+local ShopController = require(controllers.ShopController)
 local InputController = require(controllers.InputController)
 
 CameraController.start()
@@ -17,6 +18,7 @@ CosmeticPresentationController.start()
 FeedbackController.start()
 GraphicsQualityController.start()
 HudController.start()
+ShopController.start()
 InputController.start()
 
 print("[Perfect Jump] Client gameplay initialized")

@@ -127,8 +127,7 @@ local function sparkBurst(color: Color3)
 		spark.CastShadow = false
 		spark.Material = Enum.Material.Neon
 		spark.Color = color
-		spark.AssemblyLinearVelocity =
-			Vector3.new(math.cos(angle) * 4.2, 5.2 + (index % 3), math.sin(angle) * 4.2)
+		spark.AssemblyLinearVelocity = Vector3.new(math.cos(angle) * 4.2, 5.2 + (index % 3), math.sin(angle) * 4.2)
 		spark.Parent = Workspace
 		Debris:AddItem(spark, 0.7)
 	end
@@ -174,10 +173,13 @@ local function onRoundState(payload: any)
 		end
 
 		local reward = payload.Reward
-		if type(reward) == "table"
-			and (reward.NewPB == true
+		if
+			type(reward) == "table"
+			and (
+				reward.NewPB == true
 				or (tonumber(reward.AchievementCoins) or 0) > 0
-				or (tonumber(reward.ChallengeCoins) or 0) > 0)
+				or (tonumber(reward.ChallengeCoins) or 0) > 0
+			)
 		then
 			task.delay(0.12, function()
 				playCue("Reward")

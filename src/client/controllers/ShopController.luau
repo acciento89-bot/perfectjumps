@@ -129,9 +129,7 @@ local function updateCosmetics()
 	end
 	for category, buttons in cosmeticButtons do
 		for itemId, itemButton in buttons do
-			local owned = profile.Owned
-				and profile.Owned[category]
-				and profile.Owned[category][itemId] == true
+			local owned = profile.Owned and profile.Owned[category] and profile.Owned[category][itemId] == true
 			local equipped = profile.Equipped and profile.Equipped[category] == itemId
 			local item = CosmeticConfig.Categories[category].Items[itemId]
 			if equipped then
@@ -264,23 +262,15 @@ local function addCosmeticSection(scroll: ScrollingFrame, category: string, titl
 		)
 		priceLabel.ZIndex = 54
 
-		local action = makeButton(
-			row,
-			"Action",
-			"BUY",
-			UDim2.fromOffset(104, 40),
-			UDim2.new(1, -116, 0.5, -20),
-			COLORS.Amber
-		)
+		local action =
+			makeButton(row, "Action", "BUY", UDim2.fromOffset(104, 40), UDim2.new(1, -116, 0.5, -20), COLORS.Amber)
 		action.ZIndex = 54
 		cosmeticButtons[category][itemId] = action
 		action.Activated:Connect(function()
 			if not profile then
 				return
 			end
-			local owned = profile.Owned
-				and profile.Owned[category]
-				and profile.Owned[category][itemId] == true
+			local owned = profile.Owned and profile.Owned[category] and profile.Owned[category][itemId] == true
 			task.spawn(function()
 				local ok, result = pcall(function()
 					if owned then
@@ -339,14 +329,8 @@ local function buildGui()
 		Enum.Font.GothamBlack
 	)
 	title.ZIndex = 52
-	closeButton = makeButton(
-		panel,
-		"CloseButton",
-		"×",
-		UDim2.fromOffset(46, 46),
-		UDim2.new(1, -60, 0, 12),
-		COLORS.PanelSoft
-	)
+	closeButton =
+		makeButton(panel, "CloseButton", "×", UDim2.fromOffset(46, 46), UDim2.new(1, -60, 0, 12), COLORS.PanelSoft)
 	closeButton.TextColor3 = COLORS.Text
 	closeButton.TextSize = 22
 	closeButton.ZIndex = 52
@@ -386,12 +370,23 @@ local function buildGui()
 	daily.Parent = scroll
 	corner(daily, 13)
 	stroke(daily, COLORS.Amber, 0.60)
-	local dailyTitle = makeLabel(daily, "Title", "DAILY SUPPLY", UDim2.new(1, -145, 0, 27), UDim2.fromOffset(14, 8), 13, COLORS.Text, Enum.Font.GothamBold)
+	local dailyTitle = makeLabel(
+		daily,
+		"Title",
+		"DAILY SUPPLY",
+		UDim2.new(1, -145, 0, 27),
+		UDim2.fromOffset(14, 8),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	dailyTitle.ZIndex = 54
-	dailyDetail = makeLabel(daily, "Detail", "Loading…", UDim2.new(1, -145, 0, 38), UDim2.fromOffset(14, 36), 11, COLORS.Muted)
+	dailyDetail =
+		makeLabel(daily, "Detail", "Loading…", UDim2.new(1, -145, 0, 38), UDim2.fromOffset(14, 36), 11, COLORS.Muted)
 	dailyDetail.TextWrapped = true
 	dailyDetail.ZIndex = 54
-	dailyButton = makeButton(daily, "Claim", "CLAIM", UDim2.fromOffset(108, 44), UDim2.new(1, -122, 0.5, -22), COLORS.Amber)
+	dailyButton =
+		makeButton(daily, "Claim", "CLAIM", UDim2.fromOffset(108, 44), UDim2.new(1, -122, 0.5, -22), COLORS.Amber)
 	dailyButton.ZIndex = 54
 	dailyButton.Activated:Connect(function()
 		if not dailyButton.Active then
@@ -416,9 +411,26 @@ local function buildGui()
 	challenge.ZIndex = 53
 	challenge.Parent = scroll
 	corner(challenge, 13)
-	local challengeTitle = makeLabel(challenge, "Title", "DAILY PRECISION", UDim2.new(1, -28, 0, 26), UDim2.fromOffset(14, 6), 12, COLORS.Text, Enum.Font.GothamBold)
+	local challengeTitle = makeLabel(
+		challenge,
+		"Title",
+		"DAILY PRECISION",
+		UDim2.new(1, -28, 0, 26),
+		UDim2.fromOffset(14, 6),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	challengeTitle.ZIndex = 54
-	challengeDetail = makeLabel(challenge, "Detail", "Loading…", UDim2.new(1, -28, 0, 30), UDim2.fromOffset(14, 32), 11, COLORS.Muted)
+	challengeDetail = makeLabel(
+		challenge,
+		"Detail",
+		"Loading…",
+		UDim2.new(1, -28, 0, 30),
+		UDim2.fromOffset(14, 32),
+		11,
+		COLORS.Muted
+	)
 	challengeDetail.ZIndex = 54
 
 	addSectionTitle(scroll, "ASSISTS — assisted runs do not improve PB", 10)
@@ -484,14 +496,40 @@ local function buildGui()
 	settings.ZIndex = 53
 	settings.Parent = scroll
 	corner(settings, 13)
-	local reducedLabel = makeLabel(settings, "ReducedLabel", "Reduced motion", UDim2.new(1, -140, 0, 46), UDim2.fromOffset(14, 5), 12, COLORS.Text, Enum.Font.GothamBold)
+	local reducedLabel = makeLabel(
+		settings,
+		"ReducedLabel",
+		"Reduced motion",
+		UDim2.new(1, -140, 0, 46),
+		UDim2.fromOffset(14, 5),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	reducedLabel.ZIndex = 54
-	reducedMotionButton = makeButton(settings, "ReducedMotion", "OFF", UDim2.fromOffset(94, 40), UDim2.new(1, -108, 0, 8), COLORS.PanelSoft)
+	reducedMotionButton = makeButton(
+		settings,
+		"ReducedMotion",
+		"OFF",
+		UDim2.fromOffset(94, 40),
+		UDim2.new(1, -108, 0, 8),
+		COLORS.PanelSoft
+	)
 	reducedMotionButton.TextColor3 = COLORS.Text
 	reducedMotionButton.ZIndex = 54
-	local audioLabel = makeLabel(settings, "AudioLabel", "Audio", UDim2.new(1, -140, 0, 46), UDim2.fromOffset(14, 57), 12, COLORS.Text, Enum.Font.GothamBold)
+	local audioLabel = makeLabel(
+		settings,
+		"AudioLabel",
+		"Audio",
+		UDim2.new(1, -140, 0, 46),
+		UDim2.fromOffset(14, 57),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	audioLabel.ZIndex = 54
-	audioButton = makeButton(settings, "Audio", "ON", UDim2.fromOffset(94, 40), UDim2.new(1, -108, 0, 60), COLORS.PanelSoft)
+	audioButton =
+		makeButton(settings, "Audio", "ON", UDim2.fromOffset(94, 40), UDim2.new(1, -108, 0, 60), COLORS.PanelSoft)
 	audioButton.TextColor3 = COLORS.Text
 	audioButton.ZIndex = 54
 
@@ -534,22 +572,16 @@ function ShopController.start()
 
 	metaChanged.OnClientEvent:Connect(updateProfile)
 
-	ContextActionService:BindActionAtPriority(
-		"PerfectJumpShop",
-		function(_name, state)
-			if state == Enum.UserInputState.Begin then
-				local open = not (player:GetAttribute("PerfectJumpShopOpen") == true)
-				setOpen(open)
-				if open then
-					requestProfile()
-				end
+	ContextActionService:BindActionAtPriority("PerfectJumpShop", function(_name, state)
+		if state == Enum.UserInputState.Begin then
+			local open = not (player:GetAttribute("PerfectJumpShopOpen") == true)
+			setOpen(open)
+			if open then
+				requestProfile()
 			end
-			return Enum.ContextActionResult.Sink
-		end,
-		false,
-		Enum.ContextActionPriority.High.Value + 60,
-		Enum.KeyCode.ButtonY
-	)
+		end
+		return Enum.ContextActionResult.Sink
+	end, false, Enum.ContextActionPriority.High.Value + 60, Enum.KeyCode.ButtonY)
 
 	requestProfile()
 end

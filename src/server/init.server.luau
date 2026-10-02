@@ -25,9 +25,13 @@ for _, definition in RemoteDefinitions do
 	instance.Parent = remotes
 end
 
+local ProfileService = require(script.services.ProfileService)
+local PurchaseService = require(script.services.PurchaseService)
 local WorldService = require(script.services.WorldService)
 local RoundService = require(script.services.RoundService)
 
+ProfileService.start()
+PurchaseService.start()
 WorldService.start()
 RoundService.start()
 

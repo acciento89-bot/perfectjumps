@@ -47,6 +47,14 @@ local function send(action: string)
 end
 
 local function chargeAction(_actionName: string, inputState: Enum.UserInputState): Enum.ContextActionResult
+	if player:GetAttribute("PerfectJumpUiModal") == true then
+		if charging then
+			charging = false
+			send("CancelCharge")
+		end
+		return Enum.ContextActionResult.Pass
+	end
+
 	if inputState == Enum.UserInputState.Begin then
 		if not charging and player:GetAttribute("PerfectJumpPhase") == "Ready" then
 			charging = true

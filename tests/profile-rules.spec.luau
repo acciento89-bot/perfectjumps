@@ -20,7 +20,10 @@ return function()
 	})
 	assert(normalized.Coins == 0, "negative coins were not clamped")
 	assert(normalized.BestScore == 41 and normalized.HighestPlatform == 8, "score/platform normalization failed")
-	assert(normalized.Settings.ReducedMotion == true and normalized.Settings.AudioEnabled == false, "settings normalization failed")
+	assert(
+		normalized.Settings.ReducedMotion == true and normalized.Settings.AudioEnabled == false,
+		"settings normalization failed"
+	)
 	assert(normalized.Inventory.Revives == 2, "revive inventory normalization failed")
 
 	normalized.Coins = 1000

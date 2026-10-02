@@ -434,16 +434,78 @@ local function buildGui()
 	stroke(statsPanel, COLORS.Cyan, 0.64)
 	gradient(statsPanel, COLORS.Foundation, COLORS.Panel, 110)
 
-	scoreLabel = label(statsPanel, "Score", "SCORE  0", UDim2.fromOffset(128, 27), UDim2.fromOffset(14, 8), 15, COLORS.Text, Enum.Font.GothamBold)
-	comboLabel = label(statsPanel, "Combo", "COMBO  0", UDim2.fromOffset(128, 27), UDim2.fromOffset(146, 8), 15, COLORS.Text, Enum.Font.GothamBold)
-	bestLabel = label(statsPanel, "Best", "PB  0", UDim2.fromOffset(92, 27), UDim2.fromOffset(278, 8), 15, COLORS.Amber, Enum.Font.GothamBold)
-	coinsLabel = label(statsPanel, "Coins", "◈ 0", UDim2.fromOffset(72, 27), UDim2.new(1, -82, 0, 8), 14, COLORS.Amber, Enum.Font.GothamBold)
+	scoreLabel = label(
+		statsPanel,
+		"Score",
+		"SCORE  0",
+		UDim2.fromOffset(128, 27),
+		UDim2.fromOffset(14, 8),
+		15,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	comboLabel = label(
+		statsPanel,
+		"Combo",
+		"COMBO  0",
+		UDim2.fromOffset(128, 27),
+		UDim2.fromOffset(146, 8),
+		15,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	bestLabel = label(
+		statsPanel,
+		"Best",
+		"PB  0",
+		UDim2.fromOffset(92, 27),
+		UDim2.fromOffset(278, 8),
+		15,
+		COLORS.Amber,
+		Enum.Font.GothamBold
+	)
+	coinsLabel = label(
+		statsPanel,
+		"Coins",
+		"◈ 0",
+		UDim2.fromOffset(72, 27),
+		UDim2.new(1, -82, 0, 8),
+		14,
+		COLORS.Amber,
+		Enum.Font.GothamBold
+	)
 	coinsLabel.TextXAlignment = Enum.TextXAlignment.Right
-	platformLabel = label(statsPanel, "Platform", "PLATFORM  0", UDim2.fromOffset(230, 24), UDim2.fromOffset(14, 48), 12, COLORS.Muted, Enum.Font.GothamBold)
-	phaseLabel = label(statsPanel, "Phase", "READY", UDim2.new(1, -258, 0, 24), UDim2.fromOffset(244, 48), 12, COLORS.Cyan, Enum.Font.GothamBold)
+	platformLabel = label(
+		statsPanel,
+		"Platform",
+		"PLATFORM  0",
+		UDim2.fromOffset(230, 24),
+		UDim2.fromOffset(14, 48),
+		12,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	phaseLabel = label(
+		statsPanel,
+		"Phase",
+		"READY",
+		UDim2.new(1, -258, 0, 24),
+		UDim2.fromOffset(244, 48),
+		12,
+		COLORS.Cyan,
+		Enum.Font.GothamBold
+	)
 	phaseLabel.TextXAlignment = Enum.TextXAlignment.Right
 
-	shopButton = button(gui, "ShopButton", "SUPPLY", UDim2.fromOffset(110, 46), UDim2.new(1, -132, 0, 22), COLORS.Cyan, COLORS.Foundation)
+	shopButton = button(
+		gui,
+		"ShopButton",
+		"SUPPLY",
+		UDim2.fromOffset(110, 46),
+		UDim2.new(1, -132, 0, 22),
+		COLORS.Cyan,
+		COLORS.Foundation
+	)
 	shopButton.Activated:Connect(function()
 		setShopOpen(true)
 		requestProfile()
@@ -460,13 +522,39 @@ local function buildGui()
 	tutorial.Parent = gui
 	corner(tutorial, 16)
 	stroke(tutorial, COLORS.Amber, 0.35, 1.4)
-	local tutorialTitle = label(tutorial, "Title", "HOLD  •  RELEASE  •  LAND CENTER", UDim2.new(1, -24, 0, 30), UDim2.fromOffset(12, 10), 15, COLORS.Text, Enum.Font.GothamBlack)
+	local tutorialTitle = label(
+		tutorial,
+		"Title",
+		"HOLD  •  RELEASE  •  LAND CENTER",
+		UDim2.new(1, -24, 0, 30),
+		UDim2.fromOffset(12, 10),
+		15,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
 	tutorialTitle.TextXAlignment = Enum.TextXAlignment.Center
-	local tutorialBody = label(tutorial, "Body", "Charge your jump, release, and aim for the amber precision zone.", UDim2.new(1, -30, 0, 36), UDim2.fromOffset(15, 43), 12, COLORS.Muted)
+	local tutorialBody = label(
+		tutorial,
+		"Body",
+		"Charge your jump, release, and aim for the amber precision zone.",
+		UDim2.new(1, -30, 0, 36),
+		UDim2.fromOffset(15, 43),
+		12,
+		COLORS.Muted
+	)
 	tutorialBody.TextWrapped = true
 	tutorialBody.TextXAlignment = Enum.TextXAlignment.Center
 
-	gradeLabel = label(gui, "LandingGrade", "", UDim2.fromOffset(300, 54), UDim2.new(0.5, -150, 0.33, 0), 32, COLORS.Amber, Enum.Font.GothamBlack)
+	gradeLabel = label(
+		gui,
+		"LandingGrade",
+		"",
+		UDim2.fromOffset(300, 54),
+		UDim2.new(0.5, -150, 0.33, 0),
+		32,
+		COLORS.Amber,
+		Enum.Font.GothamBlack
+	)
 	gradeLabel.TextXAlignment = Enum.TextXAlignment.Center
 	gradeLabel.TextTransparency = 1
 
@@ -482,7 +570,16 @@ local function buildGui()
 	corner(chargePanel, 16)
 	stroke(chargePanel, COLORS.Amber, 0.55)
 
-	local hint = label(chargePanel, "Hint", "HOLD  •  RELEASE", UDim2.new(1, -24, 0, 28), UDim2.fromOffset(12, 7), 13, COLORS.Text, Enum.Font.GothamBold)
+	local hint = label(
+		chargePanel,
+		"Hint",
+		"HOLD  •  RELEASE",
+		UDim2.new(1, -24, 0, 28),
+		UDim2.fromOffset(12, 7),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	hint.TextXAlignment = Enum.TextXAlignment.Center
 	local track = Instance.new("Frame")
 	track.Name = "Track"
@@ -514,15 +611,49 @@ local function buildGui()
 	stroke(resultPanel, COLORS.Fail, 0.30, 1.4)
 	gradient(resultPanel, COLORS.Foundation, COLORS.Panel, 120)
 
-	local resultTitle = label(resultPanel, "Title", "JUMP MISSED", UDim2.new(1, -30, 0, 42), UDim2.fromOffset(15, 14), 22, COLORS.Text, Enum.Font.GothamBlack)
+	local resultTitle = label(
+		resultPanel,
+		"Title",
+		"JUMP MISSED",
+		UDim2.new(1, -30, 0, 42),
+		UDim2.fromOffset(15, 14),
+		22,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
 	resultTitle.TextXAlignment = Enum.TextXAlignment.Center
-	resultScore = label(resultPanel, "Score", "SCORE  0", UDim2.new(1, -30, 0, 28), UDim2.fromOffset(15, 61), 14, COLORS.Muted, Enum.Font.GothamBold)
+	resultScore = label(
+		resultPanel,
+		"Score",
+		"SCORE  0",
+		UDim2.new(1, -30, 0, 28),
+		UDim2.fromOffset(15, 61),
+		14,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
 	resultScore.TextXAlignment = Enum.TextXAlignment.Center
-	local retryButton = button(resultPanel, "RetryButton", "RETRY", UDim2.fromOffset(148, 50), UDim2.fromOffset(20, 148), COLORS.Cyan, COLORS.Foundation)
+	local retryButton = button(
+		resultPanel,
+		"RetryButton",
+		"RETRY",
+		UDim2.fromOffset(148, 50),
+		UDim2.fromOffset(20, 148),
+		COLORS.Cyan,
+		COLORS.Foundation
+	)
 	retryButton.Activated:Connect(function()
 		roundAction:FireServer("Retry")
 	end)
-	reviveButton = button(resultPanel, "ReviveButton", "REVIVE", UDim2.fromOffset(148, 50), UDim2.fromOffset(182, 148), COLORS.Amber, COLORS.Foundation)
+	reviveButton = button(
+		resultPanel,
+		"ReviveButton",
+		"REVIVE",
+		UDim2.fromOffset(148, 50),
+		UDim2.fromOffset(182, 148),
+		COLORS.Amber,
+		COLORS.Foundation
+	)
 	reviveButton.Activated:Connect(function()
 		local revives = tonumber(player:GetAttribute("PerfectJumpRevives")) or 0
 		if revives > 0 then
@@ -564,9 +695,26 @@ local function buildGui()
 	constraint.MaxSize = Vector2.new(520, 700)
 	constraint.Parent = shopPanel
 
-	local shopTitle = label(shopPanel, "Title", "PRECISION SUPPLY", UDim2.new(1, -92, 0, 48), UDim2.fromOffset(20, 10), 20, COLORS.Text, Enum.Font.GothamBlack)
+	local shopTitle = label(
+		shopPanel,
+		"Title",
+		"PRECISION SUPPLY",
+		UDim2.new(1, -92, 0, 48),
+		UDim2.fromOffset(20, 10),
+		20,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
 	shopTitle.ZIndex = 52
-	local closeButton = button(shopPanel, "CloseButton", "×", UDim2.fromOffset(46, 46), UDim2.new(1, -60, 0, 12), COLORS.PanelSoft, COLORS.Text)
+	local closeButton = button(
+		shopPanel,
+		"CloseButton",
+		"×",
+		UDim2.fromOffset(46, 46),
+		UDim2.new(1, -60, 0, 12),
+		COLORS.PanelSoft,
+		COLORS.Text
+	)
 	closeButton.TextSize = 23
 	closeButton.ZIndex = 52
 	closeButton.Activated:Connect(function()
@@ -605,12 +753,30 @@ local function buildGui()
 	dailyCard.Parent = scroll
 	corner(dailyCard, 14)
 	stroke(dailyCard, COLORS.Amber, 0.58)
-	local dailyTitle = label(dailyCard, "Title", "DAILY SUPPLY", UDim2.new(1, -148, 0, 28), UDim2.fromOffset(14, 8), 13, COLORS.Text, Enum.Font.GothamBold)
+	local dailyTitle = label(
+		dailyCard,
+		"Title",
+		"DAILY SUPPLY",
+		UDim2.new(1, -148, 0, 28),
+		UDim2.fromOffset(14, 8),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	dailyTitle.ZIndex = 54
-	dailyDetail = label(dailyCard, "Detail", "Loading…", UDim2.new(1, -148, 0, 40), UDim2.fromOffset(14, 37), 11, COLORS.Muted)
+	dailyDetail =
+		label(dailyCard, "Detail", "Loading…", UDim2.new(1, -148, 0, 40), UDim2.fromOffset(14, 37), 11, COLORS.Muted)
 	dailyDetail.TextWrapped = true
 	dailyDetail.ZIndex = 54
-	dailyButton = button(dailyCard, "Claim", "CLAIM", UDim2.fromOffset(112, 46), UDim2.new(1, -126, 0.5, -23), COLORS.Amber, COLORS.Foundation)
+	dailyButton = button(
+		dailyCard,
+		"Claim",
+		"CLAIM",
+		UDim2.fromOffset(112, 46),
+		UDim2.new(1, -126, 0.5, -23),
+		COLORS.Amber,
+		COLORS.Foundation
+	)
 	dailyButton.ZIndex = 54
 	dailyButton.Activated:Connect(function()
 		if not dailyButton.Active then
@@ -635,12 +801,38 @@ local function buildGui()
 	challengeCard.ZIndex = 53
 	challengeCard.Parent = scroll
 	corner(challengeCard, 14)
-	local challengeTitle = label(challengeCard, "Title", "DAILY PRECISION", UDim2.new(1, -28, 0, 27), UDim2.fromOffset(14, 6), 12, COLORS.Text, Enum.Font.GothamBold)
+	local challengeTitle = label(
+		challengeCard,
+		"Title",
+		"DAILY PRECISION",
+		UDim2.new(1, -28, 0, 27),
+		UDim2.fromOffset(14, 6),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	challengeTitle.ZIndex = 54
-	challengeDetail = label(challengeCard, "Detail", "Loading…", UDim2.new(1, -28, 0, 30), UDim2.fromOffset(14, 33), 11, COLORS.Muted)
+	challengeDetail = label(
+		challengeCard,
+		"Detail",
+		"Loading…",
+		UDim2.new(1, -28, 0, 30),
+		UDim2.fromOffset(14, 33),
+		11,
+		COLORS.Muted
+	)
 	challengeDetail.ZIndex = 54
 
-	local assistTitle = label(scroll, "AssistsTitle", "ASSISTS — assisted runs do not improve PB", UDim2.new(1, -8, 0, 28), UDim2.new(), 11, COLORS.Muted, Enum.Font.GothamBold)
+	local assistTitle = label(
+		scroll,
+		"AssistsTitle",
+		"ASSISTS — assisted runs do not improve PB",
+		UDim2.new(1, -8, 0, 28),
+		UDim2.new(),
+		11,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
 	assistTitle.LayoutOrder = 10
 	assistTitle.ZIndex = 53
 
@@ -696,7 +888,16 @@ local function buildGui()
 	order = addCosmeticSection(scroll, "PlatformThemes", "PLATFORM THEMES", order)
 	order = addCosmeticSection(scroll, "EnvironmentThemes", "ENVIRONMENT THEMES", order)
 
-	local settingsTitle = label(scroll, "SettingsTitle", "ACCESSIBILITY", UDim2.new(1, -8, 0, 28), UDim2.new(), 11, COLORS.Muted, Enum.Font.GothamBold)
+	local settingsTitle = label(
+		scroll,
+		"SettingsTitle",
+		"ACCESSIBILITY",
+		UDim2.new(1, -8, 0, 28),
+		UDim2.new(),
+		11,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
 	settingsTitle.LayoutOrder = order
 	settingsTitle.ZIndex = 53
 	order += 1
@@ -710,13 +911,47 @@ local function buildGui()
 	settings.ZIndex = 53
 	settings.Parent = scroll
 	corner(settings, 14)
-	local reducedLabel = label(settings, "ReducedLabel", "Reduced motion", UDim2.new(1, -140, 0, 48), UDim2.fromOffset(14, 6), 12, COLORS.Text, Enum.Font.GothamBold)
+	local reducedLabel = label(
+		settings,
+		"ReducedLabel",
+		"Reduced motion",
+		UDim2.new(1, -140, 0, 48),
+		UDim2.fromOffset(14, 6),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	reducedLabel.ZIndex = 54
-	reducedMotionButton = button(settings, "ReducedMotion", "OFF", UDim2.fromOffset(96, 42), UDim2.new(1, -110, 0, 9), COLORS.PanelSoft, COLORS.Text)
+	reducedMotionButton = button(
+		settings,
+		"ReducedMotion",
+		"OFF",
+		UDim2.fromOffset(96, 42),
+		UDim2.new(1, -110, 0, 9),
+		COLORS.PanelSoft,
+		COLORS.Text
+	)
 	reducedMotionButton.ZIndex = 54
-	local audioLabel = label(settings, "AudioLabel", "Audio", UDim2.new(1, -140, 0, 48), UDim2.fromOffset(14, 60), 12, COLORS.Text, Enum.Font.GothamBold)
+	local audioLabel = label(
+		settings,
+		"AudioLabel",
+		"Audio",
+		UDim2.new(1, -140, 0, 48),
+		UDim2.fromOffset(14, 60),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	audioLabel.ZIndex = 54
-	audioButton = button(settings, "Audio", "ON", UDim2.fromOffset(96, 42), UDim2.new(1, -110, 0, 63), COLORS.PanelSoft, COLORS.Text)
+	audioButton = button(
+		settings,
+		"Audio",
+		"ON",
+		UDim2.fromOffset(96, 42),
+		UDim2.new(1, -110, 0, 63),
+		COLORS.PanelSoft,
+		COLORS.Text
+	)
 	audioButton.ZIndex = 54
 
 	reducedMotionButton.Activated:Connect(function()
@@ -743,21 +978,15 @@ local function buildGui()
 		end)
 	end)
 
-	ContextActionService:BindActionAtPriority(
-		"PerfectJumpShop",
-		function(_name, state)
-			if state == Enum.UserInputState.Begin then
-				setShopOpen(not shopPanel.Visible)
-				if shopPanel.Visible then
-					requestProfile()
-				end
+	ContextActionService:BindActionAtPriority("PerfectJumpShop", function(_name, state)
+		if state == Enum.UserInputState.Begin then
+			setShopOpen(not shopPanel.Visible)
+			if shopPanel.Visible then
+				requestProfile()
 			end
-			return Enum.ContextActionResult.Sink
-		end,
-		false,
-		Enum.ContextActionPriority.High.Value + 60,
-		Enum.KeyCode.ButtonY
-	)
+		end
+		return Enum.ContextActionResult.Sink
+	end, false, Enum.ContextActionPriority.High.Value + 60, Enum.KeyCode.ButtonY)
 
 	updateResponsive()
 	local camera = Workspace.CurrentCamera
@@ -768,60 +997,3 @@ local function buildGui()
 		task.defer(updateResponsive)
 	end)
 end
-
-function HudController.start()
-	buildGui()
-
-	roundState.OnClientEvent:Connect(function(payload: any)
-		if type(payload) == "table" and type(payload.Grade) == "string" then
-			gradeLabel.Text = string.upper(payload.Grade)
-			gradeLabel.TextColor3 = if payload.Grade == "Perfect"
-				then COLORS.Amber
-				elseif payload.Grade == "Good" then COLORS.Cyan
-				else COLORS.Text
-			gradeLabel.TextTransparency = 0
-			task.delay(0.7, function()
-				if gradeLabel.Parent then
-					gradeLabel.TextTransparency = 1
-				end
-			end)
-		end
-		refreshHud()
-	end)
-
-	metaChanged.OnClientEvent:Connect(updateProfile)
-
-	for _, attribute in {
-		"PerfectJumpScore",
-		"PerfectJumpCombo",
-		"PerfectJumpBestScore",
-		"PerfectJumpHighestPlatform",
-		"PerfectJumpCoins",
-		"PerfectJumpPhase",
-		"PerfectJumpCurrentPlatform",
-		"PerfectJumpAssisted",
-		"PerfectJumpRevives",
-		"PerfectJumpTutorialComplete",
-	} do
-		player:GetAttributeChangedSignal(attribute):Connect(refreshHud)
-	end
-
-	RunService.RenderStepped:Connect(function()
-		if chargeStartedAt == nil then
-			return
-		end
-		local elapsed = os.clock() - chargeStartedAt
-		local alpha = math.clamp(
-			(elapsed - GameConfig.Charge.MinimumSeconds)
-				/ (GameConfig.Charge.MaximumSeconds - GameConfig.Charge.MinimumSeconds),
-			0,
-			1
-		)
-		chargeFill.Size = UDim2.fromScale(alpha, 1)
-	end)
-
-	refreshHud()
-	requestProfile()
-end
-
-return HudController

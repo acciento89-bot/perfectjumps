@@ -486,6 +486,59 @@ local function removePlayer(player: Player)
 	rounds[player] = nil
 end
 
+function RoundService.qaSnapshot(player: Player)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	return if round then statePayload(round) else nil
+end
+
+function RoundService.qaLand(player: Player, centerDistance: number): boolean
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	local root = getRoot(player)
+	if not round or not root or round.Phase == "GameOver" then
+		return false
+	end
+
+	round.Phase = "Airborne"
+	local target = round.Lane.TargetCollision
+	root.CFrame = CFrame.new(target.Position + Vector3.new(centerDistance, 3, 0))
+	root.AssemblyLinearVelocity = Vector3.new(0, -2, 0)
+	handleLanding(round)
+	return round.Phase == "Landed" or round.Phase == "Ready"
+end
+
+function RoundService.qaFail(player: Player, reason: string?): boolean
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	if not round then
+		return false
+	end
+	failRound(round, reason or "StudioQA")
+	return round.Phase == "GameOver"
+end
+
+function RoundService.qaRetry(player: Player): boolean
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	if not round then
+		return false
+	end
+	round.FailedAt = os.clock() - GameConfig.Failure.RetryDelaySeconds - 0.1
+	retryRound(round)
+	return round.Phase == "Ready"
+end
+
+function RoundService.qaRevive(player: Player): boolean
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	if not round then
+		return false
+	end
+	reviveRound(round)
+	return round.Phase == "Ready" and round.Assisted == true
+end
+
 function RoundService.start()
 	remotes = ReplicatedStorage:WaitForChild("PerfectJumpRemotes") :: Folder
 	roundAction = remotes:WaitForChild("RoundAction") :: RemoteEvent

@@ -6,7 +6,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
-local CosmeticConfig = require(shared.config.CosmeticConfig)
 local EconomyConfig = require(shared.config.EconomyConfig)
 local MonetizationConfig = require(shared.config.MonetizationConfig)
 local RetentionConfig = require(shared.config.RetentionConfig)
@@ -520,7 +519,9 @@ function ProfileService.start()
 
 	requestMeta.OnServerInvoke = function(player)
 		local profile = ProfileService.WaitForProfile(player)
-		return if profile then { ok = true, meta = snapshot(profile) } else { ok = false, reason = "profile_unavailable" }
+		return if profile
+			then { ok = true, meta = snapshot(profile) }
+			else { ok = false, reason = "profile_unavailable" }
 	end
 	purchaseCosmetic.OnServerInvoke = function(player, category, itemId)
 		if not purchaseLimiter:Allow(player) then

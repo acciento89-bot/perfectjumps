@@ -155,7 +155,11 @@ function CosmeticPresentationController.start()
 	end)
 
 	Workspace.DescendantAdded:Connect(function(descendant)
-		if descendant:IsA("BasePart") and descendant:IsDescendantOf(currentLane()) then
+		if not descendant:IsA("BasePart") then
+			return
+		end
+		local lane = currentLane()
+		if lane and descendant:IsDescendantOf(lane) then
 			task.defer(applyPlatformTheme)
 		end
 	end)

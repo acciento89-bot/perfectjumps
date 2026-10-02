@@ -20,16 +20,26 @@ function JumpRules.SafeRadius(platformWidth: number): number
 	return math.max(0, platformWidth / 2 - GameConfig.Platform.EdgeSafetyMargin)
 end
 
-function JumpRules.GradeLanding(centerDistance: number, platformWidth: number): LandingGrade
+function JumpRules.GradeLandingWithPerfectRadius(
+	centerDistance: number,
+	platformWidth: number,
+	perfectRadius: number
+): LandingGrade
 	local distance = math.max(0, centerDistance)
-	if distance <= GameConfig.Landing.PerfectRadius then
+	local safeRadius = JumpRules.SafeRadius(platformWidth)
+	local effectivePerfect = math.clamp(perfectRadius, 0, math.min(GameConfig.Landing.GoodRadius, safeRadius))
+	if distance <= effectivePerfect then
 		return "Perfect"
 	elseif distance <= GameConfig.Landing.GoodRadius then
 		return "Good"
-	elseif distance <= JumpRules.SafeRadius(platformWidth) then
+	elseif distance <= safeRadius then
 		return "Safe"
 	end
 	return "Miss"
+end
+
+function JumpRules.GradeLanding(centerDistance: number, platformWidth: number): LandingGrade
+	return JumpRules.GradeLandingWithPerfectRadius(centerDistance, platformWidth, GameConfig.Landing.PerfectRadius)
 end
 
 function JumpRules.NextCombo(currentCombo: number, grade: LandingGrade): number

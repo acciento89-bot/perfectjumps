@@ -27,6 +27,7 @@ end
 
 local ProfileService = require(script.services.ProfileService)
 local PurchaseService = require(script.services.PurchaseService)
+local RuntimeQaService = require(script.services.RuntimeQaService)
 local WorldService = require(script.services.WorldService)
 local RoundService = require(script.services.RoundService)
 
@@ -34,5 +35,6 @@ ProfileService.start()
 PurchaseService.start()
 WorldService.start()
 RoundService.start()
+RuntimeQaService.start()
 
 print("[Perfect Jump] Server gameplay initialized")

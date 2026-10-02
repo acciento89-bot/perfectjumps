@@ -66,10 +66,7 @@ local function run(player: Player)
 
 	local initial = RoundService.qaSnapshot(player)
 	check("initial_platform", initial.CurrentPlatformId == 0 and initial.TargetPlatformId == 1, initial)
-	check(
-		"avatar_spawned",
-		player.Character ~= nil and player.Character:FindFirstChild("HumanoidRootPart") ~= nil
-	)
+	check("avatar_spawned", player.Character ~= nil and player.Character:FindFirstChild("HumanoidRootPart") ~= nil)
 
 	local perfectCount = 0
 	for index = 1, RuntimeQaConfig.LandingSampleCount do
@@ -89,9 +86,13 @@ local function run(player: Player)
 	check("perfect_combo_progresses", afterClimb.Combo >= RuntimeQaConfig.LandingSampleCount, {
 		Combo = afterClimb.Combo,
 	})
-	check("pb_progresses", (player:GetAttribute("PerfectJumpHighestPlatform") or 0) >= RuntimeQaConfig.LandingSampleCount, {
-		HighestPlatform = player:GetAttribute("PerfectJumpHighestPlatform"),
-	})
+	check(
+		"pb_progresses",
+		(player:GetAttribute("PerfectJumpHighestPlatform") or 0) >= RuntimeQaConfig.LandingSampleCount,
+		{
+			HighestPlatform = player:GetAttribute("PerfectJumpHighestPlatform"),
+		}
+	)
 
 	ProfileService.qaGrantCoins(player, 3000)
 	local buy = ProfileService.PurchaseCosmetic(player, "Trails", "ion")

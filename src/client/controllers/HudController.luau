@@ -149,6 +149,7 @@ local function currentPhase(): string
 end
 
 local function setShopOpen(open: boolean)
+	player:SetAttribute("PerfectJumpUiModal", open)
 	shopDimmer.Visible = open
 	shopPanel.Visible = open
 	if open then

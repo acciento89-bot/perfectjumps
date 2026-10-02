@@ -14,6 +14,7 @@ local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Share
 local CosmeticConfig = require(shared.config.CosmeticConfig)
 local GameConfig = require(shared.config.GameConfig)
 local MonetizationConfig = require(shared.config.MonetizationConfig)
+local ViewportRules = require(shared.game.ViewportRules)
 
 local remotes = ReplicatedStorage:WaitForChild("PerfectJumpRemotes")
 local roundAction = remotes:WaitForChild("RoundAction") :: RemoteEvent
@@ -166,14 +167,15 @@ local function updateResponsive()
 	end
 
 	local width = camera.ViewportSize.X
-	responsiveScale.Scale = math.clamp(width / 980, 0.80, 1.06)
-	if width <= 760 then
+	local viewportClass = ViewportRules.classify(width)
+	responsiveScale.Scale = ViewportRules.uiScale(width)
+	if viewportClass == "compact" then
 		statsPanel.Position = UDim2.fromOffset(12, 12)
 		statsPanel.Size = UDim2.fromOffset(290, 84)
 		shopButton.Position = UDim2.new(1, -112, 0, 112)
 		chargePanel.Size = UDim2.new(1, -36, 0, 78)
 		tutorial.Size = UDim2.new(1, -30, 0, 90)
-	elseif width <= 1100 then
+	elseif viewportClass == "tablet" then
 		statsPanel.Position = UDim2.fromOffset(16, 16)
 		statsPanel.Size = UDim2.fromOffset(390, 84)
 		shopButton.Position = UDim2.new(1, -124, 0, 18)

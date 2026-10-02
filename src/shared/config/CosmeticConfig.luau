@@ -21,9 +21,24 @@ local CosmeticConfig = {
 		PlatformThemes = table.freeze({
 			Default = "steel",
 			Items = table.freeze({
-				steel = table.freeze({ DisplayName = "Precision Steel", Price = 0, BaseRGB = { 54, 61, 72 }, AccentRGB = { 255, 184, 76 } }),
-				forge = table.freeze({ DisplayName = "Copper Forge", Price = 650, BaseRGB = { 91, 54, 42 }, AccentRGB = { 255, 155, 72 } }),
-				frost = table.freeze({ DisplayName = "Frost Grid", Price = 720, BaseRGB = { 43, 72, 87 }, AccentRGB = { 135, 232, 255 } }),
+				steel = table.freeze({
+					DisplayName = "Precision Steel",
+					Price = 0,
+					BaseRGB = { 54, 61, 72 },
+					AccentRGB = { 255, 184, 76 },
+				}),
+				forge = table.freeze({
+					DisplayName = "Copper Forge",
+					Price = 650,
+					BaseRGB = { 91, 54, 42 },
+					AccentRGB = { 255, 155, 72 },
+				}),
+				frost = table.freeze({
+					DisplayName = "Frost Grid",
+					Price = 720,
+					BaseRGB = { 43, 72, 87 },
+					AccentRGB = { 135, 232, 255 },
+				}),
 			}),
 		}),
 		EnvironmentThemes = table.freeze({

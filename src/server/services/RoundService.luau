@@ -33,6 +33,7 @@ type Round = {
 	CharacterConnections: { RBXScriptConnection },
 	RateWindowStartedAt: number,
 	RateCount: number,
+	RespawnGuard: boolean,
 }
 
 local remotes: Folder
@@ -270,6 +271,7 @@ local function prepareCharacter(round: Round, character: Model)
 	root.AssemblyLinearVelocity = Vector3.zero
 	root.AssemblyAngularVelocity = Vector3.zero
 	setNetworkOwner(root, round.Player)
+	round.RespawnGuard = false
 
 	if round.Phase == "GameOver" then
 		setGroundMovement(round.Player, false)
@@ -314,6 +316,7 @@ local function retryRound(round: Round)
 	round.FailedAt = nil
 	round.Phase = "Ready"
 	round.RespawnCFrame = nil
+	round.RespawnGuard = true
 	-- Disconnect the old character listeners before LoadCharacter destroys the
 	-- current humanoid. Otherwise the stale Died callback can fail the freshly
 	-- reset round during the retry respawn.
@@ -334,6 +337,7 @@ local function reviveRound(round: Round)
 	round.FailedAt = nil
 	round.Phase = "Ready"
 	round.RespawnCFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	round.RespawnGuard = true
 	-- Revive uses the same character replacement path as retry. Remove stale
 	-- Died listeners before replacing the character so the old humanoid cannot
 	-- race the revived round back into GameOver.
@@ -467,6 +471,7 @@ local function addPlayer(player: Player)
 		CharacterConnections = {},
 		RateWindowStartedAt = os.clock(),
 		RateCount = 0,
+		RespawnGuard = false,
 	}
 	rounds[player] = round
 	player.RespawnLocation = lane.Spawn
@@ -572,7 +577,7 @@ function RoundService.start()
 
 	RunService.Heartbeat:Connect(function()
 		for player, round in rounds do
-			if round.Phase ~= "GameOver" then
+			if round.Phase ~= "GameOver" and not round.RespawnGuard then
 				local root = getRoot(player)
 				if root then
 					local current = round.Lane.CurrentCollision.Position

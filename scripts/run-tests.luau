@@ -1,9 +1,11 @@
 local tests = {
+	require("../tests/graphics-quality-rules.spec"),
 	require("../tests/jump-rules.spec"),
 	require("../tests/profile-rules.spec"),
 	require("../tests/reachability-rules.spec"),
 	require("../tests/receipt-rules.spec"),
 	require("../tests/retention-rules.spec"),
+	require("../tests/viewport-rules.spec"),
 	require("../tests/launch-rules.spec"),
 	require("../tests/round-state-rules.spec"),
 	require("../tests/readiness.spec"),

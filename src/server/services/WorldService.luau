@@ -5,6 +5,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local GameConfig = require(shared.config.GameConfig)
+local WorldArtService = require(script.Parent.WorldArtService)
 local ReachabilityRules = require(shared.game.ReachabilityRules)
 
 local WorldService = {}
@@ -179,6 +180,8 @@ function WorldService.createLane(player: Player, laneIndex: number): Lane
 	spawn.Neutral = true
 	spawn.Enabled = true
 	spawn.Parent = laneModel
+
+	WorldArtService.decorateLane(laneModel, origin)
 
 	return {
 		Model = laneModel,

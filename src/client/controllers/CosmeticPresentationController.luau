@@ -68,6 +68,7 @@ local function applyTrail()
 	trail.Attachment1 = attachmentB
 	trail.Color = ColorSequence.new(rgb(definition.RGB), Color3.fromRGB(235, 247, 255))
 	trail.Lifetime = 0.28
+	trail:SetAttribute("BaseLifetime", 0.28)
 	trail.MinLength = 0.08
 	trail.LightEmission = 0.35
 	trail.Transparency = NumberSequence.new({

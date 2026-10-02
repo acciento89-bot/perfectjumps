@@ -24,7 +24,8 @@ local function refreshPass(player: Player)
 		player:SetAttribute("PerfectJumpPremiumThemes", false)
 		return
 	end
-	local ok, owned = pcall(MarketplaceService.UserOwnsGamePassAsync, MarketplaceService, player.UserId, pass.GamePassId)
+	local ok, owned =
+		pcall(MarketplaceService.UserOwnsGamePassAsync, MarketplaceService, player.UserId, pass.GamePassId)
 	player:SetAttribute("PerfectJumpPremiumThemes", ok and owned == true)
 end
 

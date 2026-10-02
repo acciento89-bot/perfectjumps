@@ -29,7 +29,9 @@ function ReachabilityRules.bestDistanceError(horizontalDistance: number, vertica
 	local best = math.huge
 	for step = 0, 200 do
 		local alpha = step / 200
-		local distance = ReachabilityRules.travelDistance(alpha, verticalDelta)
+		local chargePower = GameConfig.Charge.MinimumPower
+			+ (GameConfig.Charge.MaximumPower - GameConfig.Charge.MinimumPower) * alpha
+		local distance = ReachabilityRules.travelDistance(chargePower, verticalDelta)
 		if distance then
 			best = math.min(best, math.abs(distance - target))
 		end

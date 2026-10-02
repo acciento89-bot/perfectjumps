@@ -91,7 +91,8 @@ function ProfileRules.normalize(value)
 	if type(value.Equipped) == "table" then
 		for category, definition in CosmeticConfig.Categories do
 			local itemId = value.Equipped[category]
-			if type(itemId) == "string"
+			if
+				type(itemId) == "string"
 				and profile.Owned[category][itemId] == true
 				and definition.Items[itemId] ~= nil
 			then

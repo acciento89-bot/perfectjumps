@@ -314,6 +314,10 @@ local function retryRound(round: Round)
 	round.FailedAt = nil
 	round.Phase = "Ready"
 	round.RespawnCFrame = nil
+	-- Disconnect the old character listeners before LoadCharacter destroys the
+	-- current humanoid. Otherwise the stale Died callback can fail the freshly
+	-- reset round during the retry respawn.
+	clearCharacterConnections(round)
 	rebuildLane(round)
 	round.Player.RespawnLocation = round.Lane.Spawn
 	round.Player:LoadCharacter()
@@ -330,6 +334,10 @@ local function reviveRound(round: Round)
 	round.FailedAt = nil
 	round.Phase = "Ready"
 	round.RespawnCFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	-- Revive uses the same character replacement path as retry. Remove stale
+	-- Died listeners before replacing the character so the old humanoid cannot
+	-- race the revived round back into GameOver.
+	clearCharacterConnections(round)
 	round.Player:LoadCharacter()
 end
 

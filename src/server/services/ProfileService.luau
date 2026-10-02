@@ -508,6 +508,28 @@ function ProfileService.Save(player: Player): boolean
 	return savePlayer(player, false)
 end
 
+function ProfileService.qaGrantCoins(player: Player, amount: number)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local profile = profiles[player]
+	assert(profile, "profile unavailable")
+	profile.Coins += math.max(0, math.floor(amount))
+	markDirty(player)
+end
+
+function ProfileService.qaGrantRevive(player: Player)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local profile = profiles[player]
+	assert(profile, "profile unavailable")
+	profile.Inventory.Revives += 1
+	markDirty(player)
+end
+
+function ProfileService.qaPersistentPayload(player: Player)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local profile = profiles[player]
+	return if profile then ProfileRules.normalize(profile) else nil
+end
+
 function ProfileService.start()
 	local remotes = ReplicatedStorage:WaitForChild("PerfectJumpRemotes")
 	metaChanged = remotes:WaitForChild("MetaStateChanged") :: RemoteEvent

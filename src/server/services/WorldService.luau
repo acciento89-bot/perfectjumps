@@ -5,6 +5,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local GameConfig = require(shared.config.GameConfig)
+local ReachabilityRules = require(shared.game.ReachabilityRules)
 
 local WorldService = {}
 
@@ -56,14 +57,14 @@ local function platformWidth(platformId: number): number
 end
 
 local function nextCenter(currentCenter: Vector3, nextId: number): Vector3
-	local progress = math.max(0, nextId - 1)
-	local gap = math.min(
-		GameConfig.Generation.MaximumGap,
-		GameConfig.Generation.InitialGap + progress * GameConfig.Generation.GapGrowthPerLanding
+	local lateral, vertical, gap = ReachabilityRules.generatorOffset(nextId)
+	local width = platformWidth(nextId)
+	local landingRadius = math.max(0.8, width / 2 - GameConfig.Platform.EdgeSafetyMargin)
+	local horizontalDistance = math.sqrt(lateral * lateral + gap * gap)
+	assert(
+		ReachabilityRules.isReachable(horizontalDistance, vertical, landingRadius),
+		("generated platform %d is outside the configured jump envelope"):format(nextId)
 	)
-	local lateralScale = math.min(1, 0.25 + progress * 0.04)
-	local lateral = math.sin(nextId * 1.71) * GameConfig.Generation.LateralSpread * lateralScale
-	local vertical = GameConfig.Generation.VerticalStep
 	return currentCenter + Vector3.new(lateral, vertical, gap)
 end
 
@@ -138,6 +139,7 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 end
 
 function WorldService.start()
+	Workspace.Gravity = 196.2
 	local existing = Workspace:FindFirstChild("PerfectJumpWorld")
 	if existing then
 		existing:Destroy()

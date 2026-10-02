@@ -229,12 +229,14 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 		)
 	end
 
-	for _, offset in {
-		Vector3.new(-10, 0, -10),
-		Vector3.new(10, 0, -10),
-		Vector3.new(-10, 0, 5),
-		Vector3.new(10, 0, 5),
-	} do
+	for _, offset in
+		{
+			Vector3.new(-10, 0, -10),
+			Vector3.new(10, 0, -10),
+			Vector3.new(-10, 0, 5),
+			Vector3.new(10, 0, 5),
+		}
+	do
 		practical(art, origin + offset - Vector3.new(0, 0.5, 0), COLORS.Amber)
 	end
 

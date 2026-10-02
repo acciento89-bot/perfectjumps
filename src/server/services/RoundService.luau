@@ -183,11 +183,7 @@ local function handleLanding(round: Round)
 		round.Assisted = true
 	end
 
-	local grade = JumpRules.GradeLandingWithPerfectRadius(
-		distance,
-		round.Lane.TargetCollision.Size.X,
-		perfectRadius
-	)
+	local grade = JumpRules.GradeLandingWithPerfectRadius(distance, round.Lane.TargetCollision.Size.X, perfectRadius)
 	if grade == "Miss" then
 		failRound(round, "Miss")
 		return

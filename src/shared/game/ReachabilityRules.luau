@@ -37,7 +37,11 @@ function ReachabilityRules.bestDistanceError(horizontalDistance: number, vertica
 	return best
 end
 
-function ReachabilityRules.isReachable(horizontalDistance: number, verticalDelta: number, landingRadius: number): boolean
+function ReachabilityRules.isReachable(
+	horizontalDistance: number,
+	verticalDelta: number,
+	landingRadius: number
+): boolean
 	if horizontalDistance ~= horizontalDistance or verticalDelta ~= verticalDelta then
 		return false
 	end

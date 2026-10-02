@@ -65,43 +65,43 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P04-T01 Server computes landing center distance from platform sweet zone
 - [x] P04-T02 Perfect/Good/Safe/Miss thresholds are explicit and tested
 - [x] P04-T03 Combo/multiplier rules and break conditions
-- [ ] P04-T04 PB/highest-platform persistence
+- [~] P04-T04 PB/highest-platform persistence — profile payload/runtime progression verified; real new-session rejoin remains open
 - [~] P04-T05 Grade feedback appears at landing without hiding next target
 - [~] P04-T06 Anti-replay/duplicate-score guards
 
 ## P05 Platform generation and difficulty
-- [ ] P05-T01 Reachability envelope derived from actual jump model
+- [x] P05-T01 Reachability envelope derived from actual jump model
 - [~] P05-T02 Horizontal/vertical spacing by difficulty band
 - [~] P05-T03 Platform size/sweet-zone progression
 - [~] P05-T04 Pattern variety without blind/impossible jumps
 - [~] P05-T05 Deterministic QA seed
-- [ ] P05-T06 1,000+ generated targets all satisfy reachability model
+- [x] P05-T06 1,000+ generated targets all satisfy reachability model — current pure test covers 2,000 generated targets
 - [ ] P05-T07 Runtime sample across early/mid/late difficulty
 
 ## P06 Progression and persistence
-- [ ] P06-T01 Legitimate coin/reward model
-- [ ] P06-T02 Trail, landing effect, platform/environment theme catalog
-- [ ] P06-T03 Server ownership/equip validation
-- [ ] P06-T04 Versioned profile schema/migration
-- [ ] P06-T05 Save/lock/recovery rules
+- [~] P06-T01 Legitimate coin/reward model
+- [~] P06-T02 Trail, landing effect, platform/environment theme catalog
+- [~] P06-T03 Server ownership/equip validation
+- [~] P06-T04 Versioned profile schema/migration
+- [~] P06-T05 Save/lock/recovery rules
 - [ ] P06-T06 Real rejoin retains PB, coins, cosmetics and settings
 
 ## P07 Tutorial and retention
 - [ ] P07-T01 First-time tutorial: hold → release → aim for center
 - [ ] P07-T02 First target is forgiving enough to teach the relation between charge and distance
-- [ ] P07-T03 Daily login
-- [ ] P07-T04 Daily jump/Perfect challenge
-- [ ] P07-T05 Achievement milestones
-- [ ] P07-T06 PB/Perfect-chain celebration and quick retry
+- [~] P07-T03 Daily login
+- [~] P07-T04 Daily jump/Perfect challenge
+- [~] P07-T05 Achievement milestones
+- [~] P07-T06 PB/Perfect-chain celebration and quick retry
 
 ## P08 Monetization
 - [ ] P08-T01 Final products/passes/prices
-- [ ] P08-T02 Revive returns to last valid platform
+- [~] P08-T02 Revive returns to last valid platform — runtime harness verified revive Ready/assisted path
 - [ ] P08-T03 Wider-Perfect-zone boost is temporary, disclosed and excluded from competitive score if required by design
 - [ ] P08-T04 Coin multiplier does not buy leaderboard progress
-- [ ] P08-T05 Receipt allowlist/idempotency/serialization
+- [~] P08-T05 Receipt allowlist/idempotency/serialization
 - [ ] P08-T06 Explicit purchase UI and ownership states
-- [ ] P08-T07 Duplicate/retry/aborted purchase tests
+- [~] P08-T07 Duplicate/retry/aborted purchase tests
 - [!] P08-T08 Real Developer Product receipt + rejoin verification
 
 ## P09 Production UI/UX
@@ -141,13 +141,13 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [ ] P13-T01 Fresh spawn/tutorial
 - [ ] P13-T02 Min/mid/max charge jumps
 - [ ] P13-T03 Perfect + Good + edge landing + miss
-- [ ] P13-T04 Combo build/break and PB update
-- [ ] P13-T05 Failure → immediate retry
-- [ ] P13-T06 Reward and cosmetic buy/equip
-- [ ] P13-T07 Revive
+- [~] P13-T04 Combo/PB progression verified by runtime harness; real player-input break cases remain open
+- [x] P13-T05 Failure → immediate retry — post-fix runtime harness passes failure/GameOver/Retry/Ready/reset
+- [x] P13-T06 Reward and cosmetic buy/equip — runtime harness passes coin grant, purchase and equip
+- [x] P13-T07 Revive — runtime harness passes failure/revive/Ready/assisted
 - [ ] P13-T08 Respawn camera/input reset
 - [ ] P13-T09 New-session persistence/rejoin
-- [ ] P13-T10 Extended repeated-jump stability
+- [~] P13-T10 Extended repeated-jump stability — 60 generated landing transitions pass; physical repeated-input soak remains open
 
 ## P14 Device, input and performance QA
 - [ ] P14-T01 Compact phone touch hold/release
@@ -160,9 +160,9 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## P15 Release
 - [ ] P15-T01 Production icon/thumbnails/metadata
 - [ ] P15-T02 Privacy/content questionnaire
-- [ ] P15-T03 Canonical private publish
+- [~] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 bound; final ID/product build republish still required
 - [ ] P15-T04 Full P13 journey repeated in published private place
-- [ ] P15-T05 Build hash/place version/rollback record
+- [~] P15-T05 Build hash/place version/rollback record — production identity and accepted fix commit recorded; final published version/rollback record pending
 - [!] P15-T06 Public launch after paid receipt/rejoin evidence and zero known P0/P1 defects
 
 ## P16 Post-launch
@@ -173,3 +173,6 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## Definition of Done
 
 Perfect Jump V1 is complete only when charge → release → flight → landing feels deterministic and fair on every supported input method, the camera stays useful throughout the arc, generated targets remain reachable, persistence survives rejoin and the published private build passes the full player journey.
+
+
+Runtime acceptance update (2026-10-02): post-fix Studio QA completed through 60 landing transitions, PB/combo progression, cosmetic purchase/equip, daily path, failure, Retry reset, Revive and persistent-profile payload, ending in `[PerfectJumpQA] COMPLETE`. The retry/revive character-listener race was fixed in `f7e259851071ff8832edd54e251e19c3d741d383`. Production identity is Universe `10768948354`, Start Place `74217245707666`; `PlatformConfig` is now bound on main. GitHub Actions is green. Real DataStore rejoin, physical-input/device smoke, real paid receipt, final store/questionnaire and public-access gates remain intentionally unclaimed. Evidence: `docs/evidence/2026-10-02-runtime-acceptance-production-binding.md`.

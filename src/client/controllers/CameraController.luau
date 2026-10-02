@@ -8,6 +8,7 @@ local Workspace = game:GetService("Workspace")
 local player = Players.LocalPlayer
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local GameConfig = require(shared.config.GameConfig)
+local ViewportRules = require(shared.game.ViewportRules)
 
 local remotes = ReplicatedStorage:WaitForChild("PerfectJumpRemotes")
 local roundState = remotes:WaitForChild("RoundState") :: RemoteEvent
@@ -61,7 +62,7 @@ local function refreshInitialState()
 end
 
 local function desiredCFrame(camera: Camera, root: BasePart, current: Vector3, target: Vector3): (CFrame, Vector3)
-	local compact = camera.ViewportSize.X <= 760
+	local compact = ViewportRules.classify(camera.ViewportSize.X) == "compact"
 	local phase = player:GetAttribute("PerfectJumpPhase")
 	local avatarPosition = root.Position
 	local anchor = if phase == "Airborne" then avatarPosition else current
@@ -79,7 +80,7 @@ local function desiredCFrame(camera: Camera, root: BasePart, current: Vector3, t
 	end
 	local direction = horizontal.Unit
 
-	local distance = if compact then 15.4 else GameConfig.Camera.Distance
+	local distance = ViewportRules.cameraDistance(camera.ViewportSize.X, GameConfig.Camera.Distance)
 	local height = if compact then 7.7 else GameConfig.Camera.Height
 	local cameraPosition = focus - direction * distance + Vector3.new(0, height, 0)
 

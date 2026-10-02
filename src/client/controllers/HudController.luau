@@ -215,16 +215,71 @@ local function buildGui()
 	corner(stats, 16)
 	stroke(stats, COLORS.Cyan, 0.64)
 
-	scoreLabel = makeLabel(stats, "Score", "SCORE  0", UDim2.fromOffset(128, 27), UDim2.fromOffset(14, 8), 15, COLORS.Text, Enum.Font.GothamBold)
-	comboLabel = makeLabel(stats, "Combo", "COMBO  0", UDim2.fromOffset(128, 27), UDim2.fromOffset(146, 8), 15, COLORS.Text, Enum.Font.GothamBold)
-	bestLabel = makeLabel(stats, "Best", "PB  0", UDim2.fromOffset(92, 27), UDim2.fromOffset(278, 8), 15, COLORS.Amber, Enum.Font.GothamBold)
-	coinsLabel = makeLabel(stats, "Coins", "◈ 0", UDim2.fromOffset(72, 27), UDim2.new(1, -82, 0, 8), 14, COLORS.Amber, Enum.Font.GothamBold)
+	scoreLabel = makeLabel(
+		stats,
+		"Score",
+		"SCORE  0",
+		UDim2.fromOffset(128, 27),
+		UDim2.fromOffset(14, 8),
+		15,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	comboLabel = makeLabel(
+		stats,
+		"Combo",
+		"COMBO  0",
+		UDim2.fromOffset(128, 27),
+		UDim2.fromOffset(146, 8),
+		15,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	bestLabel = makeLabel(
+		stats,
+		"Best",
+		"PB  0",
+		UDim2.fromOffset(92, 27),
+		UDim2.fromOffset(278, 8),
+		15,
+		COLORS.Amber,
+		Enum.Font.GothamBold
+	)
+	coinsLabel = makeLabel(
+		stats,
+		"Coins",
+		"◈ 0",
+		UDim2.fromOffset(72, 27),
+		UDim2.new(1, -82, 0, 8),
+		14,
+		COLORS.Amber,
+		Enum.Font.GothamBold
+	)
 	coinsLabel.TextXAlignment = Enum.TextXAlignment.Right
-	platformLabel = makeLabel(stats, "Platform", "PLATFORM  0", UDim2.fromOffset(230, 24), UDim2.fromOffset(14, 48), 12, COLORS.Muted, Enum.Font.GothamBold)
-	phaseLabel = makeLabel(stats, "Phase", "READY", UDim2.new(1, -258, 0, 24), UDim2.fromOffset(244, 48), 12, COLORS.Cyan, Enum.Font.GothamBold)
+	platformLabel = makeLabel(
+		stats,
+		"Platform",
+		"PLATFORM  0",
+		UDim2.fromOffset(230, 24),
+		UDim2.fromOffset(14, 48),
+		12,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	phaseLabel = makeLabel(
+		stats,
+		"Phase",
+		"READY",
+		UDim2.new(1, -258, 0, 24),
+		UDim2.fromOffset(244, 48),
+		12,
+		COLORS.Cyan,
+		Enum.Font.GothamBold
+	)
 	phaseLabel.TextXAlignment = Enum.TextXAlignment.Right
 
-	shopButton = makeButton(gui, "ShopButton", "SUPPLY", UDim2.fromOffset(110, 46), UDim2.new(1, -132, 0, 22), COLORS.Cyan)
+	shopButton =
+		makeButton(gui, "ShopButton", "SUPPLY", UDim2.fromOffset(110, 46), UDim2.new(1, -132, 0, 22), COLORS.Cyan)
 	shopButton.Activated:Connect(function()
 		player:SetAttribute("PerfectJumpShopOpen", true)
 	end)
@@ -240,13 +295,39 @@ local function buildGui()
 	tutorial.Parent = gui
 	corner(tutorial, 16)
 	stroke(tutorial, COLORS.Amber, 0.35, 1.4)
-	local tutorialTitle = makeLabel(tutorial, "Title", "HOLD  •  RELEASE  •  LAND CENTER", UDim2.new(1, -24, 0, 30), UDim2.fromOffset(12, 10), 15, COLORS.Text, Enum.Font.GothamBlack)
+	local tutorialTitle = makeLabel(
+		tutorial,
+		"Title",
+		"HOLD  •  RELEASE  •  LAND CENTER",
+		UDim2.new(1, -24, 0, 30),
+		UDim2.fromOffset(12, 10),
+		15,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
 	tutorialTitle.TextXAlignment = Enum.TextXAlignment.Center
-	local tutorialBody = makeLabel(tutorial, "Body", "Charge your jump, release, and aim for the amber precision zone.", UDim2.new(1, -30, 0, 36), UDim2.fromOffset(15, 43), 12, COLORS.Muted)
+	local tutorialBody = makeLabel(
+		tutorial,
+		"Body",
+		"Charge your jump, release, and aim for the amber precision zone.",
+		UDim2.new(1, -30, 0, 36),
+		UDim2.fromOffset(15, 43),
+		12,
+		COLORS.Muted
+	)
 	tutorialBody.TextWrapped = true
 	tutorialBody.TextXAlignment = Enum.TextXAlignment.Center
 
-	gradeLabel = makeLabel(gui, "LandingGrade", "", UDim2.fromOffset(300, 54), UDim2.new(0.5, -150, 0.33, 0), 32, COLORS.Amber, Enum.Font.GothamBlack)
+	gradeLabel = makeLabel(
+		gui,
+		"LandingGrade",
+		"",
+		UDim2.fromOffset(300, 54),
+		UDim2.new(0.5, -150, 0.33, 0),
+		32,
+		COLORS.Amber,
+		Enum.Font.GothamBlack
+	)
 	gradeLabel.TextXAlignment = Enum.TextXAlignment.Center
 	gradeLabel.TextTransparency = 1
 
@@ -261,7 +342,16 @@ local function buildGui()
 	chargePanel.Parent = gui
 	corner(chargePanel, 16)
 	stroke(chargePanel, COLORS.Amber, 0.55)
-	local hint = makeLabel(chargePanel, "Hint", "HOLD  •  RELEASE", UDim2.new(1, -24, 0, 28), UDim2.fromOffset(12, 7), 13, COLORS.Text, Enum.Font.GothamBold)
+	local hint = makeLabel(
+		chargePanel,
+		"Hint",
+		"HOLD  •  RELEASE",
+		UDim2.new(1, -24, 0, 28),
+		UDim2.fromOffset(12, 7),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
 	hint.TextXAlignment = Enum.TextXAlignment.Center
 	local track = Instance.new("Frame")
 	track.Name = "Track"
@@ -290,15 +380,47 @@ local function buildGui()
 	resultPanel.Parent = gui
 	corner(resultPanel, 20)
 	stroke(resultPanel, COLORS.Fail, 0.30, 1.4)
-	local resultTitle = makeLabel(resultPanel, "Title", "JUMP MISSED", UDim2.new(1, -30, 0, 42), UDim2.fromOffset(15, 14), 22, COLORS.Text, Enum.Font.GothamBlack)
+	local resultTitle = makeLabel(
+		resultPanel,
+		"Title",
+		"JUMP MISSED",
+		UDim2.new(1, -30, 0, 42),
+		UDim2.fromOffset(15, 14),
+		22,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
 	resultTitle.TextXAlignment = Enum.TextXAlignment.Center
-	resultScore = makeLabel(resultPanel, "Score", "SCORE  0", UDim2.new(1, -30, 0, 28), UDim2.fromOffset(15, 61), 14, COLORS.Muted, Enum.Font.GothamBold)
+	resultScore = makeLabel(
+		resultPanel,
+		"Score",
+		"SCORE  0",
+		UDim2.new(1, -30, 0, 28),
+		UDim2.fromOffset(15, 61),
+		14,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
 	resultScore.TextXAlignment = Enum.TextXAlignment.Center
-	local retryButton = makeButton(resultPanel, "RetryButton", "RETRY", UDim2.fromOffset(148, 50), UDim2.fromOffset(20, 148), COLORS.Cyan)
+	local retryButton = makeButton(
+		resultPanel,
+		"RetryButton",
+		"RETRY",
+		UDim2.fromOffset(148, 50),
+		UDim2.fromOffset(20, 148),
+		COLORS.Cyan
+	)
 	retryButton.Activated:Connect(function()
 		roundAction:FireServer("Retry")
 	end)
-	reviveButton = makeButton(resultPanel, "ReviveButton", "REVIVE", UDim2.fromOffset(148, 50), UDim2.fromOffset(182, 148), COLORS.Amber)
+	reviveButton = makeButton(
+		resultPanel,
+		"ReviveButton",
+		"REVIVE",
+		UDim2.fromOffset(148, 50),
+		UDim2.fromOffset(182, 148),
+		COLORS.Amber
+	)
 	reviveButton.Activated:Connect(function()
 		local revives = tonumber(player:GetAttribute("PerfectJumpRevives")) or 0
 		if revives > 0 then
@@ -338,18 +460,20 @@ function HudController.start()
 		refreshHud()
 	end)
 
-	for _, attribute in {
-		"PerfectJumpScore",
-		"PerfectJumpCombo",
-		"PerfectJumpBestScore",
-		"PerfectJumpHighestPlatform",
-		"PerfectJumpCoins",
-		"PerfectJumpPhase",
-		"PerfectJumpCurrentPlatform",
-		"PerfectJumpAssisted",
-		"PerfectJumpRevives",
-		"PerfectJumpTutorialComplete",
-	} do
+	for _, attribute in
+		{
+			"PerfectJumpScore",
+			"PerfectJumpCombo",
+			"PerfectJumpBestScore",
+			"PerfectJumpHighestPlatform",
+			"PerfectJumpCoins",
+			"PerfectJumpPhase",
+			"PerfectJumpCurrentPlatform",
+			"PerfectJumpAssisted",
+			"PerfectJumpRevives",
+			"PerfectJumpTutorialComplete",
+		}
+	do
 		player:GetAttributeChangedSignal(attribute):Connect(refreshHud)
 	end
 

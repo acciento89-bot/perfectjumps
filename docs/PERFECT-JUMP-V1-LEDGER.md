@@ -160,10 +160,10 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## P15 Release
 - [ ] P15-T01 Production icon/thumbnails/metadata
 - [ ] P15-T02 Privacy/content questionnaire
-- [~] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 and live monetization IDs bound; latest green build republish still required
-- [ ] P15-T04 Full P13 journey repeated in published private place
-- [~] P15-T05 Build hash/place version/rollback record — production identity and accepted fix commit recorded; final published version/rollback record pending
-- [!] P15-T06 Public launch after paid receipt/rejoin evidence and zero known P0/P1 defects
+- [x] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 republished from current canonical main as v11
+- [x] P15-T04 Full P13 journey repeated in published private place — v11 Studio run completed 60/60 landings plus PB/combo, cosmetics, Daily, failure, Retry, Revive and persistent payload with `[PerfectJumpQA] COMPLETE`
+- [x] P15-T05 Build hash/place version/rollback record — production Place v11; immediate rollback v10; repaired source recorded on canonical main
+- [~] P15-T06 Public launch — zero known P0/P1 gameplay defects; owner directs completed games to public release. Content Maturity is Minimal with no age restriction; final store presentation/public toggle remains
 
 ## P16 Post-launch
 - [!] P16-T01 First telemetry review

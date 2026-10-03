@@ -42,7 +42,16 @@ local dailyDetail: TextLabel
 local challengeDetail: TextLabel
 local reducedMotionButton: TextButton
 local audioButton: TextButton
+local premiumThemesButton: TextButton
+local productButtons: { [string]: TextButton } = {}
 local cosmeticButtons: { [string]: { [string]: TextButton } } = {}
+
+local PRODUCT_KEYS = { "Revive", "WidePerfect5m", "CoinBoost15m" }
+local PRODUCT_LABELS = {
+	Revive = "REVIVE",
+	WidePerfect5m = "WIDE ZONE",
+	CoinBoost15m = "2× COINS",
+}
 
 local function corner(parent: Instance, radius: number)
 	local item = Instance.new("UICorner")
@@ -146,6 +155,44 @@ local function updateCosmetics()
 	end
 end
 
+local function updateMonetization()
+	for _, key in PRODUCT_KEYS do
+		local product = MonetizationConfig.DeveloperProducts[key]
+		local button = productButtons[key]
+		if button then
+			local configured = product.ProductId > 0
+			button.Active = configured
+			button.AutoButtonColor = configured
+			button.Text = if configured
+				then ("%s  •  %d R$"):format(PRODUCT_LABELS[key], product.Robux)
+				else PRODUCT_LABELS[key] .. "  •  NOT LIVE"
+			button.BackgroundColor3 = if configured then COLORS.Cyan else COLORS.PanelSoft
+			button.TextColor3 = if configured then COLORS.Foundation else COLORS.Muted
+		end
+	end
+
+	local pass = MonetizationConfig.GamePasses.PremiumThemes
+	if premiumThemesButton then
+		local owned = player:GetAttribute("PerfectJumpPremiumThemes") == true
+		local configured = pass.GamePassId > 0
+		premiumThemesButton.Active = configured and not owned
+		premiumThemesButton.AutoButtonColor = configured and not owned
+		if owned then
+			premiumThemesButton.Text = "OWNED"
+			premiumThemesButton.BackgroundColor3 = COLORS.Green
+			premiumThemesButton.TextColor3 = COLORS.Foundation
+		elseif configured then
+			premiumThemesButton.Text = ("UNLOCK  •  %d R$"):format(pass.Robux)
+			premiumThemesButton.BackgroundColor3 = COLORS.Amber
+			premiumThemesButton.TextColor3 = COLORS.Foundation
+		else
+			premiumThemesButton.Text = "NOT LIVE"
+			premiumThemesButton.BackgroundColor3 = COLORS.PanelSoft
+			premiumThemesButton.TextColor3 = COLORS.Muted
+		end
+	end
+end
+
 local function updateProfile(nextProfile: any)
 	if type(nextProfile) ~= "table" then
 		return
@@ -173,6 +220,7 @@ local function updateProfile(nextProfile: any)
 	reducedMotionButton.Text = if profile.Settings and profile.Settings.ReducedMotion == true then "ON" else "OFF"
 	audioButton.Text = if not profile.Settings or profile.Settings.AudioEnabled ~= false then "ON" else "OFF"
 	updateCosmetics()
+	updateMonetization()
 end
 
 local function requestProfile()
@@ -459,25 +507,72 @@ local function buildGui()
 	assistText.TextWrapped = true
 	assistText.ZIndex = 54
 
-	local keys = { "Revive", "WidePerfect5m", "CoinBoost15m" }
-	local names = { "REVIVE", "WIDE ZONE", "2× COINS" }
-	for index, key in keys do
+	for index, key in PRODUCT_KEYS do
 		local product = MonetizationConfig.DeveloperProducts[key]
 		local buy = makeButton(
 			assists,
 			"Buy" .. key,
-			names[index],
+			PRODUCT_LABELS[key],
 			UDim2.new(1 / 3, -12, 0, 44),
 			UDim2.new((index - 1) / 3, 8 + (index - 1) * 2, 0, 68),
 			if index == 1 then COLORS.Amber else COLORS.Cyan
 		)
 		buy.ZIndex = 54
+		productButtons[key] = buy
 		buy.Activated:Connect(function()
 			if product.ProductId > 0 then
 				MarketplaceService:PromptProductPurchase(player, product.ProductId)
 			end
 		end)
 	end
+
+	addSectionTitle(scroll, "PREMIUM THEMES — cosmetic only", 12)
+	local premium = Instance.new("Frame")
+	premium.Name = "PremiumThemes"
+	premium.Size = UDim2.new(1, -8, 0, 76)
+	premium.BackgroundColor3 = COLORS.Panel
+	premium.BorderSizePixel = 0
+	premium.LayoutOrder = 13
+	premium.ZIndex = 53
+	premium.Parent = scroll
+	corner(premium, 13)
+	local premiumTitle = makeLabel(
+		premium,
+		"Title",
+		"PREMIUM THEMES",
+		UDim2.new(1, -170, 0, 26),
+		UDim2.fromOffset(14, 8),
+		12,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	premiumTitle.ZIndex = 54
+	local premiumDetail = makeLabel(
+		premium,
+		"Detail",
+		"Extra platform and environment looks. No score advantage.",
+		UDim2.new(1, -170, 0, 34),
+		UDim2.fromOffset(14, 34),
+		10,
+		COLORS.Muted
+	)
+	premiumDetail.TextWrapped = true
+	premiumDetail.ZIndex = 54
+	premiumThemesButton = makeButton(
+		premium,
+		"PremiumThemesAction",
+		"NOT LIVE",
+		UDim2.fromOffset(138, 44),
+		UDim2.new(1, -152, 0.5, -22),
+		COLORS.PanelSoft
+	)
+	premiumThemesButton.ZIndex = 54
+	premiumThemesButton.Activated:Connect(function()
+		local pass = MonetizationConfig.GamePasses.PremiumThemes
+		if pass.GamePassId > 0 and player:GetAttribute("PerfectJumpPremiumThemes") ~= true then
+			MarketplaceService:PromptGamePassPurchase(player, pass.GamePassId)
+		end
+	end)
 
 	local order = 20
 	order = addCosmeticSection(scroll, "Trails", "TRAILS", order)
@@ -571,6 +666,8 @@ function ShopController.start()
 	end)
 
 	metaChanged.OnClientEvent:Connect(updateProfile)
+	player:GetAttributeChangedSignal("PerfectJumpPremiumThemes"):Connect(updateMonetization)
+	updateMonetization()
 
 	ContextActionService:BindActionAtPriority("PerfectJumpShop", function(_name, state)
 		if state == Enum.UserInputState.Begin then

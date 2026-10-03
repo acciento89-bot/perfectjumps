@@ -44,7 +44,7 @@ local GameConfig = {
 	},
 
 	Generation = {
-		InitialGap = 7,
+		InitialGap = 12.5,
 		MaximumGap = 17,
 		GapGrowthPerLanding = 0.28,
 		WidthShrinkPerLanding = 0.10,

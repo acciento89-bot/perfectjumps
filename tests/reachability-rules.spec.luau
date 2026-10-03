@@ -25,6 +25,29 @@ return function()
 	end
 	assert(checked == 2000, "reachability sample count mismatch")
 
+	local firstLateral, firstVertical, firstGap = ReachabilityRules.generatorOffset(1)
+	local firstDistance = math.sqrt(firstLateral * firstLateral + firstGap * firstGap)
+	local firstSafeRadius = GameConfig.Platform.InitialWidth / 2 - GameConfig.Platform.EdgeSafetyMargin
+	local safeCharges = 0
+	local perfectCharges = 0
+	for step = 0, 200 do
+		local alpha = step / 200
+		local charge = GameConfig.Charge.MinimumPower
+			+ (GameConfig.Charge.MaximumPower - GameConfig.Charge.MinimumPower) * alpha
+		local travel = ReachabilityRules.travelDistance(charge, firstVertical)
+		if travel then
+			local error = math.abs(travel - firstDistance)
+			if error <= firstSafeRadius then
+				safeCharges += 1
+			end
+			if error <= GameConfig.Landing.PerfectRadius then
+				perfectCharges += 1
+			end
+		end
+	end
+	assert(safeCharges >= 80, "first target does not provide a forgiving charge window")
+	assert(perfectCharges >= 15, "first target does not provide a learnable Perfect window")
+
 	local a = ReachabilityRules.travelDistance(0.5, GameConfig.Generation.VerticalStep)
 	local b = ReachabilityRules.travelDistance(0.5, GameConfig.Generation.VerticalStep)
 	assert(a ~= nil and b ~= nil and math.abs(a - b) < 1e-9, "launch model is not deterministic")

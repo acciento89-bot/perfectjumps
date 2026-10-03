@@ -87,8 +87,8 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [ ] P06-T06 Real rejoin retains PB, coins, cosmetics and settings
 
 ## P07 Tutorial and retention
-- [ ] P07-T01 First-time tutorial: hold → release → aim for center
-- [ ] P07-T02 First target is forgiving enough to teach the relation between charge and distance
+- [~] P07-T01 First-time tutorial: hold → release → aim for center — HUD flow implemented; physical-input runtime acceptance remains
+- [x] P07-T02 First target is forgiving enough to teach the relation between charge and distance — regression test enforces broad Safe and reachable Perfect charge windows
 - [~] P07-T03 Daily login
 - [~] P07-T04 Daily jump/Perfect challenge
 - [~] P07-T05 Achievement milestones
@@ -100,7 +100,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [ ] P08-T03 Wider-Perfect-zone boost is temporary, disclosed and excluded from competitive score if required by design
 - [ ] P08-T04 Coin multiplier does not buy leaderboard progress
 - [~] P08-T05 Receipt allowlist/idempotency/serialization
-- [ ] P08-T06 Explicit purchase UI and ownership states
+- [~] P08-T06 Explicit purchase UI and ownership states — Developer Products + Premium Themes states implemented; live IDs/prompts remain
 - [~] P08-T07 Duplicate/retry/aborted purchase tests
 - [!] P08-T08 Real Developer Product receipt + rejoin verification
 
@@ -160,7 +160,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## P15 Release
 - [ ] P15-T01 Production icon/thumbnails/metadata
 - [ ] P15-T02 Privacy/content questionnaire
-- [~] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 bound; final ID/product build republish still required
+- [~] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 bound as development + production identity; final product-ID build republish still required
 - [ ] P15-T04 Full P13 journey repeated in published private place
 - [~] P15-T05 Build hash/place version/rollback record — production identity and accepted fix commit recorded; final published version/rollback record pending
 - [!] P15-T06 Public launch after paid receipt/rejoin evidence and zero known P0/P1 defects

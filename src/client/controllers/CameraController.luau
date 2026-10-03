@@ -21,6 +21,14 @@ local targetPosition: Vector3? = nil
 local snappedCharacter: Model? = nil
 local lastTargetId: number? = nil
 
+local function keepAvatarVisible(character: Model)
+	for _, descendant in character:GetDescendants() do
+		if descendant:IsA("BasePart") and descendant.LocalTransparencyModifier ~= 0 then
+			descendant.LocalTransparencyModifier = 0
+		end
+	end
+end
+
 local function getRoot(): BasePart?
 	local character = player.Character
 	if not character then
@@ -109,6 +117,11 @@ local function snapIfReady()
 	end
 	local desired, focus = desiredCFrame(camera, root, current, target)
 	camera.CameraType = Enum.CameraType.Scriptable
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		camera.CameraSubject = humanoid
+	end
+	keepAvatarVisible(character)
 	camera.CFrame = desired
 	camera.Focus = CFrame.new(focus)
 	snappedCharacter = character
@@ -161,6 +174,11 @@ function CameraController.start()
 
 		local desired, focus = desiredCFrame(activeCamera, root, current, target)
 		activeCamera.CameraType = Enum.CameraType.Scriptable
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			activeCamera.CameraSubject = humanoid
+		end
+		keepAvatarVisible(character)
 
 		if snappedCharacter ~= character then
 			activeCamera.CFrame = desired

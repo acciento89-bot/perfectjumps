@@ -99,18 +99,56 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 	)
 	inset.CanTouch = false
 
-	local sweetDiameter = math.min(width - 0.8, GameConfig.Landing.GoodRadius * 2)
-	local sweetZone = makePart(
+	local goodDiameter = math.min(width - 0.8, GameConfig.Landing.GoodRadius * 2)
+	local perfectDiameter = math.min(goodDiameter - 0.4, GameConfig.Landing.PerfectRadius * 2)
+	model:SetAttribute("GoodZoneDiameter", goodDiameter)
+	model:SetAttribute("PerfectZoneDiameter", perfectDiameter)
+
+	local goodZone = makePart(
 		model,
-		"SweetZone",
-		Vector3.new(math.max(1.2, sweetDiameter), 0.08, math.max(1.2, sweetDiameter)),
-		CFrame.new(center + Vector3.new(0, GameConfig.Platform.Height / 2 + 0.22, 0)),
+		"GoodZone",
+		Vector3.new(math.max(1.2, goodDiameter), 0.06, math.max(1.2, goodDiameter)),
+		CFrame.new(center + Vector3.new(0, GameConfig.Platform.Height / 2 + 0.20, 0)),
+		Enum.Material.SmoothPlastic,
+		Color3.fromRGB(72, 118, 133),
+		false
+	)
+	goodZone.Transparency = 0.18
+	goodZone.CanTouch = false
+
+	local perfectCore = makePart(
+		model,
+		"PerfectCore",
+		Vector3.new(math.max(1.0, perfectDiameter), 0.08, math.max(1.0, perfectDiameter)),
+		CFrame.new(center + Vector3.new(0, GameConfig.Platform.Height / 2 + 0.25, 0)),
 		Enum.Material.Neon,
 		Color3.fromRGB(255, 184, 76),
 		false
 	)
-	sweetZone.Transparency = 0.18
-	sweetZone.CanTouch = false
+	perfectCore.Transparency = 0.06
+	perfectCore.CanTouch = false
+
+	local bracketOffset = math.max(0.65, goodDiameter / 2 - 0.24)
+	for _, direction in
+		{
+			Vector3.new(-bracketOffset, 0, -bracketOffset),
+			Vector3.new(bracketOffset, 0, -bracketOffset),
+			Vector3.new(-bracketOffset, 0, bracketOffset),
+			Vector3.new(bracketOffset, 0, bracketOffset),
+		}
+	do
+		local bracket = makePart(
+			model,
+			"TargetBracket",
+			Vector3.new(0.34, 0.09, 0.34),
+			CFrame.new(center + Vector3.new(direction.X, GameConfig.Platform.Height / 2 + 0.27, direction.Z)),
+			Enum.Material.Neon,
+			Color3.fromRGB(121, 226, 239),
+			false
+		)
+		bracket.Transparency = 0.10
+		bracket.CanTouch = false
+	end
 
 	local underFrame = makePart(
 		model,
@@ -129,6 +167,25 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 			"EdgeTrim",
 			Vector3.new(0.16, 0.3, GameConfig.Platform.Depth - 0.4),
 			CFrame.new(center + Vector3.new(xSign * (width / 2 - 0.08), GameConfig.Platform.Height / 2 + 0.03, 0)),
+			Enum.Material.Metal,
+			Color3.fromRGB(222, 135, 48),
+			false
+		)
+		edge.CanTouch = false
+	end
+	for _, zSign in { -1, 1 } do
+		local edge = makePart(
+			model,
+			"EdgeTrim",
+			Vector3.new(math.max(1, width - 0.4), 0.3, 0.16),
+			CFrame.new(
+				center
+					+ Vector3.new(
+						0,
+						GameConfig.Platform.Height / 2 + 0.03,
+						zSign * (GameConfig.Platform.Depth / 2 - 0.08)
+					)
+			),
 			Enum.Material.Metal,
 			Color3.fromRGB(222, 135, 48),
 			false

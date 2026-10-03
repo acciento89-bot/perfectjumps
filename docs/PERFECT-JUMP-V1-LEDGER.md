@@ -95,12 +95,12 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P07-T06 PB/Perfect-chain celebration and quick retry
 
 ## P08 Monetization
-- [ ] P08-T01 Final products/passes/prices
+- [x] P08-T01 Final products/passes/prices — live Creator Hub IDs and fixed prices bound in source
 - [~] P08-T02 Revive returns to last valid platform — runtime harness verified revive Ready/assisted path
-- [ ] P08-T03 Wider-Perfect-zone boost is temporary, disclosed and excluded from competitive score if required by design
-- [ ] P08-T04 Coin multiplier does not buy leaderboard progress
+- [x] P08-T03 Wider-Perfect-zone boost is temporary, disclosed and excluded from competitive PB progression
+- [x] P08-T04 Coin multiplier does not buy leaderboard/PB progress — multiplier changes coin reward only
 - [~] P08-T05 Receipt allowlist/idempotency/serialization
-- [~] P08-T06 Explicit purchase UI and ownership states — Developer Products + Premium Themes states implemented; live IDs/prompts remain
+- [~] P08-T06 Explicit purchase UI and ownership states — live IDs + configured/owned states implemented; runtime prompt smoke remains
 - [~] P08-T07 Duplicate/retry/aborted purchase tests
 - [!] P08-T08 Real Developer Product receipt + rejoin verification
 
@@ -160,7 +160,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## P15 Release
 - [ ] P15-T01 Production icon/thumbnails/metadata
 - [ ] P15-T02 Privacy/content questionnaire
-- [~] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 bound as development + production identity; final product-ID build republish still required
+- [~] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 and live monetization IDs bound; latest green build republish still required
 - [ ] P15-T04 Full P13 journey repeated in published private place
 - [~] P15-T05 Build hash/place version/rollback record — production identity and accepted fix commit recorded; final published version/rollback record pending
 - [!] P15-T06 Public launch after paid receipt/rejoin evidence and zero known P0/P1 defects

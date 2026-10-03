@@ -4,20 +4,20 @@ return table.freeze({
 	MaxProcessedReceipts = 50,
 	DeveloperProducts = table.freeze({
 		Revive = table.freeze({
-			ProductId = 0,
+			ProductId = 3716160802,
 			Robux = 29,
 			Grant = "Revive",
 			MaxInventory = 3,
 		}),
 		WidePerfect5m = table.freeze({
-			ProductId = 0,
+			ProductId = 3716161039,
 			Robux = 39,
 			Grant = "WidePerfect",
 			DurationSeconds = 300,
 			RadiusMultiplier = 1.35,
 		}),
 		CoinBoost15m = table.freeze({
-			ProductId = 0,
+			ProductId = 3716161121,
 			Robux = 49,
 			Grant = "CoinBoost",
 			DurationSeconds = 900,
@@ -26,7 +26,7 @@ return table.freeze({
 	}),
 	GamePasses = table.freeze({
 		PremiumThemes = table.freeze({
-			GamePassId = 0,
+			GamePassId = 2006672673,
 			Robux = 99,
 		}),
 	}),

@@ -1,7 +1,8 @@
 local rules = require("../src/shared/release/ReadinessRules")
 local platform = require("../src/shared/config/PlatformConfig")
+local monetization = require("../src/shared/config/MonetizationConfig")
 
-local result = rules.Evaluate(platform)
+local result = rules.Evaluate(platform, monetization)
 
 print("Perfect Jump release-readiness report")
 print(("Sandbox-ready: %s"):format(if result.ReadyForSandbox then "yes" else "no"))

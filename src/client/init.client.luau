@@ -10,6 +10,7 @@ local CosmeticPresentationController = require(controllers.CosmeticPresentationC
 local FeedbackController = require(controllers.FeedbackController)
 local GraphicsQualityController = require(controllers.GraphicsQualityController)
 local HudController = require(controllers.HudController)
+local VisualPolishController = require(controllers.VisualPolishController)
 local ShopController = require(controllers.ShopController)
 local InputController = require(controllers.InputController)
 
@@ -18,6 +19,7 @@ CosmeticPresentationController.start()
 FeedbackController.start()
 GraphicsQualityController.start()
 HudController.start()
+VisualPolishController.start()
 ShopController.start()
 InputController.start()
 

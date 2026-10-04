@@ -1,0 +1,53 @@
+--!strict
+
+return {
+	Id = "perfect-jump",
+	Title = "Perfect Jump",
+	Colors = {
+		Foundation = "#10202A",
+		Panel = "#17323D",
+		Panel2 = "#244B56",
+		Accent = "#5BE7FF",
+		Accent2 = "#FF9C5B",
+		Accent3 = "#7EF0A9",
+		Text = "#F3FDFF",
+		Muted = "#ADCAD0",
+	},
+	Lighting = {
+		Brightness = 2.75,
+		ClockTime = 15.7,
+		ExposureCompensation = 0.18,
+		EnvironmentDiffuseScale = 0.48,
+		EnvironmentSpecularScale = 0.72,
+		FogStart = 500,
+		FogEnd = 1600,
+		Ambient = "#668E9C",
+		OutdoorAmbient = "#A4C6CF",
+		FogColor = "#BDE7E8",
+	},
+	Atmosphere = {
+		Density = 0.18,
+		Offset = 0.08,
+		Color = "#CFF8F1",
+		Decay = "#D8B08B",
+		Glare = 0.16,
+		Haze = 1.1,
+	},
+	Effects = {
+		BloomIntensity = 0.46,
+		BloomSize = 30,
+		BloomThreshold = 1.2,
+		Saturation = 0.1,
+		Contrast = 0.06,
+		TintColor = "#F5FFF1",
+		SunRaysIntensity = 0.06,
+		SunRaysSpread = 0.66,
+	},
+	Clouds = {
+		Cover = 0.17,
+		Density = 0.24,
+		Color = "#F0FFFF",
+	},
+	TargetGuis = { "PerfectJumpHUD" },
+	TargetPrefixes = { "PerfectJump" },
+}

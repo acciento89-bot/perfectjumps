@@ -176,3 +176,9 @@ Perfect Jump V1 is complete only when charge → release → flight → landing 
 
 
 Runtime acceptance update (2026-10-02): post-fix Studio QA completed through 60 landing transitions, PB/combo progression, cosmetic purchase/equip, daily path, failure, Retry reset, Revive and persistent-profile payload, ending in `[PerfectJumpQA] COMPLETE`. The retry/revive character-listener race was fixed in `f7e259851071ff8832edd54e251e19c3d741d383`. Production identity is Universe `10768948354`, Start Place `74217245707666`; `PlatformConfig` is now bound on main. GitHub Actions is green. Real DataStore rejoin, physical-input/device smoke, real paid receipt, final store/questionnaire and public-access gates remain intentionally unclaimed. Evidence: `docs/evidence/2026-10-02-runtime-acceptance-production-binding.md`.
+
+## 2026-10-04 concept visual-polish pass
+
+- [x] Native Roblox concept-quality presentation pass implemented for this game; no static concept screenshot is used in gameplay.
+- [x] Lighting/VFX and native ScreenGui styling are test-guarded and pass local static verification plus Studio PlaySolo runtime QA.
+- [x] Evidence: `docs/evidence/2026-10-04-concept-visual-polish.md`.

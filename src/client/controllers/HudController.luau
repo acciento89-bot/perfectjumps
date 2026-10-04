@@ -46,6 +46,11 @@ local resultPanel: Frame
 local resultScore: TextLabel
 local reviveButton: TextButton
 local shopButton: TextButton
+local logo: Frame
+local comboProgress: Frame
+local comboProgressFill: Frame
+local comboProgressText: TextLabel
+local quickRail: Frame
 
 local function corner(parent: Instance, radius: number)
 	local item = Instance.new("UICorner")
@@ -121,19 +126,34 @@ local function updateResponsive()
 	scale.Scale = ViewportRules.uiScale(width)
 
 	if viewportClass == "compact" then
+		logo.Visible = false
+		comboProgress.Visible = false
+		quickRail.Visible = false
+		shopButton.Visible = true
 		stats.Position = UDim2.fromOffset(12, 12)
 		stats.Size = UDim2.fromOffset(290, 84)
 		shopButton.Position = UDim2.new(1, -112, 0, 112)
 		chargePanel.Size = UDim2.new(1, -36, 0, 78)
 		tutorial.Size = UDim2.new(1, -30, 0, 90)
 	elseif viewportClass == "tablet" then
-		stats.Position = UDim2.fromOffset(16, 16)
+		logo.Visible = true
+		comboProgress.Visible = true
+		quickRail.Visible = true
+		shopButton.Visible = false
+		logo.Position = UDim2.fromOffset(16, 10)
+		stats.Position = UDim2.fromOffset(16, 92)
 		stats.Size = UDim2.fromOffset(390, 84)
 		shopButton.Position = UDim2.new(1, -124, 0, 18)
 		chargePanel.Size = UDim2.fromOffset(460, 78)
 		tutorial.Size = UDim2.fromOffset(430, 90)
 	else
-		stats.Position = UDim2.fromOffset(20, 20)
+		logo.Visible = true
+		comboProgress.Visible = true
+		quickRail.Visible = true
+		shopButton.Visible = false
+		logo.Position = UDim2.fromOffset(20, 12)
+		stats.Position = UDim2.fromOffset(20, 92)
+		stats.Position = UDim2.fromOffset(20, 92)
 		stats.Size = UDim2.fromOffset(440, 84)
 		shopButton.Position = UDim2.new(1, -132, 0, 22)
 		chargePanel.Size = UDim2.fromOffset(460, 78)
@@ -155,6 +175,8 @@ local function refreshHud()
 
 	scoreLabel.Text = ("SCORE  %d"):format(score)
 	comboLabel.Text = ("COMBO  %d"):format(combo)
+	comboProgressText.Text = ("COMBO %d • NEXT BOOST 10"):format(combo)
+	comboProgressFill.Size = UDim2.fromScale(math.clamp(combo / 10, 0, 1), 1)
 	bestLabel.Text = ("PB  %d"):format(best)
 	coinsLabel.Text = ("◈ %d"):format(coins)
 	platformLabel.Text = ("PLATFORM  %d   •   HIGH  %d"):format(currentPlatform, highest)
@@ -204,6 +226,92 @@ local function buildGui()
 	scale = Instance.new("UIScale")
 	scale.Name = "ResponsiveScale"
 	scale.Parent = gui
+
+	logo = Instance.new("Frame")
+	logo.Name = "PerfectJumpLogo"
+	logo.Position = UDim2.fromOffset(20, 12)
+	logo.Size = UDim2.fromOffset(190, 72)
+	logo.BackgroundTransparency = 1
+	logo.Parent = gui
+
+	local perfectWord = makeLabel(
+		logo,
+		"PerfectWord",
+		"PERFECT",
+		UDim2.fromOffset(150, 32),
+		UDim2.fromOffset(0, 0),
+		27,
+		COLORS.Cyan,
+		Enum.Font.GothamBlack
+	)
+	perfectWord.TextStrokeColor3 = Color3.fromRGB(26, 48, 62)
+	perfectWord.TextStrokeTransparency = 0.36
+
+	local jumpWord = makeLabel(
+		logo,
+		"JumpWord",
+		"JUMP",
+		UDim2.fromOffset(136, 34),
+		UDim2.fromOffset(18, 27),
+		30,
+		COLORS.Amber,
+		Enum.Font.GothamBlack
+	)
+	jumpWord.TextStrokeColor3 = Color3.fromRGB(55, 44, 35)
+	jumpWord.TextStrokeTransparency = 0.34
+
+	local logoTag = makeLabel(
+		logo,
+		"Tagline",
+		"CHARGE • RELEASE • LAND PERFECT",
+		UDim2.fromOffset(188, 12),
+		UDim2.fromOffset(1, 60),
+		8,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	logoTag.TextXAlignment = Enum.TextXAlignment.Left
+
+	comboProgress = Instance.new("Frame")
+	comboProgress.Name = "ComboProgress"
+	comboProgress.AnchorPoint = Vector2.new(0.5, 0)
+	comboProgress.Position = UDim2.new(0.5, 0, 0, 14)
+	comboProgress.Size = UDim2.fromOffset(290, 52)
+	comboProgress.BackgroundColor3 = COLORS.Foundation
+	comboProgress.BackgroundTransparency = 0.03
+	comboProgress.BorderSizePixel = 0
+	comboProgress.Parent = gui
+	corner(comboProgress, 16)
+	stroke(comboProgress, COLORS.Cyan, 0.42, 1.3)
+
+	comboProgressText = makeLabel(
+		comboProgress,
+		"Text",
+		"COMBO 0 • NEXT BOOST 10",
+		UDim2.new(1, -20, 0, 24),
+		UDim2.fromOffset(10, 4),
+		11,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	comboProgressText.TextXAlignment = Enum.TextXAlignment.Center
+
+	local comboTrack = Instance.new("Frame")
+	comboTrack.Position = UDim2.fromOffset(12, 34)
+	comboTrack.Size = UDim2.new(1, -24, 0, 10)
+	comboTrack.BackgroundColor3 = Color3.fromRGB(22, 33, 43)
+	comboTrack.BorderSizePixel = 0
+	comboTrack.ClipsDescendants = true
+	comboTrack.Parent = comboProgress
+	corner(comboTrack, 99)
+
+	comboProgressFill = Instance.new("Frame")
+	comboProgressFill.Name = "Fill"
+	comboProgressFill.Size = UDim2.fromScale(0, 1)
+	comboProgressFill.BackgroundColor3 = COLORS.Amber
+	comboProgressFill.BorderSizePixel = 0
+	comboProgressFill.Parent = comboTrack
+	corner(comboProgressFill, 99)
 
 	stats = Instance.new("Frame")
 	stats.Name = "Stats"
@@ -281,6 +389,26 @@ local function buildGui()
 	shopButton =
 		makeButton(gui, "ShopButton", "SUPPLY", UDim2.fromOffset(110, 46), UDim2.new(1, -132, 0, 22), COLORS.Cyan)
 	shopButton.Activated:Connect(function()
+		player:SetAttribute("PerfectJumpShopOpen", true)
+	end)
+
+	quickRail = Instance.new("Frame")
+	quickRail.Name = "ConceptQuickRail"
+	quickRail.AnchorPoint = Vector2.new(1, 0)
+	quickRail.Position = UDim2.new(1, -20, 0, 92)
+	quickRail.Size = UDim2.fromOffset(96, 96)
+	quickRail.BackgroundTransparency = 1
+	quickRail.Parent = gui
+
+	local supplyQuick =
+		makeButton(quickRail, "SupplyQuick", "SUPPLY", UDim2.fromOffset(96, 42), UDim2.fromOffset(0, 0), COLORS.Cyan)
+	supplyQuick.Activated:Connect(function()
+		player:SetAttribute("PerfectJumpShopOpen", true)
+	end)
+
+	local dailyQuick =
+		makeButton(quickRail, "DailyQuick", "DAILY", UDim2.fromOffset(96, 42), UDim2.fromOffset(0, 50), COLORS.Amber)
+	dailyQuick.Activated:Connect(function()
 		player:SetAttribute("PerfectJumpShopOpen", true)
 	end)
 

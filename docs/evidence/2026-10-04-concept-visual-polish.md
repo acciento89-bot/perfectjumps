@@ -23,3 +23,9 @@ The visual contract was introduced with a failing test before production impleme
 - PlaySolo visual QA: server/client gameplay initialized with 0 CreatorErrors.
 - Visual inspection was performed from the generated local PlaySolo build at desktop viewport size.
 - This evidence covers the source/runtime visual pass only; Roblox production publishing is a separate gate.
+
+## Concept-fidelity pass 2
+
+- Added a branded Perfect Jump wordmark, concept-style combo progress strip and compact Supply/Daily quick rail while preserving the hold/release charge panel and avatar visibility.
+- Brightened the highline materials and added layered cloud depth, a hero gateway and warm sky focal disc to make the route read as an authored sky course rather than black structural blocks.
+- Final Studio PlaySolo initialized server/client with 0 CreatorErrors. Static verification: 12 pure-Luau tests, Selene 0/0, StyLua, Rojo build and git diff check pass.

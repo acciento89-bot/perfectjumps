@@ -8,9 +8,9 @@ local WorldArtService = {}
 local lightingConfigured = false
 
 local COLORS = {
-	Foundation = Color3.fromRGB(18, 24, 33),
-	Steel = Color3.fromRGB(33, 45, 59),
-	SteelLight = Color3.fromRGB(57, 76, 94),
+	Foundation = Color3.fromRGB(35, 50, 62),
+	Steel = Color3.fromRGB(52, 75, 88),
+	SteelLight = Color3.fromRGB(78, 108, 121),
 	Amber = Color3.fromRGB(255, 178, 72),
 	Cyan = Color3.fromRGB(91, 220, 239),
 	Glass = Color3.fromRGB(112, 154, 177),
@@ -92,7 +92,7 @@ local function tower(parent: Instance, position: Vector3, size: Vector3, index: 
 		size,
 		CFrame.new(position + Vector3.new(0, size.Y / 2, 0)),
 		Enum.Material.Concrete,
-		Color3.fromRGB(30 + index * 2, 39 + index * 2, 52 + index * 3)
+		Color3.fromRGB(48 + index * 2, 61 + index * 2, 73 + index * 3)
 	)
 
 	for row = 1, math.clamp(math.floor(size.Y / 13), 2, 6) do
@@ -251,6 +251,67 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 			index
 		)
 	end
+
+	local cloudGarden = Instance.new("Folder")
+	cloudGarden.Name = "CloudGarden"
+	cloudGarden.Parent = art
+	for index = 1, 8 do
+		local cloud = part(
+			cloudGarden,
+			"CloudWisp",
+			Vector3.new(10 + (index % 3) * 4, 2.1 + (index % 2) * 0.6, 6 + (index % 4) * 2),
+			CFrame.new(origin + Vector3.new(-42 + index * 11, 16 + (index % 3) * 3, 70 + (index % 2) * 12)),
+			Enum.Material.SmoothPlastic,
+			Color3.fromRGB(236, 248, 250),
+			0.52
+		)
+		cloud.Shape = Enum.PartType.Ball
+		cloud.CastShadow = false
+	end
+
+	local gateway = Instance.new("Folder")
+	gateway.Name = "HeroGateway"
+	gateway.Parent = art
+	for _, side in { -1, 1 } do
+		part(
+			gateway,
+			"GatewayPillar",
+			Vector3.new(1.4, 12, 1.4),
+			CFrame.new(origin + Vector3.new(side * 6.2, 10, 82)),
+			Enum.Material.Marble,
+			COLORS.SteelLight
+		)
+	end
+	local gatewayTop = part(
+		gateway,
+		"GatewayCrown",
+		Vector3.new(14, 1.2, 1.4),
+		CFrame.new(origin + Vector3.new(0, 16, 82)),
+		Enum.Material.Marble,
+		COLORS.SteelLight
+	)
+	local gatewayRune = part(
+		gateway,
+		"GatewayRune",
+		Vector3.new(10.5, 0.18, 0.34),
+		gatewayTop.CFrame + Vector3.new(0, 0.72, -0.1),
+		Enum.Material.Neon,
+		COLORS.Amber,
+		0.08
+	)
+	gatewayRune.CastShadow = false
+
+	local sun = part(
+		art,
+		"SkySunDisc",
+		Vector3.new(18, 18, 18),
+		CFrame.new(origin + Vector3.new(44, 48, 145)),
+		Enum.Material.Neon,
+		Color3.fromRGB(255, 194, 121),
+		0.08
+	)
+	sun.Shape = Enum.PartType.Ball
+	sun.CastShadow = false
 
 	local crown = part(
 		art,

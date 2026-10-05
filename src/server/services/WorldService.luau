@@ -128,6 +128,29 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 	perfectCore.Transparency = 0.06
 	perfectCore.CanTouch = false
 
+	local landingRingRadius = math.max(0.75, perfectDiameter / 2 + 0.26)
+	for _, definition in
+		{
+			{ Vector3.new(math.max(1.1, perfectDiameter), 0.06, 0.10), Vector3.new(0, 0, -landingRingRadius) },
+			{ Vector3.new(math.max(1.1, perfectDiameter), 0.06, 0.10), Vector3.new(0, 0, landingRingRadius) },
+			{ Vector3.new(0.10, 0.06, math.max(1.1, perfectDiameter)), Vector3.new(-landingRingRadius, 0, 0) },
+			{ Vector3.new(0.10, 0.06, math.max(1.1, perfectDiameter)), Vector3.new(landingRingRadius, 0, 0) },
+		}
+	do
+		local ring = makePart(
+			model,
+			"LandingRing",
+			definition[1],
+			CFrame.new(center + Vector3.new(0, GameConfig.Platform.Height / 2 + 0.285, 0) + definition[2]),
+			Enum.Material.Neon,
+			Color3.fromRGB(255, 205, 107),
+			false
+		)
+		ring.Transparency = 0.18
+		ring.CanTouch = false
+		ring.CanQuery = false
+	end
+
 	local bracketOffset = math.max(0.65, goodDiameter / 2 - 0.24)
 	for _, direction in
 		{
@@ -160,6 +183,19 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 		false
 	)
 	underFrame.CanTouch = false
+
+	local platformFin = makePart(
+		model,
+		"PlatformFin",
+		Vector3.new(math.max(0.4, width * 0.12), 1.6, math.max(1.4, GameConfig.Platform.Depth - 1.8)),
+		CFrame.new(center + Vector3.new(0, -(GameConfig.Platform.Height / 2 + 1.0), 0)),
+		Enum.Material.Metal,
+		Color3.fromRGB(33, 43, 53),
+		false
+	)
+	platformFin.Transparency = 0.04
+	platformFin.CanTouch = false
+	platformFin.CanQuery = false
 
 	for _, xSign in { -1, 1 } do
 		local edge = makePart(

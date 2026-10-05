@@ -6,6 +6,12 @@ The approved concept image is a **feature montage**, not a simultaneous gameplay
 ## Target
 A polished, readable Roblox experience that looks intentional from a normal gameplay screenshot. Stylized, clean and modern; never like an empty baseplate or developer prototype.
 
+## Graphic fidelity
+- The **sky-course identity** uses a launch deck, repeated structural arches, motion ribbons, cloud layers and distant skyline masses to create depth along the route.
+- Gameplay platforms keep deterministic collision but gain a premium target ring and authored underside detail so they read as engineered course pieces rather than raw blocks.
+- Cyan communicates precision and direction; amber is reserved for perfect/reward emphasis and the warm sky focal point.
+- Decorative skyline and architecture frame the route without obstructing gameplay.
+
 ## Visual language
 - Strong silhouette readability at mobile camera distance.
 - One dominant dark/neutral foundation plus one warm accent and one gameplay-state accent.

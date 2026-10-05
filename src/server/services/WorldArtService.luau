@@ -121,6 +121,60 @@ local function tower(parent: Instance, position: Vector3, size: Vector3, index: 
 	body.CastShadow = true
 end
 
+local function highlineArch(parent: Instance, origin: Vector3, zOffset: number, scale: number)
+	local archFolder = Instance.new("Folder")
+	archFolder.Name = "HighlineArch"
+	archFolder.Parent = parent
+
+	for _, side in { -1, 1 } do
+		part(
+			archFolder,
+			"ArchPillar",
+			Vector3.new(1.4 * scale, 18 * scale, 1.4 * scale),
+			CFrame.new(origin + Vector3.new(side * 12 * scale, 8 * scale, zOffset)),
+			Enum.Material.Metal,
+			COLORS.SteelLight
+		)
+	end
+
+	local crown = part(
+		archFolder,
+		"ArchCrown",
+		Vector3.new(25 * scale, 1.2 * scale, 1.4 * scale),
+		CFrame.new(origin + Vector3.new(0, 17 * scale, zOffset)),
+		Enum.Material.Metal,
+		COLORS.SteelLight
+	)
+
+	local guide = part(
+		archFolder,
+		"ArchGuide",
+		Vector3.new(19 * scale, 0.16, 0.28),
+		crown.CFrame + Vector3.new(0, 0.78 * scale, -0.1),
+		Enum.Material.Neon,
+		COLORS.Amber,
+		0.12
+	)
+	guide.CastShadow = false
+end
+
+local function motionRibbon(parent: Instance, fromPosition: Vector3, toPosition: Vector3, color: Color3)
+	local delta = toPosition - fromPosition
+	if delta.Magnitude < 0.05 then
+		return
+	end
+	local ribbon = part(
+		parent,
+		"MotionRibbon",
+		Vector3.new(0.16, 0.08, delta.Magnitude),
+		CFrame.lookAt((fromPosition + toPosition) / 2, toPosition),
+		Enum.Material.Neon,
+		color,
+		0.34
+	)
+	ribbon.CastShadow = false
+end
+
 function WorldArtService.configureLighting()
 	if lightingConfigured then
 		return
@@ -252,6 +306,33 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 		)
 	end
 
+	local farLayer = Instance.new("Folder")
+	farLayer.Name = "ParallaxHighlineFar"
+	farLayer.Parent = art
+	for index, height in { 32, 46, 29, 55, 38, 50, 35 } do
+		local x = origin.X - 108 + index * 28
+		local z = origin.Z + 154 + (index % 2) * 14
+		tower(
+			farLayer,
+			Vector3.new(x, origin.Y - 54, z),
+			Vector3.new(10 + (index % 2) * 3, height, 11 + (index % 3)),
+			index + 2
+		)
+	end
+
+	highlineArch(art, origin, 36, 1.0)
+	highlineArch(art, origin, 68, 0.86)
+	highlineArch(art, origin, 104, 0.72)
+
+	motionRibbon(art, origin + Vector3.new(-16, 18, 22), origin + Vector3.new(-5, 22, 64), COLORS.Cyan)
+	motionRibbon(art, origin + Vector3.new(15, 20, 30), origin + Vector3.new(4, 25, 82), COLORS.Amber)
+	motionRibbon(
+		art,
+		origin + Vector3.new(-10, 27, 54),
+		origin + Vector3.new(8, 31, 112),
+		Color3.fromRGB(156, 127, 232)
+	)
+
 	local cloudGarden = Instance.new("Folder")
 	cloudGarden.Name = "CloudGarden"
 	cloudGarden.Parent = art
@@ -312,6 +393,18 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 	)
 	sun.Shape = Enum.PartType.Ball
 	sun.CastShadow = false
+
+	local sunHalo = part(
+		art,
+		"SunHalo",
+		Vector3.new(35, 35, 35),
+		CFrame.new(origin + Vector3.new(44, 48, 146.5)),
+		Enum.Material.Neon,
+		Color3.fromRGB(255, 218, 164),
+		0.91
+	)
+	sunHalo.Shape = Enum.PartType.Ball
+	sunHalo.CastShadow = false
 
 	local crown = part(
 		art,

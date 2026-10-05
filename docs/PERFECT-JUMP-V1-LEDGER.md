@@ -145,7 +145,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P13-T05 Failure → immediate retry — post-fix runtime harness passes failure/GameOver/Retry/Ready/reset
 - [x] P13-T06 Reward and cosmetic buy/equip — runtime harness passes coin grant, purchase and equip
 - [x] P13-T07 Revive — runtime harness passes failure/revive/Ready/assisted
-- [ ] P13-T08 Respawn camera/input reset
+- [x] P13-T08 Respawn camera/input reset — Studio client QA verifies the replacement character owns the Scriptable camera/CameraSubject with current+target state loaded, while charging is false, phase is Ready and no modal remains open. Evidence: `docs/evidence/2026-10-05-respawn-camera-input.md`
 - [ ] P13-T09 New-session persistence/rejoin
 - [~] P13-T10 Extended repeated-jump stability — 60 generated landing transitions pass; physical repeated-input soak remains open
 

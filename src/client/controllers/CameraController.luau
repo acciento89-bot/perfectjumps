@@ -127,6 +127,20 @@ local function snapIfReady()
 	snappedCharacter = character
 end
 
+function CameraController.qaState()
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local camera = Workspace.CurrentCamera
+	local character = player.Character
+	local humanoid = if character then character:FindFirstChildOfClass("Humanoid") else nil
+	return {
+		Scriptable = camera ~= nil and camera.CameraType == Enum.CameraType.Scriptable,
+		SubjectIsCurrentHumanoid = camera ~= nil and humanoid ~= nil and camera.CameraSubject == humanoid,
+		SnappedToCurrentCharacter = character ~= nil and snappedCharacter == character,
+		HasCurrentPosition = currentPosition ~= nil,
+		HasTargetPosition = targetPosition ~= nil,
+	}
+end
+
 function CameraController.start()
 	local camera = Workspace.CurrentCamera
 	camera.CameraType = Enum.CameraType.Scriptable

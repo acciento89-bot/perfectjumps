@@ -3,6 +3,7 @@
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
@@ -94,6 +95,15 @@ local function refreshTouchButtons()
 	if phase ~= "Charging" then
 		charging = false
 	end
+end
+
+function InputController.qaState()
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	return {
+		Charging = charging,
+		Phase = player:GetAttribute("PerfectJumpPhase"),
+		UiModal = player:GetAttribute("PerfectJumpUiModal") == true,
+	}
 end
 
 function InputController.start()

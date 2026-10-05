@@ -1,4 +1,5 @@
 local tests = {
+	require("../tests/runtime-tutorial-qa.spec"),
 	require("../tests/runtime-difficulty-qa.spec"),
 	require("../tests/runtime-journey-qa.spec"),
 	require("../tests/diagnostic-logging.spec"),

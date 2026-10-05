@@ -71,6 +71,11 @@ local function run(player: Player)
 	local initial = RoundService.qaSnapshot(player)
 	check("initial_platform", initial.CurrentPlatformId == 0 and initial.TargetPlatformId == 1, initial)
 	check("avatar_spawned", player.Character ~= nil and player.Character:FindFirstChild("HumanoidRootPart") ~= nil)
+	check(
+		"tutorial_fresh_player",
+		player:GetAttribute("PerfectJumpTutorialComplete") == false,
+		{ TutorialComplete = player:GetAttribute("PerfectJumpTutorialComplete") }
+	)
 
 	local minimumSeconds = GameConfig.Charge.MinimumSeconds
 	local midpointSeconds = (GameConfig.Charge.MinimumSeconds + GameConfig.Charge.MaximumSeconds) / 2
@@ -84,6 +89,11 @@ local function run(player: Player)
 		"journey_landing_ready",
 		journeyLanded == true and journeyGrade == "Perfect" and waitReady(player),
 		{ Grade = journeyGrade }
+	)
+	check(
+		"tutorial_completes_after_first_landing",
+		player:GetAttribute("PerfectJumpTutorialComplete") == true,
+		{ TutorialComplete = player:GetAttribute("PerfectJumpTutorialComplete") }
 	)
 	check("journey_failure", RoundService.qaFail(player, "StudioJourney"))
 	local failedCharacter = player.Character

@@ -138,7 +138,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P12-T06 Structured diagnostic logging — stable single-line `PJ_DIAG` records now cover DataStore init, profile load/lock/save and receipt transaction failures; 24-test suite and fresh Studio server/client smoke pass. Evidence: `docs/evidence/2026-10-05-diagnostic-logging.md`
 
 ## P13 Mandatory full runtime journey
-- [ ] P13-T01 Fresh spawn/tutorial
+- [x] P13-T01 Fresh spawn/tutorial — fresh Studio profile starts with tutorial incomplete; HUD binds to the authoritative flag; first production-path landing flips completion true and the full QA harness completes. Evidence: `docs/evidence/2026-10-05-fresh-tutorial-runtime.md`
 - [x] P13-T02 Min/mid/max charge jumps — Studio QA exercised the real server launch path at minimum, midpoint and maximum charge and matched configured velocity expectations
 - [x] P13-T03 Perfect + Good + edge landing + miss — production server landing path verified in Studio for all four grades; Miss reached GameOver and recovered through Retry/Ready
 - [~] P13-T04 Combo/PB progression verified by runtime harness; real player-input break cases remain open

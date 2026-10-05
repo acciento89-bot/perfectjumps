@@ -16,13 +16,17 @@ local FeedbackController = {}
 local SOUND_ID = "rbxasset://sounds/electronicpingshort.wav"
 local lastCueAt: { [string]: number } = {}
 local transientSounds = 0
+local previousPhase: string? = nil
 local MAX_TRANSIENT = 4
 
 local CUES = {
+	Charge = { Speed = 0.72, Volume = 0.12, MinInterval = 0.25 },
+	Release = { Speed = 1.18, Volume = 0.17, MinInterval = 0.12 },
 	Perfect = { Speed = 1.35, Volume = 0.24, MinInterval = 0.08 },
 	Good = { Speed = 1.08, Volume = 0.20, MinInterval = 0.08 },
 	Safe = { Speed = 0.88, Volume = 0.17, MinInterval = 0.08 },
 	Failure = { Speed = 0.58, Volume = 0.26, MinInterval = 0.45 },
+	Retry = { Speed = 0.96, Volume = 0.16, MinInterval = 0.35 },
 	Reward = { Speed = 1.52, Volume = 0.23, MinInterval = 0.32 },
 }
 
@@ -34,7 +38,7 @@ local function reducedMotion(): boolean
 	return player:GetAttribute("PerfectJumpReducedMotion") == true
 end
 
-local function playCue(name: string)
+local function playCue(name: string, speedScale: number?)
 	if not audioEnabled() or transientSounds >= MAX_TRANSIENT then
 		return
 	end
@@ -55,7 +59,7 @@ local function playCue(name: string)
 	sound.Name = "PerfectJump_" .. name
 	sound.SoundId = SOUND_ID
 	sound.Volume = math.min(0.28, definition.Volume)
-	sound.PlaybackSpeed = definition.Speed
+	sound.PlaybackSpeed = math.clamp(definition.Speed * (speedScale or 1), 0.5, 1.85)
 	sound.Parent = SoundService
 	transientSounds += 1
 	sound.Ended:Connect(function()
@@ -159,10 +163,24 @@ local function onRoundState(payload: any)
 		return
 	end
 
+	local phase = if type(payload.Phase) == "string" then payload.Phase else nil
+	if phase then
+		if phase == "Charging" and previousPhase ~= "Charging" then
+			playCue("Charge")
+		elseif phase == "Airborne" and previousPhase == "Charging" then
+			playCue("Release")
+		elseif phase == "Ready" and previousPhase == "GameOver" then
+			playCue("Retry")
+		end
+		previousPhase = phase
+	end
+
 	if type(payload.Grade) == "string" then
 		if payload.Grade == "Perfect" then
-			playCue("Perfect")
-			landingRing(Color3.fromRGB(255, 194, 85), 7.2)
+			local combo = math.max(0, math.floor(tonumber(payload.Combo) or 0))
+			local comboScale = 1 + math.min(combo, 12) * 0.0125
+			playCue("Perfect", comboScale)
+			landingRing(Color3.fromRGB(255, 194, 85), math.min(8.2, 7.2 + math.min(combo, 10) * 0.08))
 			sparkBurst(Color3.fromRGB(255, 220, 130))
 		elseif payload.Grade == "Good" then
 			playCue("Good")

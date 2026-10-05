@@ -105,29 +105,29 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [!] P08-T08 Real Developer Product receipt + rejoin verification
 
 ## P09 Production UI/UX
-- [~] P09-T01 Charge meter is legible and responsive
-- [ ] P09-T02 Target/sweet-zone visual is clear without excessive Neon
-- [~] P09-T03 Score/combo/PB hierarchy
-- [~] P09-T04 Result/retry flow
-- [ ] P09-T05 Shop/cosmetic previews
-- [ ] P09-T06 Compact phone/tablet/desktop layouts
-- [ ] P09-T07 Controller focus and accessibility/reduced-motion
+- [x] P09-T01 Charge meter is legible and responsive — live compact/tablet/desktop review confirms the charge control remains readable and unobstructed
+- [x] P09-T02 Target/sweet-zone visual is clear without excessive Neon — live Studio review confirms integrated Good/Perfect target geometry with restrained cyan/amber precision accents
+- [x] P09-T03 Score/combo/PB hierarchy — live HUD review confirms compact stats plus dedicated combo-progress hierarchy without covering the route
+- [x] P09-T04 Result/retry flow — production result UI is event-driven and the Studio QA path verifies GameOver → Retry → Ready/reset
+- [x] P09-T05 Shop/cosmetic previews — live Precision Supply modal plus authored cosmetic swatches/category actions verified in the production UI
+- [x] P09-T06 Compact phone/tablet/desktop layouts — live Studio resize acceptance covered compact, tablet and wide desktop compositions without blocking avatar/target/charge controls
+- [~] P09-T07 Controller focus and accessibility/reduced-motion — selectable controls, modal SelectedObject focus, ButtonA/ButtonX/ButtonY bindings, Reduced Motion and Audio settings are implemented; physical controller navigation remains P14 runtime evidence
 
 ## P10 Production art
-- [ ] P10-T01 Distinct platform-world environment
-- [ ] P10-T02 Platforms have production silhouettes/materials/edge detail
-- [ ] P10-T03 Sweet zone is integrated into art, not a debug decal
-- [ ] P10-T04 Avatar remains readable against every theme
-- [ ] P10-T05 Lighting/background depth supports judging distance
-- [ ] P10-T06 Screenshot-quality acceptance at charge, mid-flight and landing
+- [x] P10-T01 Distinct platform-world environment — live authored aerial-highline environment verified in Studio
+- [x] P10-T02 Platforms have production silhouettes/materials/edge detail — metal/diamond-plate bodies, precision borders, structural arches/masts and depth layers verified
+- [x] P10-T03 Sweet zone is integrated into art, not a debug decal — production GoodZone, PerfectCore, LandingRing and TargetBracket geometry is integrated into the platform presentation
+- [~] P10-T04 Avatar remains readable against every theme — default highline theme is visually accepted with avatar readability; remaining cosmetic themes still require visual cycling
+- [x] P10-T05 Lighting/background depth supports judging distance — live Studio review confirms layered skyline/highline depth, atmospheric clouds and restrained precision lighting
+- [~] P10-T06 Screenshot-quality acceptance at charge, mid-flight and landing — overall compact/tablet/desktop gameplay composition is accepted; charge/mid-flight/landing triptych remains open because OS-level input injection did not drive Roblox gameplay state
 
 ## P11 Audio and VFX
-- [ ] P11-T01 Charge buildup audio/visual
-- [ ] P11-T02 Release/air cue without noise
-- [ ] P11-T03 Landing grade cues
-- [ ] P11-T04 Perfect-chain escalation
-- [ ] P11-T05 Failure/retry/PB/reward cues
-- [ ] P11-T06 Owned/Roblox-safe assets and reduced-motion/audio QA
+- [x] P11-T01 Charge buildup audio/visual — responsive charge meter plus dedicated Charge cue implemented and regression-tested
+- [x] P11-T02 Release/air cue without noise — dedicated Release cue is phase-transition driven, rate-limited and covered by the feedback contract
+- [x] P11-T03 Landing grade cues — distinct Perfect/Good/Safe audio and landing-ring feedback retained and the production grade matrix passed in Studio
+- [x] P11-T04 Perfect-chain escalation — Perfect cue pitch and landing-ring emphasis now scale from authoritative combo while remaining capped
+- [x] P11-T05 Failure/retry/PB/reward cues — Failure and Reward/PB cues retained; dedicated GameOver→Ready Retry cue added and full QA journey rerun
+- [~] P11-T06 Owned/Roblox-safe assets and reduced-motion/audio QA — Roblox built-in audio, AudioEnabled guard, Reduced Motion guard and transient overlap cap are verified in source/tests; physical mobile-speaker mix/fatigue listen remains open
 
 ## P12 Security and persistence hardening
 - [~] P12-T01 Remote/rate-limit audit

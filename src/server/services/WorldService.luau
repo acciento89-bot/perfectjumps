@@ -184,6 +184,19 @@ local function createPlatform(parent: Instance, platformId: number, center: Vect
 	)
 	underFrame.CanTouch = false
 
+	local platformFin = makePart(
+		model,
+		"PlatformFin",
+		Vector3.new(math.max(0.4, width * 0.12), 1.6, math.max(1.4, GameConfig.Platform.Depth - 1.8)),
+		CFrame.new(center + Vector3.new(0, -(GameConfig.Platform.Height / 2 + 1.0), 0)),
+		Enum.Material.Metal,
+		Color3.fromRGB(33, 43, 53),
+		false
+	)
+	platformFin.Transparency = 0.04
+	platformFin.CanTouch = false
+	platformFin.CanQuery = false
+
 	for _, xSign in { -1, 1 } do
 		local edge = makePart(
 			model,

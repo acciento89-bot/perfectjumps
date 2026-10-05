@@ -53,11 +53,11 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 
 ## P03 Precision jump mechanic
 - [x] P03-T01 Deterministic charge-to-impulse mapping
-- [~] P03-T02 Server validates legal charge duration/action sequence
-- [~] P03-T03 Jump launch prevents duplicate release or stale input
-- [~] P03-T04 Stable air/landing state detection
-- [~] P03-T05 Edge landings, bounces and sliding cannot double-score
-- [~] P03-T06 Failure boundary triggers once
+- [x] P03-T02 Server validates legal charge duration/action sequence — Studio production-path probe accepts legal charge flow and rejects stale held duration back to Ready. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
+- [x] P03-T03 Jump launch prevents duplicate release or stale input — duplicate release leaves phase/velocity/token unchanged; stale release produces no impulse. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
+- [x] P03-T04 Stable air/landing state detection — non-Airborne landing calls and upward target touches are runtime-verified as ignored without score/platform mutation. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
+- [x] P03-T05 Edge landings, bounces and sliding cannot double-score — immediate duplicate landing produced 0 second score and 0 second platform advance; grade matrix still covers edge/Safe. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
+- [x] P03-T06 Failure boundary triggers once — first failure increments action token once; repeated GameOver failure is a no-op and Retry returns Ready. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
 - [x] P03-T07 Runtime tuning at min/mid/max charge — production launch path measured in Studio at all three charge points; evidence: `docs/evidence/2026-10-05-runtime-launch-repeatability.md`
 - [x] P03-T08 100-jump repeatability sample shows no unexplained impulse drift — 100/100 midpoint production-path releases measured with 0 horizontal and 0 vertical velocity delta; evidence: `docs/evidence/2026-10-05-runtime-launch-repeatability.md`
 
@@ -67,7 +67,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P04-T03 Combo/multiplier rules and break conditions
 - [~] P04-T04 PB/highest-platform persistence — profile payload/runtime progression verified; real new-session rejoin remains open
 - [~] P04-T05 Grade feedback appears at landing without hiding next target
-- [~] P04-T06 Anti-replay/duplicate-score guards
+- [x] P04-T06 Anti-replay/duplicate-score guards — duplicate production landing evaluation cannot re-award score or advance the lane. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
 
 ## P05 Platform generation and difficulty
 - [x] P05-T01 Reachability envelope derived from actual jump model
@@ -141,7 +141,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P13-T01 Fresh spawn/tutorial — fresh Studio profile starts with tutorial incomplete; HUD binds to the authoritative flag; first production-path landing flips completion true and the full QA harness completes. Evidence: `docs/evidence/2026-10-05-fresh-tutorial-runtime.md`
 - [x] P13-T02 Min/mid/max charge jumps — Studio QA exercised the real server launch path at minimum, midpoint and maximum charge and matched configured velocity expectations
 - [x] P13-T03 Perfect + Good + edge landing + miss — production server landing path verified in Studio for all four grades; Miss reached GameOver and recovered through Retry/Ready
-- [~] P13-T04 Combo/PB progression verified by runtime harness; real player-input break cases remain open
+- [x] P13-T04 Combo/PB progression — Studio runtime verifies Perfect combo growth, Good reset to 0, 60-landing progression and PB/highest-platform advancement; physical input coverage remains separately tracked in P14. Evidence: `docs/evidence/2026-10-05-precision-guards.md`
 - [x] P13-T05 Failure → immediate retry — post-fix runtime harness passes failure/GameOver/Retry/Ready/reset
 - [x] P13-T06 Reward and cosmetic buy/equip — runtime harness passes coin grant, purchase and equip
 - [x] P13-T07 Revive — runtime harness passes failure/revive/Ready/assisted

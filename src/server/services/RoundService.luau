@@ -619,6 +619,149 @@ function RoundService.qaLaunch(player: Player, heldSeconds: number)
 	return sample
 end
 
+function RoundService.qaReleaseSequence(player: Player, heldSeconds: number)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	local root = getRoot(player)
+	if not round or not root or round.Phase == "GameOver" then
+		return nil
+	end
+
+	round.ActionToken += 1
+	round.Phase = "Ready"
+	round.ChargeStartedAt = nil
+	root.CFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	setNetworkOwner(root, player)
+	setGroundMovement(player, true)
+
+	beginCharge(round)
+	round.ChargeStartedAt = os.clock() - heldSeconds
+	releaseCharge(round)
+
+	local firstPhase = round.Phase
+	local firstVelocity = root.AssemblyLinearVelocity
+	local tokenAfterFirst = round.ActionToken
+	releaseCharge(round)
+	local secondPhase = round.Phase
+	local secondVelocity = root.AssemblyLinearVelocity
+	local duplicateTokenDelta = round.ActionToken - tokenAfterFirst
+
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	root.CFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	round.ActionToken += 1
+	round.Phase = "Ready"
+	round.ChargeStartedAt = nil
+	setNetworkOwner(root, player)
+	setGroundMovement(player, true)
+	emitState(round)
+
+	return {
+		FirstPhase = firstPhase,
+		SecondPhase = secondPhase,
+		FirstSpeed = firstVelocity.Magnitude,
+		SecondSpeed = secondVelocity.Magnitude,
+		DuplicateTokenDelta = duplicateTokenDelta,
+	}
+end
+
+function RoundService.qaLandingGuardProbe(player: Player)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	local root = getRoot(player)
+	if not round or not root or round.Phase == "GameOver" then
+		return nil
+	end
+
+	local beforeScore = round.Score
+	local beforePlatform = round.Lane.CurrentId
+	root.CFrame = round.Lane.TargetCollision.CFrame + Vector3.new(0, 3, 0)
+	root.AssemblyLinearVelocity = Vector3.new(0, -2, 0)
+	round.Phase = "Ready"
+	handleLanding(round)
+	local readyIgnored = round.Score == beforeScore
+		and round.Lane.CurrentId == beforePlatform
+		and round.Phase == "Ready"
+
+	round.Phase = "Airborne"
+	root.AssemblyLinearVelocity = Vector3.new(0, GameConfig.Movement.LandingVerticalSpeedLimit + 5, 0)
+	handleLanding(round)
+	local ascendingIgnored = round.Score == beforeScore
+		and round.Lane.CurrentId == beforePlatform
+		and round.Phase == "Airborne"
+
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	root.CFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	round.ActionToken += 1
+	round.Phase = "Ready"
+	round.ChargeStartedAt = nil
+	setNetworkOwner(root, player)
+	setGroundMovement(player, true)
+	emitState(round)
+
+	return {
+		ReadyIgnored = readyIgnored,
+		AscendingIgnored = ascendingIgnored,
+	}
+end
+
+function RoundService.qaDoubleLanding(player: Player)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	local root = getRoot(player)
+	if not round or not root or round.Phase == "GameOver" then
+		return nil
+	end
+
+	local beforeScore = round.Score
+	local beforePlatform = round.Lane.CurrentId
+	root.CFrame = round.Lane.TargetCollision.CFrame + Vector3.new(0, 3, 0)
+	root.AssemblyLinearVelocity = Vector3.new(0, -2, 0)
+	round.Phase = "Airborne"
+
+	handleLanding(round)
+	local firstScore = round.Score
+	local firstPlatform = round.Lane.CurrentId
+	local firstPhase = round.Phase
+	handleLanding(round)
+
+	return {
+		FirstPhase = firstPhase,
+		SecondPhase = round.Phase,
+		ScoreDeltaFirst = firstScore - beforeScore,
+		ScoreDeltaSecond = round.Score - firstScore,
+		PlatformDeltaFirst = firstPlatform - beforePlatform,
+		PlatformDeltaSecond = round.Lane.CurrentId - firstPlatform,
+	}
+end
+
+function RoundService.qaFailureIdempotency(player: Player)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	if not round then
+		return nil
+	end
+
+	if round.Phase == "GameOver" then
+		round.FailedAt = os.clock() - GameConfig.Failure.RetryDelaySeconds - 0.1
+		retryRound(round)
+	end
+	round.Phase = "Ready"
+	local tokenBefore = round.ActionToken
+	failRound(round, "StudioFailureProbe")
+	local tokenAfterFirst = round.ActionToken
+	failRound(round, "StudioFailureProbeDuplicate")
+
+	return {
+		Phase = round.Phase,
+		FirstTokenDelta = tokenAfterFirst - tokenBefore,
+		SecondTokenDelta = round.ActionToken - tokenAfterFirst,
+	}
+end
+
 function RoundService.qaFail(player: Player, reason: string?): boolean
 	assert(RunService:IsStudio(), "QA helpers are Studio-only")
 	local round = rounds[player]

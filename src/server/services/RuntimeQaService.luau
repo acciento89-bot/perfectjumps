@@ -157,6 +157,53 @@ local function run(player: Player)
 		}
 	)
 
+	local legalRelease = RoundService.qaReleaseSequence(player, midpointSeconds)
+	check(
+		"duplicate_release_ignored",
+		legalRelease ~= nil
+			and legalRelease.FirstPhase == "Airborne"
+			and legalRelease.SecondPhase == "Airborne"
+			and math.abs(legalRelease.SecondSpeed - legalRelease.FirstSpeed) <= 0.001
+			and legalRelease.DuplicateTokenDelta == 0,
+		legalRelease
+	)
+	local staleRelease = RoundService.qaReleaseSequence(player, GameConfig.Charge.MaximumSeconds + 0.5)
+	check(
+		"stale_charge_rejected",
+		staleRelease ~= nil and staleRelease.FirstPhase == "Ready" and staleRelease.FirstSpeed <= 0.001,
+		staleRelease
+	)
+
+	local landingGuards = RoundService.qaLandingGuardProbe(player)
+	check("landing_requires_airborne", landingGuards ~= nil and landingGuards.ReadyIgnored == true, landingGuards)
+	check("ascending_touch_ignored", landingGuards ~= nil and landingGuards.AscendingIgnored == true, landingGuards)
+
+	local doubleLanding = RoundService.qaDoubleLanding(player)
+	check(
+		"double_landing_no_double_score",
+		doubleLanding ~= nil
+			and doubleLanding.FirstPhase == "Landed"
+			and doubleLanding.SecondPhase == "Landed"
+			and doubleLanding.ScoreDeltaFirst > 0
+			and doubleLanding.ScoreDeltaSecond == 0
+			and doubleLanding.PlatformDeltaFirst == 1
+			and doubleLanding.PlatformDeltaSecond == 0,
+		doubleLanding
+	)
+	check("double_landing_ready", waitReady(player))
+
+	local failureProbe = RoundService.qaFailureIdempotency(player)
+	check(
+		"failure_idempotent",
+		failureProbe ~= nil
+			and failureProbe.Phase == "GameOver"
+			and failureProbe.FirstTokenDelta == 1
+			and failureProbe.SecondTokenDelta == 0,
+		failureProbe
+	)
+	check("failure_idempotent_retry", RoundService.qaRetry(player))
+	check("failure_idempotent_ready", waitReady(player))
+
 	local function checkLandingGrade(name: string, centerDistance: number, expectedGrade: string)
 		local accepted, grade = RoundService.qaLand(player, centerDistance)
 		local snapshot = RoundService.qaSnapshot(player)
@@ -173,13 +220,25 @@ local function run(player: Player)
 			Phase = snapshot.Phase,
 		})
 		check(name .. "_ready", waitReady(player))
+		return RoundService.qaSnapshot(player)
 	end
 
-	checkLandingGrade("landing_grade_perfect", 0, "Perfect")
-	checkLandingGrade(
+	local perfectLandingSnapshot = checkLandingGrade("landing_grade_perfect", 0, "Perfect")
+	local goodLandingSnapshot = checkLandingGrade(
 		"landing_grade_good",
 		(GameConfig.Landing.PerfectRadius + GameConfig.Landing.GoodRadius) / 2,
 		"Good"
+	)
+	check(
+		"combo_breaks_on_good",
+		perfectLandingSnapshot ~= nil
+			and goodLandingSnapshot ~= nil
+			and perfectLandingSnapshot.Combo > 0
+			and goodLandingSnapshot.Combo == 0,
+		{
+			PerfectCombo = if perfectLandingSnapshot then perfectLandingSnapshot.Combo else -1,
+			GoodCombo = if goodLandingSnapshot then goodLandingSnapshot.Combo else -1,
+		}
 	)
 	checkLandingGrade("landing_grade_safe", GameConfig.Landing.GoodRadius + 0.5, "Safe")
 	checkLandingGrade("landing_grade_miss", GameConfig.Platform.InitialWidth, "Miss")

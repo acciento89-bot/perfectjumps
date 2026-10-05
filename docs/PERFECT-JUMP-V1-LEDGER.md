@@ -49,7 +49,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P02-T04 Camera frames avatar + current platform + target platform during charge
 - [~] P02-T05 Flight camera follows arc without losing target or inducing excessive motion
 - [~] P02-T06 Landing camera settles cleanly before next jump
-- [ ] P02-T07 Runtime spawn → charge → jump → land → fail → retry → respawn
+- [x] P02-T07 Runtime spawn → charge → jump → land → fail → retry → respawn — fresh Studio QA exercised the production launch/landing path, GameOver, Retry and a distinct replacement character returning to Ready/platform 0. Evidence: `docs/evidence/2026-10-05-runtime-journey.md`
 
 ## P03 Precision jump mechanic
 - [x] P03-T01 Deterministic charge-to-impulse mapping

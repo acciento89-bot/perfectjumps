@@ -561,6 +561,7 @@ function RoundService.qaLaunch(player: Player, heldSeconds: number)
 		HorizontalSpeed = Vector2.new(velocity.X, velocity.Z).Magnitude,
 		VerticalSpeed = velocity.Y,
 		Speed = velocity.Magnitude,
+		Phase = round.Phase,
 	}
 
 	root.AssemblyLinearVelocity = Vector3.zero

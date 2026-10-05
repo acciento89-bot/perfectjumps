@@ -75,6 +75,31 @@ local function run(player: Player)
 	local midpointSeconds = (GameConfig.Charge.MinimumSeconds + GameConfig.Charge.MaximumSeconds) / 2
 	local maximumSeconds = GameConfig.Charge.MaximumSeconds
 
+	check("journey_spawn_ready", initial.Phase == "Ready" and player.Character ~= nil, { Phase = initial.Phase })
+	local journeyLaunch = RoundService.qaLaunch(player, midpointSeconds)
+	check("journey_charge_release", journeyLaunch ~= nil and journeyLaunch.Phase == "Airborne", journeyLaunch)
+	local journeyLanded, journeyGrade = RoundService.qaLand(player, 0)
+	check(
+		"journey_landing_ready",
+		journeyLanded == true and journeyGrade == "Perfect" and waitReady(player),
+		{ Grade = journeyGrade }
+	)
+	check("journey_failure", RoundService.qaFail(player, "StudioJourney"))
+	local failedCharacter = player.Character
+	check("journey_retry_start", RoundService.qaRetry(player))
+	check(
+		"journey_retry_respawn",
+		waitUntil(function()
+			local snapshot = RoundService.qaSnapshot(player)
+			return player.Character ~= nil
+				and player.Character ~= failedCharacter
+				and snapshot ~= nil
+				and snapshot.Phase == "Ready"
+				and snapshot.CurrentPlatformId == 0
+		end, 8),
+		RoundService.qaSnapshot(player)
+	)
+
 	local function checkCharge(name: string, heldSeconds: number)
 		local sample = RoundService.qaLaunch(player, heldSeconds)
 		local chargePower = JumpRules.NormalizeCharge(heldSeconds)

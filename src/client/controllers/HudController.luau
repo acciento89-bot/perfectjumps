@@ -9,6 +9,7 @@ local Workspace = game:GetService("Workspace")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui") :: PlayerGui
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
+local CosmeticConfig = require(shared.config.CosmeticConfig)
 local GameConfig = require(shared.config.GameConfig)
 local MonetizationConfig = require(shared.config.MonetizationConfig)
 local ViewportRules = require(shared.game.ViewportRules)
@@ -51,6 +52,13 @@ local comboProgress: Frame
 local comboProgressFill: Frame
 local comboProgressText: TextLabel
 local quickRail: Frame
+local conceptShowcase: Frame
+local conceptProgressText: TextLabel
+local conceptProgressFill: Frame
+local conceptCoins: TextLabel
+local conceptScoreText: TextLabel
+local conceptComboText: TextLabel
+local conceptBestText: TextLabel
 
 local function corner(parent: Instance, radius: number)
 	local item = Instance.new("UICorner")
@@ -124,6 +132,8 @@ local function updateResponsive()
 	local width = camera.ViewportSize.X
 	local viewportClass = ViewportRules.classify(width)
 	scale.Scale = ViewportRules.uiScale(width)
+	conceptShowcase.Visible = viewportClass ~= "compact"
+	stats.Visible = viewportClass == "compact"
 
 	if viewportClass == "compact" then
 		logo.Visible = false
@@ -134,30 +144,38 @@ local function updateResponsive()
 		stats.Size = UDim2.fromOffset(290, 84)
 		shopButton.Position = UDim2.new(1, -112, 0, 112)
 		chargePanel.Size = UDim2.new(1, -36, 0, 78)
+		chargePanel.Position = UDim2.new(0.5, 0, 1, -28)
+		tutorial.Position = UDim2.new(0.5, 0, 0, 116)
 		tutorial.Size = UDim2.new(1, -30, 0, 90)
 	elseif viewportClass == "tablet" then
 		logo.Visible = true
 		comboProgress.Visible = true
 		quickRail.Visible = true
+		quickRail.Position = UDim2.new(1, -266, 0, 108)
 		shopButton.Visible = false
 		logo.Position = UDim2.fromOffset(16, 10)
 		stats.Position = UDim2.fromOffset(16, 92)
 		stats.Size = UDim2.fromOffset(390, 84)
 		shopButton.Position = UDim2.new(1, -124, 0, 18)
-		chargePanel.Size = UDim2.fromOffset(460, 78)
-		tutorial.Size = UDim2.fromOffset(430, 90)
+		chargePanel.Size = UDim2.fromOffset(390, 70)
+		chargePanel.Position = UDim2.new(0.57, 0, 1, -28)
+		tutorial.Position = UDim2.new(0.57, 0, 1, -160)
+		tutorial.Size = UDim2.fromOffset(320, 56)
 	else
 		logo.Visible = true
 		comboProgress.Visible = true
 		quickRail.Visible = true
+		quickRail.Position = UDim2.new(1, -266, 0, 108)
 		shopButton.Visible = false
 		logo.Position = UDim2.fromOffset(20, 12)
 		stats.Position = UDim2.fromOffset(20, 92)
 		stats.Position = UDim2.fromOffset(20, 92)
 		stats.Size = UDim2.fromOffset(440, 84)
 		shopButton.Position = UDim2.new(1, -132, 0, 22)
-		chargePanel.Size = UDim2.fromOffset(460, 78)
-		tutorial.Size = UDim2.fromOffset(440, 90)
+		chargePanel.Size = UDim2.fromOffset(390, 70)
+		chargePanel.Position = UDim2.new(0.57, 0, 1, -28)
+		tutorial.Position = UDim2.new(0.57, 0, 1, -160)
+		tutorial.Size = UDim2.fromOffset(320, 56)
 	end
 end
 
@@ -181,6 +199,12 @@ local function refreshHud()
 	coinsLabel.Text = ("◈ %d"):format(coins)
 	platformLabel.Text = ("PLATFORM  %d   •   HIGH  %d"):format(currentPlatform, highest)
 	phaseLabel.Text = if assisted then string.upper(phase) .. "  •  ASSISTED" else string.upper(phase)
+	conceptScoreText.Text = ("SCORE %d"):format(score)
+	conceptComboText.Text = ("COMBO %d"):format(combo)
+	conceptBestText.Text = ("PB %d"):format(best)
+	conceptCoins.Text = ("◈ %d"):format(coins)
+	conceptProgressText.Text = ("PLATFORM %d  •  HIGH %d"):format(currentPlatform, highest)
+	conceptProgressFill.Size = UDim2.fromScale(math.clamp((currentPlatform % 10) / 10, 0, 1), 1)
 
 	resultPanel.Visible = phase == "GameOver"
 	chargePanel.Visible = phase ~= "GameOver"
@@ -412,6 +436,403 @@ local function buildGui()
 		player:SetAttribute("PerfectJumpShopOpen", true)
 	end)
 
+	conceptShowcase = Instance.new("Frame")
+	conceptShowcase.Name = "ConceptShowcase"
+	conceptShowcase.Size = UDim2.fromScale(1, 1)
+	conceptShowcase.BackgroundTransparency = 1
+	conceptShowcase.Visible = false
+	conceptShowcase.Parent = gui
+
+	local function gradient(panel: GuiObject, first: Color3, second: Color3, rotation: number?)
+		local item = Instance.new("UIGradient")
+		item.Rotation = rotation or 110
+		item.Color = ColorSequence.new(first, second)
+		item.Parent = panel
+	end
+
+	local function rgb(values): Color3
+		return Color3.fromRGB(values[1], values[2], values[3])
+	end
+
+	local scorePill = Instance.new("Frame")
+	scorePill.Name = "ConceptScorePill"
+	scorePill.Position = UDim2.fromOffset(18, 90)
+	scorePill.Size = UDim2.fromOffset(276, 48)
+	scorePill.BackgroundColor3 = COLORS.Foundation
+	scorePill.BackgroundTransparency = 0.03
+	scorePill.BorderSizePixel = 0
+	scorePill.Parent = conceptShowcase
+	corner(scorePill, 14)
+	stroke(scorePill, COLORS.Cyan, 0.50, 1.2)
+	gradient(scorePill, Color3.fromRGB(36, 54, 68), COLORS.Foundation)
+	conceptScoreText = makeLabel(
+		scorePill,
+		"Score",
+		"SCORE 0",
+		UDim2.fromOffset(86, 34),
+		UDim2.fromOffset(10, 7),
+		11,
+		COLORS.Text,
+		Enum.Font.GothamBold
+	)
+	conceptComboText = makeLabel(
+		scorePill,
+		"Combo",
+		"COMBO 0",
+		UDim2.fromOffset(88, 34),
+		UDim2.fromOffset(96, 7),
+		11,
+		COLORS.Cyan,
+		Enum.Font.GothamBold
+	)
+	conceptBestText = makeLabel(
+		scorePill,
+		"Best",
+		"PB 0",
+		UDim2.fromOffset(76, 34),
+		UDim2.fromOffset(188, 7),
+		11,
+		COLORS.Amber,
+		Enum.Font.GothamBold
+	)
+	conceptBestText.TextXAlignment = Enum.TextXAlignment.Right
+
+	local shopShowcase = Instance.new("Frame")
+	shopShowcase.Name = "JumpSupplyShowcase"
+	shopShowcase.AnchorPoint = Vector2.new(0, 1)
+	shopShowcase.Position = UDim2.new(0, 18, 1, -18)
+	shopShowcase.Size = UDim2.fromOffset(308, 208)
+	shopShowcase.BackgroundColor3 = COLORS.Foundation
+	shopShowcase.BackgroundTransparency = 0.02
+	shopShowcase.BorderSizePixel = 0
+	shopShowcase.Parent = conceptShowcase
+	corner(shopShowcase, 20)
+	stroke(shopShowcase, Color3.fromRGB(143, 226, 255), 0.36, 1.3)
+	gradient(shopShowcase, Color3.fromRGB(47, 66, 82), Color3.fromRGB(22, 27, 38))
+
+	makeLabel(
+		shopShowcase,
+		"Title",
+		"JUMP SUPPLY",
+		UDim2.fromOffset(180, 28),
+		UDim2.fromOffset(15, 8),
+		17,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
+	local supplyHint = makeLabel(
+		shopShowcase,
+		"Hint",
+		"FEATURED",
+		UDim2.fromOffset(88, 20),
+		UDim2.fromOffset(202, 11),
+		9,
+		COLORS.Cyan,
+		Enum.Font.GothamBold
+	)
+	supplyHint.TextXAlignment = Enum.TextXAlignment.Right
+
+	local featured = {
+		{
+			Category = "Trails",
+			Id = "ion",
+			Item = CosmeticConfig.Categories.Trails.Items.ion,
+			Color = rgb(CosmeticConfig.Categories.Trails.Items.ion.RGB),
+		},
+		{
+			Category = "LandingEffects",
+			Id = "spark",
+			Item = CosmeticConfig.Categories.LandingEffects.Items.spark,
+			Color = rgb(CosmeticConfig.Categories.LandingEffects.Items.spark.RGB),
+		},
+		{
+			Category = "PlatformThemes",
+			Id = "forge",
+			Item = CosmeticConfig.Categories.PlatformThemes.Items.forge,
+			Color = rgb(CosmeticConfig.Categories.PlatformThemes.Items.forge.AccentRGB),
+		},
+	}
+	for index, entry in featured do
+		local card = Instance.new("Frame")
+		card.Name = ("Featured%02d"):format(index)
+		card.Position = UDim2.fromOffset(14 + (index - 1) * 98, 43)
+		card.Size = UDim2.fromOffset(88, 151)
+		card.BackgroundColor3 = COLORS.Panel
+		card.BorderSizePixel = 0
+		card.Parent = shopShowcase
+		corner(card, 14)
+		stroke(card, entry.Color, 0.42, 1)
+		gradient(card, entry.Color:Lerp(COLORS.Panel, 0.70), COLORS.Foundation)
+
+		local preview = Instance.new("Frame")
+		preview.Position = UDim2.fromOffset(8, 8)
+		preview.Size = UDim2.fromOffset(72, 58)
+		preview.BackgroundColor3 = Color3.fromRGB(16, 25, 34)
+		preview.BorderSizePixel = 0
+		preview.Parent = card
+		corner(preview, 11)
+		stroke(preview, entry.Color, 0.20, 1)
+		local arc = Instance.new("Frame")
+		arc.AnchorPoint = Vector2.new(0.5, 0.5)
+		arc.Position = UDim2.fromScale(0.5, 0.5)
+		arc.Size = UDim2.fromOffset(45, 12)
+		arc.Rotation = if index == 1 then -18 elseif index == 2 then 0 else 18
+		arc.BackgroundColor3 = entry.Color
+		arc.BorderSizePixel = 0
+		arc.Parent = preview
+		corner(arc, 8)
+		local core = Instance.new("Frame")
+		core.AnchorPoint = Vector2.new(0.5, 0.5)
+		core.Position = UDim2.fromScale(0.5, 0.5)
+		core.Size = UDim2.fromOffset(12, 12)
+		core.BackgroundColor3 = COLORS.Text
+		core.BorderSizePixel = 0
+		core.Parent = preview
+		corner(core, 99)
+
+		local name = makeLabel(
+			card,
+			"Item",
+			entry.Item.DisplayName,
+			UDim2.fromOffset(78, 34),
+			UDim2.fromOffset(5, 69),
+			10,
+			COLORS.Text,
+			Enum.Font.GothamBold
+		)
+		name.TextWrapped = true
+		name.TextXAlignment = Enum.TextXAlignment.Center
+		local price = makeLabel(
+			card,
+			"Price",
+			("◈ %d"):format(entry.Item.Price),
+			UDim2.fromOffset(78, 16),
+			UDim2.fromOffset(5, 103),
+			9,
+			COLORS.Amber,
+			Enum.Font.GothamBold
+		)
+		price.TextXAlignment = Enum.TextXAlignment.Center
+		local open =
+			makeButton(card, "OpenSupply", "OPEN", UDim2.fromOffset(70, 24), UDim2.fromOffset(9, 122), entry.Color)
+		open.TextSize = 9
+		open.Activated:Connect(function()
+			player:SetAttribute("PerfectJumpShopOpen", true)
+		end)
+	end
+
+	local rightColumn = Instance.new("Frame")
+	rightColumn.Name = "ConceptRightColumn"
+	rightColumn.AnchorPoint = Vector2.new(1, 0)
+	rightColumn.Position = UDim2.new(1, -18, 0, 96)
+	rightColumn.Size = UDim2.fromOffset(232, 366)
+	rightColumn.BackgroundTransparency = 1
+	rightColumn.Parent = conceptShowcase
+
+	local conceptProgressCard = Instance.new("Frame")
+	conceptProgressCard.Name = "ConceptProgressCard"
+	conceptProgressCard.Size = UDim2.fromOffset(232, 86)
+	conceptProgressCard.BackgroundColor3 = COLORS.Foundation
+	conceptProgressCard.BorderSizePixel = 0
+	conceptProgressCard.Parent = rightColumn
+	corner(conceptProgressCard, 17)
+	stroke(conceptProgressCard, COLORS.Cyan, 0.36, 1.2)
+	gradient(conceptProgressCard, Color3.fromRGB(43, 63, 78), COLORS.Foundation)
+	makeLabel(
+		conceptProgressCard,
+		"Title",
+		"JUMP PROGRESS",
+		UDim2.fromOffset(204, 20),
+		UDim2.fromOffset(13, 7),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
+	conceptProgressText = makeLabel(
+		conceptProgressCard,
+		"Progress",
+		"PLATFORM 0 • HIGH 0",
+		UDim2.fromOffset(204, 18),
+		UDim2.fromOffset(13, 28),
+		9,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	conceptProgressText.TextXAlignment = Enum.TextXAlignment.Center
+	local conceptTrack = Instance.new("Frame")
+	conceptTrack.Position = UDim2.fromOffset(13, 55)
+	conceptTrack.Size = UDim2.fromOffset(206, 14)
+	conceptTrack.BackgroundColor3 = Color3.fromRGB(15, 25, 33)
+	conceptTrack.BorderSizePixel = 0
+	conceptTrack.ClipsDescendants = true
+	conceptTrack.Parent = conceptProgressCard
+	corner(conceptTrack, 99)
+	conceptProgressFill = Instance.new("Frame")
+	conceptProgressFill.Size = UDim2.fromScale(0, 1)
+	conceptProgressFill.BackgroundColor3 = COLORS.Amber
+	conceptProgressFill.BorderSizePixel = 0
+	conceptProgressFill.Parent = conceptTrack
+	corner(conceptProgressFill, 99)
+
+	local conceptDailyRewards = Instance.new("Frame")
+	conceptDailyRewards.Name = "ConceptDailyRewards"
+	conceptDailyRewards.Position = UDim2.fromOffset(0, 96)
+	conceptDailyRewards.Size = UDim2.fromOffset(232, 128)
+	conceptDailyRewards.BackgroundColor3 = COLORS.Foundation
+	conceptDailyRewards.BorderSizePixel = 0
+	conceptDailyRewards.Parent = rightColumn
+	corner(conceptDailyRewards, 17)
+	stroke(conceptDailyRewards, Color3.fromRGB(173, 114, 255), 0.40, 1.2)
+	gradient(conceptDailyRewards, Color3.fromRGB(51, 45, 78), COLORS.Foundation)
+	makeLabel(
+		conceptDailyRewards,
+		"Title",
+		"DAILY REWARDS",
+		UDim2.fromOffset(204, 20),
+		UDim2.fromOffset(13, 6),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
+	local dailyCaption = makeLabel(
+		conceptDailyRewards,
+		"Caption",
+		"OPEN SUPPLY TO CLAIM",
+		UDim2.fromOffset(204, 16),
+		UDim2.fromOffset(13, 27),
+		8,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	dailyCaption.TextXAlignment = Enum.TextXAlignment.Center
+	for index = 1, 5 do
+		local tile = Instance.new("Frame")
+		tile.Position = UDim2.fromOffset(9 + (index - 1) * 44, 48)
+		tile.Size = UDim2.fromOffset(39, 67)
+		tile.BackgroundColor3 = if index == 1 then Color3.fromRGB(62, 108, 91) else Color3.fromRGB(47, 58, 75)
+		tile.BorderSizePixel = 0
+		tile.Parent = conceptDailyRewards
+		corner(tile, 9)
+		stroke(tile, Color3.fromRGB(132, 154, 184), 0.56, 1)
+		local day = makeLabel(
+			tile,
+			"Day",
+			("D%d"):format(index),
+			UDim2.fromOffset(35, 14),
+			UDim2.fromOffset(2, 4),
+			8,
+			COLORS.Muted,
+			Enum.Font.GothamBold
+		)
+		day.TextXAlignment = Enum.TextXAlignment.Center
+		local reward = makeLabel(
+			tile,
+			"Reward",
+			if index == 1
+				then "✓"
+				elseif index == 2 then "◈"
+				elseif index == 3 then "✦"
+				elseif index == 4 then "◆"
+				else "★",
+			UDim2.fromOffset(35, 31),
+			UDim2.fromOffset(2, 22),
+			15,
+			if index == 1 then Color3.fromRGB(97, 230, 164) else COLORS.Amber,
+			Enum.Font.GothamBlack
+		)
+		reward.TextXAlignment = Enum.TextXAlignment.Center
+	end
+
+	local conceptVistaCard = Instance.new("Frame")
+	conceptVistaCard.Name = "ConceptVistaCard"
+	conceptVistaCard.Position = UDim2.fromOffset(0, 234)
+	conceptVistaCard.Size = UDim2.fromOffset(232, 132)
+	conceptVistaCard.BackgroundColor3 = COLORS.Foundation
+	conceptVistaCard.BorderSizePixel = 0
+	conceptVistaCard.Parent = rightColumn
+	corner(conceptVistaCard, 17)
+	stroke(conceptVistaCard, COLORS.Amber, 0.40, 1.2)
+	gradient(conceptVistaCard, Color3.fromRGB(58, 50, 72), COLORS.Foundation)
+	makeLabel(
+		conceptVistaCard,
+		"Title",
+		"HIGHLINE PREVIEW",
+		UDim2.fromOffset(204, 20),
+		UDim2.fromOffset(13, 6),
+		13,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
+	local conceptViewport = Instance.new("ViewportFrame")
+	conceptViewport.Name = "HighlinePreview"
+	conceptViewport.Position = UDim2.fromOffset(12, 31)
+	conceptViewport.Size = UDim2.fromOffset(208, 89)
+	conceptViewport.BackgroundColor3 = Color3.fromRGB(118, 205, 228)
+	conceptViewport.BorderSizePixel = 0
+	conceptViewport.Ambient = Color3.fromRGB(145, 179, 192)
+	conceptViewport.LightColor = Color3.fromRGB(255, 220, 173)
+	conceptViewport.LightDirection = Vector3.new(-1, -1, -0.5)
+	conceptViewport.Parent = conceptVistaCard
+	corner(conceptViewport, 12)
+	local previewWorld = Instance.new("WorldModel")
+	previewWorld.Parent = conceptViewport
+	local previewCamera = Instance.new("Camera")
+	previewCamera.CFrame = CFrame.lookAt(Vector3.new(11, 7, 14), Vector3.new(0, 2, 0))
+	previewCamera.FieldOfView = 40
+	previewCamera.Parent = conceptViewport
+	conceptViewport.CurrentCamera = previewCamera
+	local function previewPart(
+		name: string,
+		size: Vector3,
+		position: Vector3,
+		color: Color3,
+		material: Enum.Material
+	): Part
+		local part = Instance.new("Part")
+		part.Name = name
+		part.Size = size
+		part.Position = position
+		part.Anchored = true
+		part.CanCollide = false
+		part.Color = color
+		part.Material = material
+		part.Parent = previewWorld
+		return part
+	end
+	previewPart("Launch", Vector3.new(7, 0.6, 7), Vector3.new(0, 0, 3), Color3.fromRGB(42, 54, 66), Enum.Material.Metal)
+	previewPart(
+		"Target1",
+		Vector3.new(5.2, 0.6, 5.2),
+		Vector3.new(0.8, 2.1, -1),
+		Color3.fromRGB(73, 94, 109),
+		Enum.Material.Metal
+	)
+	previewPart(
+		"Target2",
+		Vector3.new(4.4, 0.6, 4.4),
+		Vector3.new(-1.3, 4.4, -5),
+		Color3.fromRGB(77, 104, 118),
+		Enum.Material.Metal
+	)
+	previewPart("Precision", Vector3.new(2.2, 0.12, 2.2), Vector3.new(0.8, 2.45, -1), COLORS.Amber, Enum.Material.Neon)
+	previewPart("Rail", Vector3.new(0.22, 8, 0.22), Vector3.new(4.5, 3, -2.5), COLORS.Cyan, Enum.Material.Neon)
+
+	conceptCoins = Instance.new("TextLabel")
+	conceptCoins.Name = "ConceptCoins"
+	conceptCoins.AnchorPoint = Vector2.new(1, 0)
+	conceptCoins.Position = UDim2.new(1, -260, 0, 20)
+	conceptCoins.Size = UDim2.fromOffset(96, 42)
+	conceptCoins.BackgroundColor3 = COLORS.Foundation
+	conceptCoins.BackgroundTransparency = 0.03
+	conceptCoins.BorderSizePixel = 0
+	conceptCoins.Font = Enum.Font.GothamBold
+	conceptCoins.TextSize = 14
+	conceptCoins.TextColor3 = COLORS.Amber
+	conceptCoins.Text = "◈ 0"
+	conceptCoins.Parent = conceptShowcase
+	corner(conceptCoins, 13)
+	stroke(conceptCoins, COLORS.Amber, 0.44, 1.2)
+
 	tutorial = Instance.new("Frame")
 	tutorial.Name = "Tutorial"
 	tutorial.AnchorPoint = Vector2.new(0.5, 0)
@@ -427,9 +848,9 @@ local function buildGui()
 		tutorial,
 		"Title",
 		"HOLD  •  RELEASE  •  LAND CENTER",
-		UDim2.new(1, -24, 0, 30),
-		UDim2.fromOffset(12, 10),
-		15,
+		UDim2.new(1, -24, 0, 22),
+		UDim2.fromOffset(12, 3),
+		12,
 		COLORS.Text,
 		Enum.Font.GothamBlack
 	)
@@ -438,9 +859,9 @@ local function buildGui()
 		tutorial,
 		"Body",
 		"Charge your jump, release, and aim for the amber precision zone.",
-		UDim2.new(1, -30, 0, 36),
-		UDim2.fromOffset(15, 43),
-		12,
+		UDim2.new(1, -30, 0, 26),
+		UDim2.fromOffset(15, 25),
+		10,
 		COLORS.Muted
 	)
 	tutorialBody.TextWrapped = true

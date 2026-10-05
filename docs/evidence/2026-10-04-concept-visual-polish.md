@@ -29,3 +29,10 @@ The visual contract was introduced with a failing test before production impleme
 - Added a branded Perfect Jump wordmark, concept-style combo progress strip and compact Supply/Daily quick rail while preserving the hold/release charge panel and avatar visibility.
 - Brightened the highline materials and added layered cloud depth, a hero gateway and warm sky focal disc to make the route read as an authored sky course rather than black structural blocks.
 - Final Studio PlaySolo initialized server/client with 0 CreatorErrors. Static verification: 12 pure-Luau tests, Selene 0/0, StyLua, Rojo build and git diff check pass.
+
+## Concept-fidelity pass 3
+
+- Added the live medium/large concept composition: Jump Supply featured cosmetics, Jump Progress, five-day Daily Rewards, Highline ViewportFrame preview, score/combo/PB pill and compact Supply/Daily rail.
+- Featured cards use real Ion Arc, Precision Sparks and Copper Forge content and open the production supply UI.
+- The charge meter remains a first-class gameplay control while the onboarding card and charge stack are shifted to preserve the central avatar/target route and avoid overlap with the left concept shop.
+- Final PlaySolo recheck initialized server/client gameplay with `0 CreatorErrors`; 13 pure-Luau tests, Selene 0/0, StyLua, Rojo build and git diff check pass.

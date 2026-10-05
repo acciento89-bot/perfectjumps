@@ -105,6 +105,10 @@ function ProfileRules.normalize(value)
 	return profile
 end
 
+function ProfileRules.migrate(value)
+	return ProfileRules.normalize(value)
+end
+
 function ProfileRules.validatePurchase(profile, category: string, itemId: string): (boolean, string, number)
 	local categoryConfig = CosmeticConfig.Categories[category]
 	if not categoryConfig then

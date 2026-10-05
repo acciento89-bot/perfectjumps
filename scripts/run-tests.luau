@@ -1,4 +1,9 @@
 local tests = {
+	require("../tests/profile-storage-contract.spec"),
+	require("../tests/profile-migration.spec"),
+	require("../tests/profile-storage-rules.spec"),
+	require("../tests/profile-mutation-contract.spec"),
+	require("../tests/mutation-gate.spec"),
 	require("../tests/feedback-contract.spec"),
 	require("../tests/runtime-grade-qa.spec"),
 	require("../tests/runtime-launch-qa.spec"),

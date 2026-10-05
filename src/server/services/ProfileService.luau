@@ -319,29 +319,24 @@ function ProfileService.RecordLanding(
 			profile.TutorialComplete = true
 		end
 
-		local achievementCoins = awardAchievement(profile, "first_jump")
-		if grade == "Perfect" then
-			profile.DailyChallengePerfects += 1
-			achievementCoins += awardAchievement(profile, "first_perfect")
-			if combo >= 5 then
-				achievementCoins += awardAchievement(profile, "combo_5")
-			end
-		end
-		if platformId >= 10 then
-			achievementCoins += awardAchievement(profile, "height_10")
-		end
-		if platformId >= 25 then
-			achievementCoins += awardAchievement(profile, "height_25")
+		local achievementCoins = 0
+		for _, achievementId in RetentionRules.eligibleAchievements(grade, combo, platformId) do
+			achievementCoins += awardAchievement(profile, achievementId)
 		end
 
 		local challengeCoins = 0
-		if
-			not profile.DailyChallengeRewarded
-			and profile.DailyChallengePerfects >= RetentionConfig.DailyChallenge.PerfectsRequired
-		then
-			profile.DailyChallengeRewarded = true
-			challengeCoins = RetentionConfig.DailyChallenge.RewardCoins
-			profile.Coins += challengeCoins
+		if grade == "Perfect" then
+			local perfects, rewarded, shouldGrant = RetentionRules.applyPerfectChallenge(
+				profile.DailyChallengePerfects,
+				profile.DailyChallengeRewarded,
+				RetentionConfig.DailyChallenge.PerfectsRequired
+			)
+			profile.DailyChallengePerfects = perfects
+			profile.DailyChallengeRewarded = rewarded
+			if shouldGrant then
+				challengeCoins = RetentionConfig.DailyChallenge.RewardCoins
+				profile.Coins += challengeCoins
+			end
 		end
 
 		markDirty(player)

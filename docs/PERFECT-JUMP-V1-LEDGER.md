@@ -87,12 +87,12 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [!] P06-T06 Real rejoin retains PB, coins, cosmetics and settings — requires an actual live-player leave/rejoin against Roblox DataStore; published-place Studio smoke cannot prove it because Studio API access is disabled
 
 ## P07 Tutorial and retention
-- [~] P07-T01 First-time tutorial: hold → release → aim for center — HUD flow implemented; physical-input runtime acceptance remains
+- [x] P07-T01 First-time tutorial: hold → release → aim for center — fresh profile/runtime completion and HUD instruction flow are verified; physical touch/controller mechanics remain independently tracked under P14. Evidence: `docs/evidence/2026-10-05-fresh-tutorial-runtime.md`
 - [x] P07-T02 First target is forgiving enough to teach the relation between charge and distance — regression test enforces broad Safe and reachable Perfect charge windows
-- [~] P07-T03 Daily login
-- [~] P07-T04 Daily jump/Perfect challenge
-- [~] P07-T05 Achievement milestones
-- [~] P07-T06 PB/Perfect-chain celebration and quick retry
+- [x] P07-T03 Daily login — fresh Studio claim grants exactly 30 coins once; a same-day duplicate is rejected with no second mutation; contextual Daily modal reflects authoritative claim state. Evidence: `docs/evidence/2026-10-05-retention-runtime.md`
+- [x] P07-T04 Daily jump/Perfect challenge — exact-once threshold rule is pure-tested; Studio long climb reaches 63 Perfects, marks the 5-Perfect challenge rewarded and does not allow duplicate threshold grant. Evidence: `docs/evidence/2026-10-05-retention-runtime.md`
+- [x] P07-T05 Achievement milestones — eligibility is centralized/tested and Studio journey earns first_jump, first_perfect, combo_5, height_10 and height_25. Evidence: `docs/evidence/2026-10-05-retention-runtime.md`
+- [x] P07-T06 PB/Perfect-chain celebration and quick retry — reward/PB/challenge cues, combo-scaled Perfect feedback and GameOver→Ready Retry cue are contract-tested while PB/combo/retry runtime paths pass. Evidence: `docs/evidence/2026-10-05-retention-runtime.md`
 
 ## P08 Monetization
 - [x] P08-T01 Final products/passes/prices — live Creator Hub IDs and fixed prices bound in source

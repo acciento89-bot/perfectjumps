@@ -7,7 +7,9 @@ local RunService = game:GetService("RunService")
 
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local CosmeticConfig = require(shared.config.CosmeticConfig)
+local EconomyConfig = require(shared.config.EconomyConfig)
 local GameConfig = require(shared.config.GameConfig)
+local RetentionConfig = require(shared.config.RetentionConfig)
 local RuntimeQaConfig = require(shared.config.RuntimeQaConfig)
 local JumpRules = require(shared.game.JumpRules)
 local LaunchRules = require(shared.game.LaunchRules)
@@ -109,6 +111,28 @@ local function run(player: Player)
 				and snapshot.CurrentPlatformId == 0
 		end, 8),
 		RoundService.qaSnapshot(player)
+	)
+
+	local coinsBeforeDaily = tonumber(player:GetAttribute("PerfectJumpCoins")) or 0
+	local dailyClaim = ProfileService.ClaimDaily(player)
+	local coinsAfterDaily = tonumber(player:GetAttribute("PerfectJumpCoins")) or 0
+	check(
+		"daily_claim_once",
+		dailyClaim.ok == true
+			and dailyClaim.rewardCoins == EconomyConfig.DailyRewardCoins
+			and coinsAfterDaily - coinsBeforeDaily == EconomyConfig.DailyRewardCoins,
+		{
+			RewardCoins = dailyClaim.rewardCoins,
+			CoinDelta = coinsAfterDaily - coinsBeforeDaily,
+		}
+	)
+	local dailyDuplicate = ProfileService.ClaimDaily(player)
+	check(
+		"daily_duplicate_rejected",
+		dailyDuplicate.ok == false
+			and dailyDuplicate.reason == "already_claimed"
+			and (tonumber(player:GetAttribute("PerfectJumpCoins")) or 0) == coinsAfterDaily,
+		{ Reason = dailyDuplicate.reason }
 	)
 
 	local function checkCharge(name: string, heldSeconds: number)
@@ -314,6 +338,29 @@ local function run(player: Player)
 		{
 			HighestPlatform = player:GetAttribute("PerfectJumpHighestPlatform"),
 		}
+	)
+
+	local retentionPayload = ProfileService.qaPersistentPayload(player)
+	check(
+		"daily_challenge_completed",
+		retentionPayload ~= nil
+			and retentionPayload.DailyChallengePerfects >= RetentionConfig.DailyChallenge.PerfectsRequired
+			and retentionPayload.DailyChallengeRewarded == true,
+		{
+			Perfects = if retentionPayload then retentionPayload.DailyChallengePerfects else -1,
+			Required = RetentionConfig.DailyChallenge.PerfectsRequired,
+			Rewarded = if retentionPayload then retentionPayload.DailyChallengeRewarded else false,
+		}
+	)
+	local achievements = if retentionPayload then retentionPayload.Achievements else {}
+	check(
+		"achievement_milestones",
+		achievements.first_jump == true
+			and achievements.first_perfect == true
+			and achievements.combo_5 == true
+			and achievements.height_10 == true
+			and achievements.height_25 == true,
+		achievements
 	)
 
 	ProfileService.qaGrantCoins(player, 3000)

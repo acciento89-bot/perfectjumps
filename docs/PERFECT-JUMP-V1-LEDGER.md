@@ -58,8 +58,8 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P03-T04 Stable air/landing state detection
 - [~] P03-T05 Edge landings, bounces and sliding cannot double-score
 - [~] P03-T06 Failure boundary triggers once
-- [ ] P03-T07 Runtime tuning at min/mid/max charge
-- [ ] P03-T08 100-jump repeatability sample shows no unexplained impulse drift
+- [x] P03-T07 Runtime tuning at min/mid/max charge — production launch path measured in Studio at all three charge points; evidence: `docs/evidence/2026-10-05-runtime-launch-repeatability.md`
+- [x] P03-T08 100-jump repeatability sample shows no unexplained impulse drift — 100/100 midpoint production-path releases measured with 0 horizontal and 0 vertical velocity delta; evidence: `docs/evidence/2026-10-05-runtime-launch-repeatability.md`
 
 ## P04 Landing grade, score and combo
 - [~] P04-T01 Server computes landing center distance from platform sweet zone
@@ -139,7 +139,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 
 ## P13 Mandatory full runtime journey
 - [ ] P13-T01 Fresh spawn/tutorial
-- [ ] P13-T02 Min/mid/max charge jumps
+- [x] P13-T02 Min/mid/max charge jumps — Studio QA exercised the real server launch path at minimum, midpoint and maximum charge and matched configured velocity expectations
 - [ ] P13-T03 Perfect + Good + edge landing + miss
 - [~] P13-T04 Combo/PB progression verified by runtime harness; real player-input break cases remain open
 - [x] P13-T05 Failure → immediate retry — post-fix runtime harness passes failure/GameOver/Retry/Ready/reset

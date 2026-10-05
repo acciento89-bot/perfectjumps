@@ -4,4 +4,5 @@ return table.freeze({
 	EnabledInStudio = false,
 	StartupDelaySeconds = 1.0,
 	LandingSampleCount = 60,
+	LaunchRepeatabilitySampleCount = 100,
 })

@@ -7,7 +7,10 @@ local RunService = game:GetService("RunService")
 
 local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Shared")
 local CosmeticConfig = require(shared.config.CosmeticConfig)
+local GameConfig = require(shared.config.GameConfig)
 local RuntimeQaConfig = require(shared.config.RuntimeQaConfig)
+local JumpRules = require(shared.game.JumpRules)
+local LaunchRules = require(shared.game.LaunchRules)
 
 local ProfileService = require(script.Parent.ProfileService)
 local RoundService = require(script.Parent.RoundService)
@@ -67,6 +70,56 @@ local function run(player: Player)
 	local initial = RoundService.qaSnapshot(player)
 	check("initial_platform", initial.CurrentPlatformId == 0 and initial.TargetPlatformId == 1, initial)
 	check("avatar_spawned", player.Character ~= nil and player.Character:FindFirstChild("HumanoidRootPart") ~= nil)
+
+	local minimumSeconds = GameConfig.Charge.MinimumSeconds
+	local midpointSeconds = (GameConfig.Charge.MinimumSeconds + GameConfig.Charge.MaximumSeconds) / 2
+	local maximumSeconds = GameConfig.Charge.MaximumSeconds
+
+	local function checkCharge(name: string, heldSeconds: number)
+		local sample = RoundService.qaLaunch(player, heldSeconds)
+		local chargePower = JumpRules.NormalizeCharge(heldSeconds)
+		local expectedHorizontal = LaunchRules.HorizontalSpeed(chargePower)
+		local expectedVertical = LaunchRules.VerticalSpeed(chargePower)
+		check(
+			name,
+			sample ~= nil
+				and math.abs(sample.HorizontalSpeed - expectedHorizontal) <= 0.001
+				and math.abs(sample.VerticalSpeed - expectedVertical) <= 0.001,
+			sample
+		)
+	end
+
+	checkCharge("charge_min", minimumSeconds)
+	checkCharge("charge_mid", midpointSeconds)
+	checkCharge("charge_max", maximumSeconds)
+
+	local baseline = RoundService.qaLaunch(player, midpointSeconds)
+	local repeatCount = 0
+	local maxHorizontalDelta = 0
+	local maxVerticalDelta = 0
+	if baseline then
+		for _ = 1, RuntimeQaConfig.LaunchRepeatabilitySampleCount do
+			local sample = RoundService.qaLaunch(player, midpointSeconds)
+			if sample then
+				repeatCount += 1
+				maxHorizontalDelta =
+					math.max(maxHorizontalDelta, math.abs(sample.HorizontalSpeed - baseline.HorizontalSpeed))
+				maxVerticalDelta = math.max(maxVerticalDelta, math.abs(sample.VerticalSpeed - baseline.VerticalSpeed))
+			end
+		end
+	end
+	check(
+		"launch_repeatability_100",
+		baseline ~= nil
+			and repeatCount == RuntimeQaConfig.LaunchRepeatabilitySampleCount
+			and maxHorizontalDelta <= 0.001
+			and maxVerticalDelta <= 0.001,
+		{
+			Samples = repeatCount,
+			MaxHorizontalDelta = maxHorizontalDelta,
+			MaxVerticalDelta = maxVerticalDelta,
+		}
+	)
 
 	local perfectCount = 0
 	for index = 1, RuntimeQaConfig.LandingSampleCount do

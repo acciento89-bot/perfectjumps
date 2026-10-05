@@ -369,33 +369,32 @@ local function cancelCharge(round: Round)
 	end
 end
 
-local function releaseCharge(round: Round)
-	if round.Phase ~= "Charging" or round.ChargeStartedAt == nil then
-		return
+local function launchWithHeldSeconds(round: Round, heldSeconds: number): boolean
+	if round.Phase ~= "Charging" then
+		return false
 	end
 
-	local heldSeconds = os.clock() - round.ChargeStartedAt
 	round.ChargeStartedAt = nil
 	if not LaunchRules.IsLegalChargeSeconds(heldSeconds) then
 		cancelCharge(round)
-		return
+		return false
 	end
 
 	local root = getRoot(round.Player)
 	if not root then
 		failRound(round, "MissingRoot")
-		return
+		return false
 	end
 
 	local directionDelta = round.Lane.TargetCollision.Position - root.Position
 	local horizontal = Vector3.new(directionDelta.X, 0, directionDelta.Z)
 	if horizontal.Magnitude < 0.001 then
 		cancelCharge(round)
-		return
+		return false
 	end
 
 	if not transition(round, "Airborne") then
-		return
+		return false
 	end
 
 	local normalized = JumpRules.NormalizeCharge(heldSeconds)
@@ -416,6 +415,16 @@ local function releaseCharge(round: Round)
 		ChargeSeconds = heldSeconds,
 		ChargePower = normalized,
 	})
+	return true
+end
+
+local function releaseCharge(round: Round)
+	if round.Phase ~= "Charging" or round.ChargeStartedAt == nil then
+		return
+	end
+
+	local heldSeconds = os.clock() - round.ChargeStartedAt
+	launchWithHeldSeconds(round, heldSeconds)
 end
 
 local function allowAction(round: Round): boolean
@@ -519,6 +528,46 @@ function RoundService.qaLand(player: Player, centerDistance: number): boolean
 	root.AssemblyLinearVelocity = Vector3.new(0, -2, 0)
 	handleLanding(round)
 	return round.Phase == "Landed" or round.Phase == "Ready"
+end
+
+function RoundService.qaLaunch(player: Player, heldSeconds: number)
+	assert(RunService:IsStudio(), "QA helpers are Studio-only")
+	local round = rounds[player]
+	local root = getRoot(player)
+	if not round or not root or round.Phase == "GameOver" then
+		return nil
+	end
+
+	root.CFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	round.Phase = "Charging"
+	round.ChargeStartedAt = os.clock()
+
+	if not launchWithHeldSeconds(round, heldSeconds) then
+		return nil
+	end
+
+	local velocity = root.AssemblyLinearVelocity
+	local sample = {
+		HeldSeconds = heldSeconds,
+		ChargePower = JumpRules.NormalizeCharge(heldSeconds),
+		HorizontalSpeed = Vector2.new(velocity.X, velocity.Z).Magnitude,
+		VerticalSpeed = velocity.Y,
+		Speed = velocity.Magnitude,
+	}
+
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	root.CFrame = round.Lane.CurrentCollision.CFrame + Vector3.new(0, 3.2, 0)
+	round.ActionToken += 1
+	round.Phase = "Ready"
+	round.ChargeStartedAt = nil
+	setNetworkOwner(root, player)
+	setGroundMovement(player, true)
+	emitState(round)
+
+	return sample
 end
 
 function RoundService.qaFail(player: Player, reason: string?): boolean

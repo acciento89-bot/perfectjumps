@@ -121,6 +121,35 @@ local function run(player: Player)
 		}
 	)
 
+	local function checkLandingGrade(name: string, centerDistance: number, expectedGrade: string)
+		local accepted, grade = RoundService.qaLand(player, centerDistance)
+		local snapshot = RoundService.qaSnapshot(player)
+		if expectedGrade == "Miss" then
+			check(name, accepted == false and grade == expectedGrade and snapshot.Phase == "GameOver", {
+				Grade = grade,
+				Phase = snapshot.Phase,
+			})
+			return
+		end
+
+		check(name, accepted == true and grade == expectedGrade, {
+			Grade = grade,
+			Phase = snapshot.Phase,
+		})
+		check(name .. "_ready", waitReady(player))
+	end
+
+	checkLandingGrade("landing_grade_perfect", 0, "Perfect")
+	checkLandingGrade(
+		"landing_grade_good",
+		(GameConfig.Landing.PerfectRadius + GameConfig.Landing.GoodRadius) / 2,
+		"Good"
+	)
+	checkLandingGrade("landing_grade_safe", GameConfig.Landing.GoodRadius + 0.5, "Safe")
+	checkLandingGrade("landing_grade_miss", GameConfig.Platform.InitialWidth, "Miss")
+	check("landing_grade_miss_retry", RoundService.qaRetry(player))
+	check("landing_grade_miss_retry_ready", waitReady(player))
+
 	local perfectCount = 0
 	for index = 1, RuntimeQaConfig.LandingSampleCount do
 		check(("landing_%03d"):format(index), RoundService.qaLand(player, 0), { Index = index })

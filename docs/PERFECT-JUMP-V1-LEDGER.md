@@ -62,7 +62,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P03-T08 100-jump repeatability sample shows no unexplained impulse drift — 100/100 midpoint production-path releases measured with 0 horizontal and 0 vertical velocity delta; evidence: `docs/evidence/2026-10-05-runtime-launch-repeatability.md`
 
 ## P04 Landing grade, score and combo
-- [~] P04-T01 Server computes landing center distance from platform sweet zone
+- [x] P04-T01 Server computes landing center distance from platform sweet zone — Studio landing matrix positions the avatar at known offsets while production `handleLanding` computes root-to-target geometry and returns the expected grades
 - [x] P04-T02 Perfect/Good/Safe/Miss thresholds are explicit and tested
 - [x] P04-T03 Combo/multiplier rules and break conditions
 - [~] P04-T04 PB/highest-platform persistence — profile payload/runtime progression verified; real new-session rejoin remains open
@@ -140,7 +140,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## P13 Mandatory full runtime journey
 - [ ] P13-T01 Fresh spawn/tutorial
 - [x] P13-T02 Min/mid/max charge jumps — Studio QA exercised the real server launch path at minimum, midpoint and maximum charge and matched configured velocity expectations
-- [ ] P13-T03 Perfect + Good + edge landing + miss
+- [x] P13-T03 Perfect + Good + edge landing + miss — production server landing path verified in Studio for all four grades; Miss reached GameOver and recovered through Retry/Ready
 - [~] P13-T04 Combo/PB progression verified by runtime harness; real player-input break cases remain open
 - [x] P13-T05 Failure → immediate retry — post-fix runtime harness passes failure/GameOver/Retry/Ready/reset
 - [x] P13-T06 Reward and cosmetic buy/equip — runtime harness passes coin grant, purchase and equip

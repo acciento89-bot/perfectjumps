@@ -1,4 +1,5 @@
 local tests = {
+	require("../tests/runtime-grade-qa.spec"),
 	require("../tests/runtime-launch-qa.spec"),
 	require("../tests/graphic-fidelity.spec"),
 	require("../tests/menu-visibility-contract.spec"),

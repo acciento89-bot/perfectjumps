@@ -514,20 +514,26 @@ function RoundService.qaSnapshot(player: Player)
 	return if round then statePayload(round) else nil
 end
 
-function RoundService.qaLand(player: Player, centerDistance: number): boolean
+function RoundService.qaLand(player: Player, centerDistance: number)
 	assert(RunService:IsStudio(), "QA helpers are Studio-only")
 	local round = rounds[player]
 	local root = getRoot(player)
 	if not round or not root or round.Phase == "GameOver" then
-		return false
+		return false, nil
 	end
 
 	round.Phase = "Airborne"
 	local target = round.Lane.TargetCollision
+	local perfectRadius = GameConfig.Landing.PerfectRadius
+	if ProfileService.IsWidePerfectActive(player) then
+		perfectRadius *= MonetizationConfig.DeveloperProducts.WidePerfect5m.RadiusMultiplier
+	end
+	local grade = JumpRules.GradeLandingWithPerfectRadius(centerDistance, target.Size.X, perfectRadius)
+
 	root.CFrame = CFrame.new(target.Position + Vector3.new(centerDistance, 3, 0))
 	root.AssemblyLinearVelocity = Vector3.new(0, -2, 0)
 	handleLanding(round)
-	return round.Phase == "Landed" or round.Phase == "Ready"
+	return round.Phase == "Landed" or round.Phase == "Ready", grade
 end
 
 function RoundService.qaLaunch(player: Player, heldSeconds: number)

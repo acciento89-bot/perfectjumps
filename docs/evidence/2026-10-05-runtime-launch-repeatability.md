@@ -28,4 +28,16 @@ Production-path release measurements:
 
 The same run also retained the existing 60-landing climb, PB/combo progression, cosmetic purchase/equip, Daily, failure, Retry, Revive and persistent-payload checks.
 
+## Landing grade matrix
+
+A second RED→GREEN runtime-QA increment exercised the production server landing path at four geometric offsets:
+
+- Perfect: returned grade `Perfect` and phase `Landed`, then `Ready`.
+- Good: returned grade `Good` and phase `Landed`, then `Ready`.
+- Safe/edge: returned grade `Safe` and phase `Landed`, then `Ready`.
+- Miss: returned grade `Miss` and phase `GameOver`; Retry returned the run to `Ready`.
+- The full harness again ended with `[PerfectJumpQA] COMPLETE`.
+
+The QA helper only positions the avatar at a requested offset; `handleLanding` still computes the actual root-to-target distance and applies the production grade/failure path.
+
 No gameplay CreatorError/ScriptError/Infinite-yield match was present in the filtered runtime QA output.

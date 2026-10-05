@@ -200,5 +200,5 @@ Runtime acceptance update (2026-10-02): post-fix Studio QA completed through 60 
 - [x] Source-side concept graphic fidelity implemented: Aerial highline depth, structural arches, motion ribbons, sky focal halo, target-ring and platform underside detail.
 - [x] Contextual-menu rule preserved: full Shop/Daily/Style/Revive/Result surfaces are not permanently visible during normal gameplay.
 - [x] CI verification green on run `37270778429`; merged source commit `fbd0b7a`.
-- [ ] Fresh Roblox Studio PlaySolo visual acceptance after this pass.
-- [ ] Publish/republish this exact graphic-fidelity source to the existing canonical Place after Studio acceptance.
+- [x] Fresh Roblox Studio PlaySolo visual acceptance passed: aerial-highline composition, avatar/jump readability and contextual Supply/Daily behavior verified with clean local server/client startup.
+- [x] Graphic-fidelity source published to existing canonical Place `74217245707666` as `v18`; no new Place/Experience created. Post-publish Studio persistence smoke is limited only by disabled Studio API access. Evidence: `docs/evidence/2026-10-05-graphic-fidelity-runtime-publish.md`.

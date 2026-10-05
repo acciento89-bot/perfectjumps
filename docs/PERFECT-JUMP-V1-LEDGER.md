@@ -194,3 +194,11 @@ Runtime acceptance update (2026-10-02): post-fix Studio QA completed through 60 
 - [x] Concept-fidelity source published to existing production Place `74217245707666` as `v15`.
 - [x] Post-publish server/client gameplay initialization passed; only the expected Studio DataStore-access fallback was observed.
 - [x] Concept-fidelity pass 3: live Jump Supply + progress/daily/highline preview cards, score/combo/PB pill and non-overlapping charge/tutorial composition are implemented and runtime-verified.
+
+## 2026-10-05 graphic-fidelity pass 4
+
+- [x] Source-side concept graphic fidelity implemented: Aerial highline depth, structural arches, motion ribbons, sky focal halo, target-ring and platform underside detail.
+- [x] Contextual-menu rule preserved: full Shop/Daily/Style/Revive/Result surfaces are not permanently visible during normal gameplay.
+- [x] CI verification green on run `37270778429`; merged source commit `fbd0b7a`.
+- [ ] Fresh Roblox Studio PlaySolo visual acceptance after this pass.
+- [ ] Publish/republish this exact graphic-fidelity source to the existing canonical Place after Studio acceptance.

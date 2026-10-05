@@ -404,6 +404,18 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 	sun.Shape = Enum.PartType.Ball
 	sun.CastShadow = false
 
+	local sunHalo = part(
+		art,
+		"SunHalo",
+		Vector3.new(35, 35, 35),
+		CFrame.new(origin + Vector3.new(44, 48, 146.5)),
+		Enum.Material.Neon,
+		Color3.fromRGB(255, 218, 164),
+		0.91
+	)
+	sunHalo.Shape = Enum.PartType.Ball
+	sunHalo.CastShadow = false
+
 	local crown = part(
 		art,
 		"PrecisionBeacon",

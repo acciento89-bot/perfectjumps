@@ -54,14 +54,34 @@ function ReachabilityRules.isReachable(
 	return ReachabilityRules.bestDistanceError(horizontalDistance, verticalDelta) <= tolerance
 end
 
-function ReachabilityRules.generatorOffset(nextId: number): (number, number, number)
+function ReachabilityRules.difficultyBand(platformId: number): string
+	local id = math.max(1, math.floor(platformId))
+	if id <= 8 then
+		return "WarmUp"
+	elseif id <= 20 then
+		return "Rhythm"
+	end
+	return "Precision"
+end
+
+function ReachabilityRules.platformWidth(platformId: number): number
+	return math.max(
+		GameConfig.Platform.MinimumWidth,
+		GameConfig.Platform.InitialWidth
+			- math.max(0, math.floor(platformId) - 1) * GameConfig.Generation.WidthShrinkPerLanding
+	)
+end
+
+function ReachabilityRules.generatorOffset(nextId: number, seed: number?): (number, number, number)
 	local progress = math.max(0, nextId - 1)
 	local gap = math.min(
 		GameConfig.Generation.MaximumGap,
 		GameConfig.Generation.InitialGap + progress * GameConfig.Generation.GapGrowthPerLanding
 	)
 	local lateralScale = math.min(1, 0.25 + progress * 0.04)
-	local lateral = math.sin(nextId * 1.71) * GameConfig.Generation.LateralSpread * lateralScale
+	local effectiveSeed = if seed == nil then GameConfig.Generation.QaSeed else seed
+	local phase = nextId * 1.71 + effectiveSeed * 0.61803398875
+	local lateral = math.sin(phase) * GameConfig.Generation.LateralSpread * lateralScale
 	return lateral, GameConfig.Generation.VerticalStep, gap
 end
 

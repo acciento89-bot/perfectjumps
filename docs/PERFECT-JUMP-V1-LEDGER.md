@@ -71,10 +71,10 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 
 ## P05 Platform generation and difficulty
 - [x] P05-T01 Reachability envelope derived from actual jump model
-- [~] P05-T02 Horizontal/vertical spacing by difficulty band
-- [~] P05-T03 Platform size/sweet-zone progression
-- [~] P05-T04 Pattern variety without blind/impossible jumps
-- [~] P05-T05 Deterministic QA seed
+- [x] P05-T02 Horizontal/vertical spacing by difficulty band — WarmUp 1–8, Rhythm 9–20 and Precision 21+ are explicit/tested; gap progression, vertical step and runtime samples remain valid. Evidence: `docs/evidence/2026-10-05-generation-bands.md`
+- [x] P05-T03 Platform size/sweet-zone progression — width and derived safe radius tighten monotonically to the configured 4.5-stud floor; early/mid/late runtime widths remain 10/8/5. Evidence: `docs/evidence/2026-10-05-generation-bands.md`
+- [x] P05-T04 Pattern variety without blind/impossible jumps — bounded two-sided lateral variety is regression-tested while the 2,000-target reachability suite and runtime samples remain green. Evidence: `docs/evidence/2026-10-05-generation-bands.md`
+- [x] P05-T05 Deterministic QA seed — configured seed 0 preserves the production route; same seed reproduces exact offsets and alternate seeds alter the lateral pattern deterministically. Evidence: `docs/evidence/2026-10-05-generation-bands.md`
 - [x] P05-T06 1,000+ generated targets all satisfy reachability model — current pure test covers 2,000 generated targets
 - [x] P05-T07 Runtime sample across early/mid/late difficulty — actual generated targets at platform progression 0/20/50 passed production reachability; target widths tightened 10 → 8 → 5. Evidence: `docs/evidence/2026-10-05-runtime-difficulty-sampling.md`
 

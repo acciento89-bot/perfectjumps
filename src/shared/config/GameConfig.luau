@@ -53,6 +53,7 @@ local GameConfig = {
 		VerticalStep = 1.35,
 		LaneSpacing = 120,
 		VisiblePlatformHistory = 4,
+		QaSeed = 0,
 	},
 
 	Landing = {

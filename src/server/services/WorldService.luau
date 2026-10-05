@@ -51,10 +51,7 @@ local function makePart(
 end
 
 local function platformWidth(platformId: number): number
-	return math.max(
-		GameConfig.Platform.MinimumWidth,
-		GameConfig.Platform.InitialWidth - math.max(0, platformId - 1) * GameConfig.Generation.WidthShrinkPerLanding
-	)
+	return ReachabilityRules.platformWidth(platformId)
 end
 
 local function nextCenter(currentCenter: Vector3, nextId: number): Vector3

@@ -11,6 +11,7 @@ local GameConfig = require(shared.config.GameConfig)
 local RuntimeQaConfig = require(shared.config.RuntimeQaConfig)
 local JumpRules = require(shared.game.JumpRules)
 local LaunchRules = require(shared.game.LaunchRules)
+local ReachabilityRules = require(shared.game.ReachabilityRules)
 
 local ProfileService = require(script.Parent.ProfileService)
 local RoundService = require(script.Parent.RoundService)
@@ -175,6 +176,26 @@ local function run(player: Player)
 	check("landing_grade_miss_retry", RoundService.qaRetry(player))
 	check("landing_grade_miss_retry_ready", waitReady(player))
 
+	local difficultySamples: { [string]: any } = {}
+	local function sampleDifficulty(sampleName: string, eventName: string)
+		local snapshot = RoundService.qaSnapshot(player)
+		local delta = snapshot.TargetPosition - snapshot.CurrentPosition
+		local horizontalDistance = Vector2.new(delta.X, delta.Z).Magnitude
+		local landingRadius = math.max(0.8, snapshot.TargetWidth / 2 - GameConfig.Platform.EdgeSafetyMargin)
+		local fields = {
+			CurrentPlatformId = snapshot.CurrentPlatformId,
+			TargetPlatformId = snapshot.TargetPlatformId,
+			TargetWidth = snapshot.TargetWidth,
+			HorizontalDistance = horizontalDistance,
+			VerticalDelta = delta.Y,
+			LandingRadius = landingRadius,
+		}
+		difficultySamples[sampleName] = fields
+		check(eventName, ReachabilityRules.isReachable(horizontalDistance, delta.Y, landingRadius), fields)
+	end
+
+	sampleDifficulty("early", "difficulty_early")
+
 	local perfectCount = 0
 	for index = 1, RuntimeQaConfig.LandingSampleCount do
 		check(("landing_%03d"):format(index), RoundService.qaLand(player, 0), { Index = index })
@@ -185,8 +206,33 @@ local function run(player: Player)
 				return snapshot ~= nil and snapshot.Phase == "Ready"
 			end, 2)
 		)
+		if index == 20 then
+			sampleDifficulty("mid", "difficulty_mid")
+		elseif index == 50 then
+			sampleDifficulty("late", "difficulty_late")
+		end
 		perfectCount += 1
 	end
+
+	local early = difficultySamples.early
+	local mid = difficultySamples.mid
+	local late = difficultySamples.late
+	check(
+		"difficulty_progression",
+		early ~= nil
+			and mid ~= nil
+			and late ~= nil
+			and early.TargetPlatformId == 1
+			and mid.TargetPlatformId == 21
+			and late.TargetPlatformId == 51
+			and early.TargetWidth > mid.TargetWidth
+			and mid.TargetWidth > late.TargetWidth,
+		{
+			EarlyWidth = if early then early.TargetWidth else -1,
+			MidWidth = if mid then mid.TargetWidth else -1,
+			LateWidth = if late then late.TargetWidth else -1,
+		}
+	)
 
 	local afterClimb = RoundService.qaSnapshot(player)
 	check("long_climb_height", afterClimb.CurrentPlatformId == RuntimeQaConfig.LandingSampleCount, afterClimb)

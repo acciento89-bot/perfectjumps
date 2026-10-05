@@ -76,7 +76,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P05-T04 Pattern variety without blind/impossible jumps
 - [~] P05-T05 Deterministic QA seed
 - [x] P05-T06 1,000+ generated targets all satisfy reachability model — current pure test covers 2,000 generated targets
-- [ ] P05-T07 Runtime sample across early/mid/late difficulty
+- [x] P05-T07 Runtime sample across early/mid/late difficulty — actual generated targets at platform progression 0/20/50 passed production reachability; target widths tightened 10 → 8 → 5. Evidence: `docs/evidence/2026-10-05-runtime-difficulty-sampling.md`
 
 ## P06 Progression and persistence
 - [~] P06-T01 Legitimate coin/reward model

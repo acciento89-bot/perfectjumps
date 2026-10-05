@@ -121,6 +121,43 @@ local function tower(parent: Instance, position: Vector3, size: Vector3, index: 
 	body.CastShadow = true
 end
 
+local function highlineArch(parent: Instance, origin: Vector3, zOffset: number, scale: number)
+	local archFolder = Instance.new("Folder")
+	archFolder.Name = "HighlineArch"
+	archFolder.Parent = parent
+
+	for _, side in { -1, 1 } do
+		part(
+			archFolder,
+			"ArchPillar",
+			Vector3.new(1.4 * scale, 18 * scale, 1.4 * scale),
+			CFrame.new(origin + Vector3.new(side * 12 * scale, 8 * scale, zOffset)),
+			Enum.Material.Metal,
+			COLORS.SteelLight
+		)
+	end
+
+	local crown = part(
+		archFolder,
+		"ArchCrown",
+		Vector3.new(25 * scale, 1.2 * scale, 1.4 * scale),
+		CFrame.new(origin + Vector3.new(0, 17 * scale, zOffset)),
+		Enum.Material.Metal,
+		COLORS.SteelLight
+	)
+
+	local guide = part(
+		archFolder,
+		"ArchGuide",
+		Vector3.new(19 * scale, 0.16, 0.28),
+		crown.CFrame + Vector3.new(0, 0.78 * scale, -0.1),
+		Enum.Material.Neon,
+		COLORS.Amber,
+		0.12
+	)
+	guide.CastShadow = false
+end
+
 function WorldArtService.configureLighting()
 	if lightingConfigured then
 		return

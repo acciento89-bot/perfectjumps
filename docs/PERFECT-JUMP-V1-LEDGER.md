@@ -84,7 +84,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P06-T03 Server ownership/equip validation
 - [~] P06-T04 Versioned profile schema/migration
 - [~] P06-T05 Save/lock/recovery rules
-- [ ] P06-T06 Real rejoin retains PB, coins, cosmetics and settings
+- [!] P06-T06 Real rejoin retains PB, coins, cosmetics and settings — requires an actual live-player leave/rejoin against Roblox DataStore; published-place Studio smoke cannot prove it because Studio API access is disabled
 
 ## P07 Tutorial and retention
 - [~] P07-T01 First-time tutorial: hold → release → aim for center — HUD flow implemented; physical-input runtime acceptance remains
@@ -146,7 +146,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P13-T06 Reward and cosmetic buy/equip — runtime harness passes coin grant, purchase and equip
 - [x] P13-T07 Revive — runtime harness passes failure/revive/Ready/assisted
 - [x] P13-T08 Respawn camera/input reset — Studio client QA verifies the replacement character owns the Scriptable camera/CameraSubject with current+target state loaded, while charging is false, phase is Ready and no modal remains open. Evidence: `docs/evidence/2026-10-05-respawn-camera-input.md`
-- [ ] P13-T09 New-session persistence/rejoin
+- [!] P13-T09 New-session persistence/rejoin — external live-client/DataStore gate; Studio reports `StudioAccessToApisNotAllowed` by design, so no false rejoin claim is made
 - [~] P13-T10 Extended repeated-jump stability — 60 generated landing transitions pass; physical repeated-input soak remains open
 
 ## P14 Device, input and performance QA
@@ -160,9 +160,9 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 ## P15 Release
 - [ ] P15-T01 Production icon/thumbnails/metadata
 - [ ] P15-T02 Privacy/content questionnaire
-- [x] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 republished from current canonical main as v11
+- [x] P15-T03 Canonical private publish — Universe 10768948354 / Place 74217245707666 republished from canonical main commit `f62ad09` as v23
 - [x] P15-T04 Full P13 journey repeated in published private place — v11 Studio run completed 60/60 landings plus PB/combo, cosmetics, Daily, failure, Retry, Revive and persistent payload with `[PerfectJumpQA] COMPLETE`
-- [x] P15-T05 Build hash/place version/rollback record — production Place v11; immediate rollback v10; repaired source recorded on canonical main
+- [x] P15-T05 Build hash/place version/rollback record — production Place v23 from source `f62ad09`; immediate rollback v22. Evidence: `docs/evidence/2026-10-05-v23-runtime-hardening-publish.md`
 - [~] P15-T06 Public launch — zero known P0/P1 gameplay defects; owner directs completed games to public release. Content Maturity is Minimal with no age restriction; final store presentation/public toggle remains
 
 ## P16 Post-launch

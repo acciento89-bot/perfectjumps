@@ -188,3 +188,8 @@ Runtime acceptance update (2026-10-02): post-fix Studio QA completed through 60 
 - [x] HUD now carries a branded wordmark, combo-progress hierarchy and compact quick actions while keeping hold/release gameplay unobstructed.
 - [x] Highline world presentation gained brighter authored structure, cloud depth, hero gateway and warm sky focal point.
 - [x] Final PlaySolo runtime: server/client gameplay initialized with 0 CreatorErrors; 12 pure-Luau tests and static gates green.
+
+## 2026-10-05 concept production publish
+
+- [x] Concept-fidelity source published to existing production Place `74217245707666` as `v15`.
+- [x] Post-publish server/client gameplay initialization passed; only the expected Studio DataStore-access fallback was observed.

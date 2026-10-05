@@ -40,6 +40,12 @@ local closeButton: TextButton
 local dailyButton: TextButton
 local dailyDetail: TextLabel
 local challengeDetail: TextLabel
+local dailyBackdrop: Frame
+local dailyPanel: Frame
+local dailyCloseButton: TextButton
+local dailyModalButton: TextButton
+local dailyModalDetail: TextLabel
+local dailyModalChallenge: TextLabel
 local reducedMotionButton: TextButton
 local audioButton: TextButton
 local premiumThemesButton: TextButton
@@ -122,12 +128,32 @@ end
 
 local function setOpen(open: boolean)
 	player:SetAttribute("PerfectJumpShopOpen", open)
-	player:SetAttribute("PerfectJumpUiModal", open)
+	if open then
+		player:SetAttribute("PerfectJumpDailyOpen", false)
+	end
+	player:SetAttribute("PerfectJumpUiModal", open or player:GetAttribute("PerfectJumpDailyOpen") == true)
 	dimmer.Visible = open
 	panel.Visible = open
 	if open then
 		GuiService.SelectedObject = closeButton
 	elseif GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(panel) then
+		GuiService.SelectedObject = nil
+	end
+end
+
+local function setDailyOpen(open: boolean)
+	player:SetAttribute("PerfectJumpDailyOpen", open)
+	if open then
+		player:SetAttribute("PerfectJumpShopOpen", false)
+		dimmer.Visible = false
+		panel.Visible = false
+	end
+	player:SetAttribute("PerfectJumpUiModal", open or player:GetAttribute("PerfectJumpShopOpen") == true)
+	dailyBackdrop.Visible = open
+	dailyPanel.Visible = open
+	if open then
+		GuiService.SelectedObject = dailyCloseButton
+	elseif GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(dailyPanel) then
 		GuiService.SelectedObject = nil
 	end
 end
@@ -204,11 +230,19 @@ local function updateProfile(nextProfile: any)
 		dailyButton.Active = true
 		dailyButton.BackgroundColor3 = COLORS.Amber
 		dailyDetail.Text = "Daily precision supply is ready."
+		dailyModalButton.Text = "CLAIM DAILY REWARD"
+		dailyModalButton.Active = true
+		dailyModalButton.BackgroundColor3 = COLORS.Amber
+		dailyModalDetail.Text = "TODAY'S PRECISION SUPPLY IS READY"
 	else
 		dailyButton.Text = "CLAIMED"
 		dailyButton.Active = false
 		dailyButton.BackgroundColor3 = COLORS.PanelSoft
 		dailyDetail.Text = "Come back after the daily reset."
+		dailyModalButton.Text = "CLAIMED TODAY"
+		dailyModalButton.Active = false
+		dailyModalButton.BackgroundColor3 = COLORS.PanelSoft
+		dailyModalDetail.Text = "CLAIMED • COME BACK AFTER THE DAILY RESET"
 	end
 
 	local progress = tonumber(profile.DailyPerfects) or 0
@@ -216,6 +250,9 @@ local function updateProfile(nextProfile: any)
 	challengeDetail.Text = if profile.DailyRewarded == true
 		then "Complete  •  reward collected"
 		else ("Land %d Perfect jumps  •  %d/%d"):format(target, progress, target)
+	dailyModalChallenge.Text = if profile.DailyRewarded == true
+		then ("DAILY PRECISION  ✓  %d/%d PERFECT JUMPS"):format(math.min(progress, target), target)
+		else ("DAILY PRECISION  %d/%d PERFECT JUMPS"):format(math.min(progress, target), target)
 
 	reducedMotionButton.Text = if profile.Settings and profile.Settings.ReducedMotion == true then "ON" else "OFF"
 	audioButton.Text = if not profile.Settings or profile.Settings.AudioEnabled ~= false then "ON" else "OFF"
@@ -628,6 +665,164 @@ local function buildGui()
 	audioButton.TextColor3 = COLORS.Text
 	audioButton.ZIndex = 54
 
+	dailyBackdrop = Instance.new("Frame")
+	dailyBackdrop.Name = "DailyBackdrop"
+	dailyBackdrop.Size = UDim2.fromScale(1, 1)
+	dailyBackdrop.BackgroundColor3 = Color3.fromRGB(4, 7, 11)
+	dailyBackdrop.BackgroundTransparency = 0.28
+	dailyBackdrop.BorderSizePixel = 0
+	dailyBackdrop.Visible = false
+	dailyBackdrop.ZIndex = 60
+	dailyBackdrop.Parent = hud
+
+	dailyPanel = Instance.new("Frame")
+	dailyPanel.Name = "DailyRewardsPanel"
+	dailyPanel.AnchorPoint = Vector2.new(0.5, 0.5)
+	dailyPanel.Position = UDim2.fromScale(0.5, 0.5)
+	dailyPanel.Size = UDim2.fromOffset(438, 292)
+	dailyPanel.BackgroundColor3 = COLORS.Foundation
+	dailyPanel.BorderSizePixel = 0
+	dailyPanel.Visible = false
+	dailyPanel.ZIndex = 61
+	dailyPanel.Parent = hud
+	corner(dailyPanel, 20)
+	stroke(dailyPanel, COLORS.Amber, 0.34)
+
+	local dailyGradient = Instance.new("UIGradient")
+	dailyGradient.Rotation = 115
+	dailyGradient.Color = ColorSequence.new(Color3.fromRGB(58, 48, 87), COLORS.Foundation)
+	dailyGradient.Parent = dailyPanel
+
+	local dailyModalTitle = makeLabel(
+		dailyPanel,
+		"Title",
+		"DAILY REWARDS",
+		UDim2.new(1, -90, 0, 38),
+		UDim2.fromOffset(20, 12),
+		22,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
+	dailyModalTitle.ZIndex = 62
+
+	dailyCloseButton =
+		makeButton(dailyPanel, "Close", "×", UDim2.fromOffset(46, 46), UDim2.new(1, -60, 0, 12), COLORS.PanelSoft)
+	dailyCloseButton.TextColor3 = COLORS.Text
+	dailyCloseButton.TextSize = 22
+	dailyCloseButton.ZIndex = 62
+
+	dailyModalDetail = makeLabel(
+		dailyPanel,
+		"Detail",
+		"LOADING DAILY PRECISION SUPPLY…",
+		UDim2.new(1, -40, 0, 24),
+		UDim2.fromOffset(20, 52),
+		11,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	dailyModalDetail.TextXAlignment = Enum.TextXAlignment.Center
+	dailyModalDetail.ZIndex = 62
+
+	local rewardIcons = { "✓", "◈", "✦", "♢", "★" }
+	local rewardNames = { "TODAY", "COINS", "BOOST", "STYLE", "RARE" }
+	for index = 1, 5 do
+		local card = Instance.new("Frame")
+		card.Name = ("Day%02d"):format(index)
+		card.Position = UDim2.fromOffset(18 + (index - 1) * 81, 86)
+		card.Size = UDim2.fromOffset(73, 104)
+		card.BackgroundColor3 = COLORS.Panel
+		card.BorderSizePixel = 0
+		card.ZIndex = 62
+		card.Parent = dailyPanel
+		corner(card, 13)
+		stroke(card, if index == 1 then COLORS.Amber else COLORS.Cyan, 0.62)
+
+		local day = makeLabel(
+			card,
+			"Day",
+			("DAY %d"):format(index),
+			UDim2.new(1, 0, 0, 18),
+			UDim2.fromOffset(0, 6),
+			9,
+			COLORS.Muted,
+			Enum.Font.GothamBold
+		)
+		day.TextXAlignment = Enum.TextXAlignment.Center
+		day.ZIndex = 63
+		local icon = makeLabel(
+			card,
+			"Icon",
+			rewardIcons[index],
+			UDim2.new(1, 0, 0, 42),
+			UDim2.fromOffset(0, 28),
+			24,
+			if index == 1 then COLORS.Green else COLORS.Amber,
+			Enum.Font.GothamBlack
+		)
+		icon.TextXAlignment = Enum.TextXAlignment.Center
+		icon.ZIndex = 63
+		local reward = makeLabel(
+			card,
+			"Reward",
+			rewardNames[index],
+			UDim2.new(1, 0, 0, 18),
+			UDim2.fromOffset(0, 78),
+			9,
+			COLORS.Text,
+			Enum.Font.GothamBold
+		)
+		reward.TextXAlignment = Enum.TextXAlignment.Center
+		reward.ZIndex = 63
+	end
+
+	dailyModalChallenge = makeLabel(
+		dailyPanel,
+		"Challenge",
+		"DAILY PRECISION  0/5 PERFECT JUMPS",
+		UDim2.new(1, -40, 0, 22),
+		UDim2.fromOffset(20, 199),
+		11,
+		COLORS.Cyan,
+		Enum.Font.GothamBold
+	)
+	dailyModalChallenge.TextXAlignment = Enum.TextXAlignment.Center
+	dailyModalChallenge.ZIndex = 62
+
+	dailyModalButton = makeButton(
+		dailyPanel,
+		"ClaimButton",
+		"CLAIM DAILY REWARD",
+		UDim2.fromOffset(190, 46),
+		UDim2.new(0.5, -95, 1, -60),
+		COLORS.Amber
+	)
+	dailyModalButton.ZIndex = 62
+
+	local function claimDailyReward()
+		if profile and profile.DailyClaimable ~= true then
+			return
+		end
+		task.spawn(function()
+			local ok, result = pcall(function()
+				return claimDaily:InvokeServer()
+			end)
+			if ok and type(result) == "table" and result.meta then
+				updateProfile(result.meta)
+			end
+		end)
+	end
+
+	dailyCloseButton.Activated:Connect(function()
+		setDailyOpen(false)
+	end)
+	dailyModalButton.Activated:Connect(claimDailyReward)
+	dailyBackdrop.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			setDailyOpen(false)
+		end
+	end)
+
 	reducedMotionButton.Activated:Connect(function()
 		local enabled = not (profile and profile.Settings and profile.Settings.ReducedMotion == true)
 		task.spawn(function()
@@ -655,11 +850,19 @@ end
 function ShopController.start()
 	buildGui()
 	player:SetAttribute("PerfectJumpShopOpen", false)
+	player:SetAttribute("PerfectJumpDailyOpen", false)
 	player:SetAttribute("PerfectJumpUiModal", false)
 
 	player:GetAttributeChangedSignal("PerfectJumpShopOpen"):Connect(function()
 		local open = player:GetAttribute("PerfectJumpShopOpen") == true
 		setOpen(open)
+		if open then
+			requestProfile()
+		end
+	end)
+	player:GetAttributeChangedSignal("PerfectJumpDailyOpen"):Connect(function()
+		local open = player:GetAttribute("PerfectJumpDailyOpen") == true
+		setDailyOpen(open)
 		if open then
 			requestProfile()
 		end

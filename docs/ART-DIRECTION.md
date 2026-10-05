@@ -1,5 +1,8 @@
 # Perfect Jump Art Direction
 
+## Concept interpretation
+The approved concept image is a **feature montage**, not a simultaneous gameplay HUD. Supply/Shop, Daily Rewards and Result/Revive are contextual overlays and remain hidden until the player opens them or the matching gameplay state triggers them. Normal play keeps the avatar, landing target and jump arc unobstructed.
+
 ## Target
 A polished, readable Roblox experience that looks intentional from a normal gameplay screenshot. Stylized, clean and modern; never like an empty baseplate or developer prototype.
 

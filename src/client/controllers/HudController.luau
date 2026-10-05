@@ -132,7 +132,7 @@ local function updateResponsive()
 	local width = camera.ViewportSize.X
 	local viewportClass = ViewportRules.classify(width)
 	scale.Scale = ViewportRules.uiScale(width)
-	conceptShowcase.Visible = viewportClass ~= "compact"
+	conceptShowcase.Visible = false
 	stats.Visible = viewportClass == "compact"
 
 	if viewportClass == "compact" then
@@ -207,6 +207,10 @@ local function refreshHud()
 	conceptProgressFill.Size = UDim2.fromScale(math.clamp((currentPlatform % 10) / 10, 0, 1), 1)
 
 	resultPanel.Visible = phase == "GameOver"
+	if resultPanel.Visible then
+		player:SetAttribute("PerfectJumpShopOpen", false)
+		player:SetAttribute("PerfectJumpDailyOpen", false)
+	end
 	chargePanel.Visible = phase ~= "GameOver"
 	tutorial.Visible = player:GetAttribute("PerfectJumpTutorialComplete") ~= true and phase ~= "GameOver"
 
@@ -413,6 +417,7 @@ local function buildGui()
 	shopButton =
 		makeButton(gui, "ShopButton", "SUPPLY", UDim2.fromOffset(110, 46), UDim2.new(1, -132, 0, 22), COLORS.Cyan)
 	shopButton.Activated:Connect(function()
+		player:SetAttribute("PerfectJumpDailyOpen", false)
 		player:SetAttribute("PerfectJumpShopOpen", true)
 	end)
 
@@ -427,13 +432,15 @@ local function buildGui()
 	local supplyQuick =
 		makeButton(quickRail, "SupplyQuick", "SUPPLY", UDim2.fromOffset(96, 42), UDim2.fromOffset(0, 0), COLORS.Cyan)
 	supplyQuick.Activated:Connect(function()
+		player:SetAttribute("PerfectJumpDailyOpen", false)
 		player:SetAttribute("PerfectJumpShopOpen", true)
 	end)
 
 	local dailyQuick =
 		makeButton(quickRail, "DailyQuick", "DAILY", UDim2.fromOffset(96, 42), UDim2.fromOffset(0, 50), COLORS.Amber)
 	dailyQuick.Activated:Connect(function()
-		player:SetAttribute("PerfectJumpShopOpen", true)
+		player:SetAttribute("PerfectJumpShopOpen", false)
+		player:SetAttribute("PerfectJumpDailyOpen", true)
 	end)
 
 	conceptShowcase = Instance.new("Frame")
@@ -617,6 +624,7 @@ local function buildGui()
 			makeButton(card, "OpenSupply", "OPEN", UDim2.fromOffset(70, 24), UDim2.fromOffset(9, 122), entry.Color)
 		open.TextSize = 9
 		open.Activated:Connect(function()
+			player:SetAttribute("PerfectJumpDailyOpen", false)
 			player:SetAttribute("PerfectJumpShopOpen", true)
 		end)
 	end

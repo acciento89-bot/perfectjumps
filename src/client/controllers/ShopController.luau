@@ -49,6 +49,11 @@ local dailyModalChallenge: TextLabel
 local reducedMotionButton: TextButton
 local audioButton: TextButton
 local premiumThemesButton: TextButton
+local dailyDimmer: Frame
+local dailyPanel: Frame
+local dailyCloseButton: TextButton
+local dailyModalClaimButton: TextButton
+local dailyModalStatus: TextLabel
 local productButtons: { [string]: TextButton } = {}
 local cosmeticButtons: { [string]: { [string]: TextButton } } = {}
 
@@ -385,6 +390,138 @@ local function buildGui()
 	dimmer.ZIndex = 50
 	dimmer.Parent = hud
 
+	dailyDimmer = Instance.new("Frame")
+	dailyDimmer.Name = "DailyDimmer"
+	dailyDimmer.Size = UDim2.fromScale(1, 1)
+	dailyDimmer.BackgroundColor3 = Color3.fromRGB(4, 7, 11)
+	dailyDimmer.BackgroundTransparency = 0.28
+	dailyDimmer.BorderSizePixel = 0
+	dailyDimmer.Visible = false
+	dailyDimmer.ZIndex = 56
+	dailyDimmer.Parent = hud
+
+	dailyPanel = Instance.new("Frame")
+	dailyPanel.Name = "DailyRewardsPanel"
+	dailyPanel.AnchorPoint = Vector2.new(0.5, 0.5)
+	dailyPanel.Position = UDim2.fromScale(0.5, 0.5)
+	dailyPanel.Size = UDim2.fromOffset(438, 294)
+	dailyPanel.BackgroundColor3 = COLORS.Foundation
+	dailyPanel.BorderSizePixel = 0
+	dailyPanel.Visible = false
+	dailyPanel.ZIndex = 57
+	dailyPanel.Parent = hud
+	corner(dailyPanel, 20)
+	stroke(dailyPanel, Color3.fromRGB(173, 114, 255), 0.34)
+
+	local dailyGradient = Instance.new("UIGradient")
+	dailyGradient.Rotation = 115
+	dailyGradient.Color = ColorSequence.new(Color3.fromRGB(57, 48, 91), COLORS.Foundation)
+	dailyGradient.Parent = dailyPanel
+
+	local dailyModalTitle = makeLabel(
+		dailyPanel,
+		"Title",
+		"DAILY REWARDS",
+		UDim2.new(1, -92, 0, 36),
+		UDim2.fromOffset(22, 13),
+		22,
+		COLORS.Text,
+		Enum.Font.GothamBlack
+	)
+	dailyModalTitle.ZIndex = 58
+
+	dailyCloseButton =
+		makeButton(dailyPanel, "CloseButton", "×", UDim2.fromOffset(46, 46), UDim2.new(1, -60, 0, 12), COLORS.PanelSoft)
+	dailyCloseButton.TextColor3 = COLORS.Text
+	dailyCloseButton.TextSize = 22
+	dailyCloseButton.ZIndex = 58
+
+	dailyModalStatus = makeLabel(
+		dailyPanel,
+		"Status",
+		"LOADING DAILY SUPPLY…",
+		UDim2.new(1, -44, 0, 22),
+		UDim2.fromOffset(22, 53),
+		11,
+		COLORS.Muted,
+		Enum.Font.GothamBold
+	)
+	dailyModalStatus.TextXAlignment = Enum.TextXAlignment.Center
+	dailyModalStatus.ZIndex = 58
+
+	local icons = { "✓", "◈", "✦", "♢", "★" }
+	local rewards = { "TODAY", "COINS", "BOOST", "STYLE", "RARE" }
+	for index = 1, 5 do
+		local card = Instance.new("Frame")
+		card.Name = ("Day%02d"):format(index)
+		card.Position = UDim2.fromOffset(18 + (index - 1) * 81, 88)
+		card.Size = UDim2.fromOffset(73, 112)
+		card.BackgroundColor3 = if index == 1 then Color3.fromRGB(62, 108, 91) else COLORS.PanelSoft
+		card.BorderSizePixel = 0
+		card.ZIndex = 58
+		card.Parent = dailyPanel
+		corner(card, 13)
+		stroke(card, Color3.fromRGB(132, 154, 184), 0.54)
+
+		local day = makeLabel(
+			card,
+			"Day",
+			("DAY %d"):format(index),
+			UDim2.new(1, 0, 0, 18),
+			UDim2.fromOffset(0, 7),
+			9,
+			COLORS.Muted,
+			Enum.Font.GothamBold
+		)
+		day.TextXAlignment = Enum.TextXAlignment.Center
+		day.ZIndex = 59
+
+		local icon = makeLabel(
+			card,
+			"RewardIcon",
+			icons[index],
+			UDim2.new(1, 0, 0, 42),
+			UDim2.fromOffset(0, 30),
+			24,
+			if index == 1 then COLORS.Green else COLORS.Amber,
+			Enum.Font.GothamBlack
+		)
+		icon.TextXAlignment = Enum.TextXAlignment.Center
+		icon.ZIndex = 59
+
+		local reward = makeLabel(
+			card,
+			"Reward",
+			rewards[index],
+			UDim2.new(1, 0, 0, 20),
+			UDim2.fromOffset(0, 83),
+			9,
+			COLORS.Text,
+			Enum.Font.GothamBold
+		)
+		reward.TextXAlignment = Enum.TextXAlignment.Center
+		reward.ZIndex = 59
+	end
+
+	dailyModalClaimButton = makeButton(
+		dailyPanel,
+		"ClaimButton",
+		"CLAIM DAILY SUPPLY",
+		UDim2.fromOffset(190, 48),
+		UDim2.new(0.5, -95, 1, -66),
+		COLORS.Amber
+	)
+	dailyModalClaimButton.ZIndex = 58
+
+	dailyCloseButton.Activated:Connect(function()
+		setDailyOpen(false)
+	end)
+	dailyDimmer.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			setDailyOpen(false)
+		end
+	end)
+
 	panel = Instance.new("Frame")
 	panel.Name = "ShopPanel"
 	panel.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -473,7 +610,7 @@ local function buildGui()
 	dailyButton =
 		makeButton(daily, "Claim", "CLAIM", UDim2.fromOffset(108, 44), UDim2.new(1, -122, 0.5, -22), COLORS.Amber)
 	dailyButton.ZIndex = 54
-	dailyButton.Activated:Connect(function()
+	local function claimDailyReward()
 		if not dailyButton.Active then
 			return
 		end
@@ -485,7 +622,10 @@ local function buildGui()
 				updateProfile(result.meta)
 			end
 		end)
-	end)
+	end
+
+	dailyButton.Activated:Connect(claimDailyReward)
+	dailyModalClaimButton.Activated:Connect(claimDailyReward)
 
 	local challenge = Instance.new("Frame")
 	challenge.Name = "Challenge"
@@ -875,6 +1015,7 @@ function ShopController.start()
 	ContextActionService:BindActionAtPriority("PerfectJumpShop", function(_name, state)
 		if state == Enum.UserInputState.Begin then
 			local open = not (player:GetAttribute("PerfectJumpShopOpen") == true)
+			setDailyOpen(false)
 			setOpen(open)
 			if open then
 				requestProfile()

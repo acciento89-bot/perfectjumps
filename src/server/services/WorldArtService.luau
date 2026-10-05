@@ -306,6 +306,43 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 		)
 	end
 
+	local farLayer = Instance.new("Folder")
+	farLayer.Name = "ParallaxHighlineFar"
+	farLayer.Parent = art
+	for index, height in { 32, 46, 29, 55, 38, 50, 35 } do
+		local x = origin.X - 108 + index * 28
+		local z = origin.Z + 154 + (index % 2) * 14
+		tower(
+			farLayer,
+			Vector3.new(x, origin.Y - 54, z),
+			Vector3.new(10 + (index % 2) * 3, height, 11 + (index % 3)),
+			index + 2
+		)
+	end
+
+	highlineArch(art, origin, 36, 1.0)
+	highlineArch(art, origin, 68, 0.86)
+	highlineArch(art, origin, 104, 0.72)
+
+	motionRibbon(
+		art,
+		origin + Vector3.new(-16, 18, 22),
+		origin + Vector3.new(-5, 22, 64),
+		COLORS.Cyan
+	)
+	motionRibbon(
+		art,
+		origin + Vector3.new(15, 20, 30),
+		origin + Vector3.new(4, 25, 82),
+		COLORS.Amber
+	)
+	motionRibbon(
+		art,
+		origin + Vector3.new(-10, 27, 54),
+		origin + Vector3.new(8, 31, 112),
+		Color3.fromRGB(156, 127, 232)
+	)
+
 	local cloudGarden = Instance.new("Folder")
 	cloudGarden.Name = "CloudGarden"
 	cloudGarden.Parent = art

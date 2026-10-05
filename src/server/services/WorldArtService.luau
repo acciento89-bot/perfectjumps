@@ -324,18 +324,8 @@ function WorldArtService.decorateLane(laneModel: Model, origin: Vector3)
 	highlineArch(art, origin, 68, 0.86)
 	highlineArch(art, origin, 104, 0.72)
 
-	motionRibbon(
-		art,
-		origin + Vector3.new(-16, 18, 22),
-		origin + Vector3.new(-5, 22, 64),
-		COLORS.Cyan
-	)
-	motionRibbon(
-		art,
-		origin + Vector3.new(15, 20, 30),
-		origin + Vector3.new(4, 25, 82),
-		COLORS.Amber
-	)
+	motionRibbon(art, origin + Vector3.new(-16, 18, 22), origin + Vector3.new(-5, 22, 64), COLORS.Cyan)
+	motionRibbon(art, origin + Vector3.new(15, 20, 30), origin + Vector3.new(4, 25, 82), COLORS.Amber)
 	motionRibbon(
 		art,
 		origin + Vector3.new(-10, 27, 54),

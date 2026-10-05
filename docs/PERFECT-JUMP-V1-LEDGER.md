@@ -130,9 +130,9 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P11-T06 Owned/Roblox-safe assets and reduced-motion/audio QA — Roblox built-in audio, AudioEnabled guard, Reduced Motion guard and transient overlap cap are verified in source/tests; physical mobile-speaker mix/fatigue listen remains open
 
 ## P12 Security and persistence hardening
-- [~] P12-T01 Remote/rate-limit audit
-- [~] P12-T02 Client cannot submit impulse, landing grade or score
-- [~] P12-T03 Position/teleport/NaN/extreme-value validation
+- [x] P12-T01 Remote/rate-limit audit — all inbound client-callable remotes are now throttled at the documented rates; server-to-client and Marketplace receipt paths are classified separately. Evidence: `docs/evidence/2026-10-05-security-hardening.md`
+- [x] P12-T02 Client cannot submit impulse, landing grade or score — round remote accepts action strings only; charge time, launch velocity, landing grade and score are all server-derived. Evidence: `docs/evidence/2026-10-05-security-hardening.md`
+- [x] P12-T03 Position/teleport/NaN/extreme-value validation — finite-vector plus horizontal/vertical lane-bound guards now protect launch, landing and heartbeat paths; pure tests and full Studio QA pass. Evidence: `docs/evidence/2026-10-05-security-hardening.md`
 - [x] P12-T04 Economy/purchase mutation serialization — all profile/economy/receipt/save mutations now share a tested per-player `MutationGate`; 23-test suite and Studio smoke pass. Evidence: `docs/evidence/2026-10-05-profile-hardening.md`
 - [~] P12-T05 DataStore migration/lock/recovery — explicit profile migration plus tested lock construction/foreign-lock/expiry/malformed-lock recovery are implemented; real cross-session DataStore rejoin/recovery proof remains open. Evidence: `docs/evidence/2026-10-05-profile-hardening.md`
 - [x] P12-T06 Structured diagnostic logging — stable single-line `PJ_DIAG` records now cover DataStore init, profile load/lock/save and receipt transaction failures; 24-test suite and fresh Studio server/client smoke pass. Evidence: `docs/evidence/2026-10-05-diagnostic-logging.md`

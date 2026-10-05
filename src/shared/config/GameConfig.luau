@@ -24,6 +24,7 @@ local GameConfig = {
 	Failure = {
 		KillPlaneY = -28,
 		MaximumHorizontalDistanceFromLane = 80,
+		MaximumVerticalDistanceFromLane = 96,
 		RetryDelaySeconds = 0.2,
 	},
 

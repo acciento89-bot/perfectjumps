@@ -37,10 +37,11 @@ local dirty: { [Player]: boolean } = {}
 local revisions: { [Player]: number } = {}
 local metaChanged: RemoteEvent?
 
-local purchaseLimiter = RateLimiter.new(0.25)
-local equipLimiter = RateLimiter.new(0.15)
-local dailyLimiter = RateLimiter.new(0.75)
-local settingLimiter = RateLimiter.new(0.15)
+local metaLimiter = RateLimiter.new(1 / 3)
+local purchaseLimiter = RateLimiter.new(1 / 4)
+local equipLimiter = RateLimiter.new(1 / 6)
+local dailyLimiter = RateLimiter.new(1 / 2)
+local settingLimiter = RateLimiter.new(1 / 6)
 local mutationGate = MutationGate.new()
 
 local function keyFor(player: Player): string
@@ -559,6 +560,9 @@ function ProfileService.start()
 	local setSetting = remotes:WaitForChild("SetSetting") :: RemoteFunction
 
 	requestMeta.OnServerInvoke = function(player)
+		if not metaLimiter:Allow(player) then
+			return { ok = false, reason = "rate_limited", meta = ProfileService.GetSnapshot(player) }
+		end
 		local profile = ProfileService.WaitForProfile(player)
 		return if profile
 			then { ok = true, meta = snapshot(profile) }
@@ -598,6 +602,7 @@ function ProfileService.start()
 		mutationGate:Run(player, function()
 			savePlayerUnlocked(player, true)
 		end)
+		metaLimiter:Forget(player)
 		purchaseLimiter:Forget(player)
 		equipLimiter:Forget(player)
 		dailyLimiter:Forget(player)

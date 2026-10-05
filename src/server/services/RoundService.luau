@@ -11,6 +11,8 @@ local MonetizationConfig = require(shared.config.MonetizationConfig)
 local JumpRules = require(shared.game.JumpRules)
 local LaunchRules = require(shared.game.LaunchRules)
 local RoundStateRules = require(shared.game.RoundStateRules)
+local GameplayValidation = require(shared.security.GameplayValidation)
+local RateLimiter = require(shared.security.RateLimiter)
 
 local ProfileService = require(script.Parent.ProfileService)
 local WorldService = require(script.Parent.WorldService)
@@ -43,6 +45,7 @@ local getPlayerState: RemoteFunction
 
 local rounds: { [Player]: Round } = {}
 local nextLaneIndex = 0
+local stateRequestLimiter = RateLimiter.new(1 / 3)
 
 local function getRoot(player: Player): BasePart?
 	local character = player.Character
@@ -171,6 +174,24 @@ local function handleLanding(round: Round)
 
 	local root = getRoot(round.Player)
 	if not root then
+		return
+	end
+	local currentPosition = round.Lane.CurrentCollision.Position
+	if
+		not GameplayValidation.isFiniteVector3(root.Position)
+		or not GameplayValidation.isFiniteVector3(round.Lane.TargetCollision.Position)
+		or not GameplayValidation.isWithinHorizontalDistance(
+			root.Position,
+			currentPosition,
+			GameConfig.Failure.MaximumHorizontalDistanceFromLane
+		)
+		or not GameplayValidation.isWithinVerticalDistance(
+			root.Position,
+			currentPosition,
+			GameConfig.Failure.MaximumVerticalDistanceFromLane
+		)
+	then
+		failRound(round, "InvalidPosition")
 		return
 	end
 	if root.AssemblyLinearVelocity.Y > GameConfig.Movement.LandingVerticalSpeedLimit then
@@ -386,7 +407,27 @@ local function launchWithHeldSeconds(round: Round, heldSeconds: number): boolean
 		return false
 	end
 
-	local directionDelta = round.Lane.TargetCollision.Position - root.Position
+	local currentPosition = round.Lane.CurrentCollision.Position
+	local targetPosition = round.Lane.TargetCollision.Position
+	if
+		not GameplayValidation.isFiniteVector3(root.Position)
+		or not GameplayValidation.isFiniteVector3(targetPosition)
+		or not GameplayValidation.isWithinHorizontalDistance(
+			root.Position,
+			currentPosition,
+			GameConfig.Failure.MaximumHorizontalDistanceFromLane
+		)
+		or not GameplayValidation.isWithinVerticalDistance(
+			root.Position,
+			currentPosition,
+			GameConfig.Failure.MaximumVerticalDistanceFromLane
+		)
+	then
+		failRound(round, "InvalidPosition")
+		return false
+	end
+
+	local directionDelta = targetPosition - root.Position
 	local horizontal = Vector3.new(directionDelta.X, 0, directionDelta.Z)
 	if horizontal.Magnitude < 0.001 then
 		cancelCharge(round)
@@ -496,6 +537,7 @@ local function addPlayer(player: Player)
 end
 
 local function removePlayer(player: Player)
+	stateRequestLimiter:Forget(player)
 	local round = rounds[player]
 	if not round then
 		return
@@ -616,6 +658,9 @@ function RoundService.start()
 
 	roundAction.OnServerEvent:Connect(onRoundAction)
 	getPlayerState.OnServerInvoke = function(player: Player)
+		if not stateRequestLimiter:Allow(player) then
+			return nil
+		end
 		local round = rounds[player]
 		if not round then
 			return nil
@@ -637,11 +682,25 @@ function RoundService.start()
 				local root = getRoot(player)
 				if root then
 					local current = round.Lane.CurrentCollision.Position
-					local horizontalDistance =
-						Vector2.new(root.Position.X - current.X, root.Position.Z - current.Z).Magnitude
-					if root.Position.Y < math.max(GameConfig.Failure.KillPlaneY, current.Y - 24) then
+					if
+						not GameplayValidation.isFiniteVector3(root.Position)
+						or not GameplayValidation.isFiniteVector3(current)
+					then
+						failRound(round, "InvalidPosition")
+					elseif root.Position.Y < math.max(GameConfig.Failure.KillPlaneY, current.Y - 24) then
 						failRound(round, "Fall")
-					elseif horizontalDistance > GameConfig.Failure.MaximumHorizontalDistanceFromLane then
+					elseif
+						not GameplayValidation.isWithinHorizontalDistance(
+							root.Position,
+							current,
+							GameConfig.Failure.MaximumHorizontalDistanceFromLane
+						)
+						or not GameplayValidation.isWithinVerticalDistance(
+							root.Position,
+							current,
+							GameConfig.Failure.MaximumVerticalDistanceFromLane
+						)
+					then
 						failRound(round, "OutOfBounds")
 					end
 				end

@@ -158,6 +158,23 @@ local function highlineArch(parent: Instance, origin: Vector3, zOffset: number, 
 	guide.CastShadow = false
 end
 
+local function motionRibbon(parent: Instance, fromPosition: Vector3, toPosition: Vector3, color: Color3)
+	local delta = toPosition - fromPosition
+	if delta.Magnitude < 0.05 then
+		return
+	end
+	local ribbon = part(
+		parent,
+		"MotionRibbon",
+		Vector3.new(0.16, 0.08, delta.Magnitude),
+		CFrame.lookAt((fromPosition + toPosition) / 2, toPosition),
+		Enum.Material.Neon,
+		color,
+		0.34
+	)
+	ribbon.CastShadow = false
+end
+
 function WorldArtService.configureLighting()
 	if lightingConfigured then
 		return

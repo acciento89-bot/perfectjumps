@@ -34,6 +34,14 @@ A feedback contract was added test-first.
 
 The full Studio QA harness was rerun with the new feedback client. Min/mid/max charge, 100-release repeatability, Perfect/Good/Safe/Miss, failure, retry, revive and the 60-landing climb all passed, ending with `[PerfectJumpQA] COMPLETE`. The filtered runtime log contained no CreatorError, Script Error, `attempt to` or Infinite-yield match.
 
+## Production publish
+
+- Accepted source commit: `42bb6ac`.
+- Existing Universe: `10768948354`.
+- Existing Place: `74217245707666`.
+- Rojo synced the committed `main` source into that existing Place; no new Place/Experience was created.
+- Studio reported `PublishSuccessful`, `Published new changes in "Perfekter Sprung" to Roblox.` and published version `v19`.
+
 ## Remaining external/device evidence
 
 - Physical controller navigation/input remains a P14 device gate.

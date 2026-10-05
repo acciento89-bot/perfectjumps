@@ -202,3 +202,12 @@ Runtime acceptance update (2026-10-02): post-fix Studio QA completed through 60 
 - [x] CI verification green on run `37270778429`; merged source commit `fbd0b7a`.
 - [x] Fresh Roblox Studio PlaySolo visual acceptance passed: aerial-highline composition, avatar/jump readability and contextual Supply/Daily behavior verified with clean local server/client startup.
 - [x] Graphic-fidelity source published to existing canonical Place `74217245707666` as `v18`; no new Place/Experience created. Post-publish Studio persistence smoke is limited only by disabled Studio API access. Evidence: `docs/evidence/2026-10-05-graphic-fidelity-runtime-publish.md`.
+
+
+## 2026-10-05 runtime/feedback production publish
+
+- [x] Min/mid/max production-path launch measurements and 100-release repeatability are runtime-verified.
+- [x] Perfect/Good/Safe/Miss production landing matrix plus Miss→Retry→Ready is runtime-verified.
+- [x] UI/art/feedback pass is published to existing Place `74217245707666` as `v19` from source commit `42bb6ac`.
+- [x] No new Place/Experience was created; contextual Supply/Daily/Result visibility contract remains preserved.
+- [!] Remaining acceptance is device/external only for physical controller/touch, real paid receipt/rejoin, physical speaker mix and the charge/mid-flight/landing capture triptych.

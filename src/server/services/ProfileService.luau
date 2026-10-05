@@ -9,6 +9,7 @@ local shared = ReplicatedStorage:WaitForChild("PerfectJump"):WaitForChild("Share
 local EconomyConfig = require(shared.config.EconomyConfig)
 local MonetizationConfig = require(shared.config.MonetizationConfig)
 local RetentionConfig = require(shared.config.RetentionConfig)
+local EconomyRules = require(shared.game.EconomyRules)
 local ProfileRules = require(shared.game.ProfileRules)
 local ProfileStorageRules = require(shared.game.ProfileStorageRules)
 local ReceiptRules = require(shared.game.ReceiptRules)
@@ -305,13 +306,7 @@ function ProfileService.RecordLanding(
 		end
 		normalizeDaily(profile)
 
-		local reward = if grade == "Perfect"
-			then EconomyConfig.PerfectCoins
-			elseif grade == "Good" then EconomyConfig.GoodCoins
-			else EconomyConfig.SafeCoins
-		if profile.Boosts.CoinBoostUntil > nowUnix() then
-			reward *= MonetizationConfig.DeveloperProducts.CoinBoost15m.Multiplier
-		end
+		local reward = EconomyRules.landingCoins(grade, profile.Boosts.CoinBoostUntil > nowUnix())
 		profile.Coins += reward
 
 		local oldBest = profile.BestScore

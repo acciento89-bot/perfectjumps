@@ -1,6 +1,7 @@
 --!strict
 
 local GameConfig = require("../config/GameConfig")
+local EconomyRules = require("./EconomyRules")
 
 local JumpRules = {}
 
@@ -60,14 +61,7 @@ function JumpRules.ScoreForLanding(grade: LandingGrade, combo: number): number
 end
 
 function JumpRules.CoinsForLanding(grade: LandingGrade): number
-	if grade == "Perfect" then
-		return GameConfig.Economy.PerfectCoins
-	elseif grade == "Good" then
-		return GameConfig.Economy.GoodCoins
-	elseif grade == "Safe" then
-		return GameConfig.Economy.SafeCoins
-	end
-	return 0
+	return EconomyRules.landingCoins(grade, false)
 end
 
 return table.freeze(JumpRules)

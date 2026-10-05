@@ -79,11 +79,11 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [x] P05-T07 Runtime sample across early/mid/late difficulty — actual generated targets at platform progression 0/20/50 passed production reachability; target widths tightened 10 → 8 → 5. Evidence: `docs/evidence/2026-10-05-runtime-difficulty-sampling.md`
 
 ## P06 Progression and persistence
-- [~] P06-T01 Legitimate coin/reward model
-- [~] P06-T02 Trail, landing effect, platform/environment theme catalog
-- [~] P06-T03 Server ownership/equip validation
-- [~] P06-T04 Versioned profile schema/migration
-- [~] P06-T05 Save/lock/recovery rules
+- [x] P06-T01 Legitimate coin/reward model — grade rewards are centralized in tested `EconomyRules`; Miss grants 0, CoinBoost affects currency only, and competitive score remains non-purchasable/server-derived. Evidence: `docs/evidence/2026-10-05-progression-persistence-contract.md`
+- [x] P06-T02 Trail, landing effect, platform/environment theme catalog — all four production categories, free defaults and priced item catalogs are contract-tested; runtime default catalog and Trail purchase/equip pass. Evidence: `docs/evidence/2026-10-05-progression-persistence-contract.md`
+- [x] P06-T03 Server ownership/equip validation — invalid category/item, insufficient funds and unowned equip paths are rejected by server-owned rules; valid purchase/equip passes Studio QA. Evidence: `docs/evidence/2026-10-05-progression-persistence-contract.md`
+- [x] P06-T04 Versioned profile schema/migration — explicit current profile version plus legacy normalization/backfill are regression-tested. Evidence: `docs/evidence/2026-10-05-progression-persistence-contract.md`
+- [x] P06-T05 Save/lock/recovery rules — per-player mutation serialization plus active-foreign/same-server/expired/malformed lock rules are tested; real cross-session rejoin remains separately blocked in P06-T06. Evidence: `docs/evidence/2026-10-05-progression-persistence-contract.md`
 - [!] P06-T06 Real rejoin retains PB, coins, cosmetics and settings — requires an actual live-player leave/rejoin against Roblox DataStore; published-place Studio smoke cannot prove it because Studio API access is disabled
 
 ## P07 Tutorial and retention

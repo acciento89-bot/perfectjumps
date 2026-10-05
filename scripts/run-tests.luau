@@ -1,4 +1,5 @@
 local tests = {
+	require("../tests/progression-persistence-contract.spec"),
 	require("../tests/generation-bands.spec"),
 	require("../tests/runtime-precision-guards.spec"),
 	require("../tests/security-hardening.spec"),

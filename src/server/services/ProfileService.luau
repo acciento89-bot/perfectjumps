@@ -13,6 +13,7 @@ local ProfileRules = require(shared.game.ProfileRules)
 local ProfileStorageRules = require(shared.game.ProfileStorageRules)
 local ReceiptRules = require(shared.game.ReceiptRules)
 local RetentionRules = require(shared.game.RetentionRules)
+local DiagnosticLog = require(shared.security.DiagnosticLog)
 local MutationGate = require(shared.security.MutationGate)
 local RateLimiter = require(shared.security.RateLimiter)
 
@@ -26,7 +27,9 @@ end)
 if storeOk then
 	store = storeResult
 elseif not RunService:IsStudio() then
-	warn("[Perfect Jump] DataStore unavailable")
+	warn(DiagnosticLog.format("datastore_unavailable", "error", {
+		Store = EconomyConfig.DataStoreName,
+	}))
 end
 
 local profiles: { [Player]: any } = {}
@@ -179,12 +182,20 @@ local function loadPlayer(player: Player)
 	end
 
 	if lockedByOther then
+		warn(DiagnosticLog.format("profile_lock_blocked", "warn", {
+			UserId = player.UserId,
+			JobId = game.JobId,
+		}))
 		player:Kick("Your Perfect Jump profile is active in another server. Please try again shortly.")
 		return
 	end
 	if loadedValue == nil then
+		warn(DiagnosticLog.format("profile_load_failed", "warn", {
+			UserId = player.UserId,
+			Studio = RunService:IsStudio(),
+			Error = tostring(lastError),
+		}))
 		if RunService:IsStudio() then
-			warn(("[Perfect Jump] Studio profile fallback: %s"):format(tostring(lastError)))
 			local profile = ProfileRules.defaultProfile()
 			profiles[player] = profile
 			dirty[player] = false
@@ -234,7 +245,11 @@ local function savePlayerUnlocked(player: Player, releaseLock: boolean?): boolea
 		succeeded = result ~= nil
 	end)
 	if not ok or not succeeded then
-		warn(("[Perfect Jump] profile save failed for %d: %s"):format(player.UserId, tostring(err)))
+		warn(DiagnosticLog.format("profile_save_failed", "warn", {
+			UserId = player.UserId,
+			ReleaseLock = releaseLock == true,
+			Error = tostring(err),
+		}))
 		return false
 	end
 	if (revisions[player] or 0) == revisionAtStart then
@@ -488,7 +503,12 @@ function ProfileService.ProcessReceipt(player: Player, purchaseId: string, produ
 			end
 		end)
 		if not ok or not updatedProfile then
-			warn(("[Perfect Jump] receipt transaction failed for %d: %s"):format(player.UserId, tostring(err)))
+			warn(DiagnosticLog.format("receipt_transaction_failed", "warn", {
+				UserId = player.UserId,
+				Product = productName,
+				PurchaseId = purchaseId,
+				Error = tostring(err),
+			}))
 			return false
 		end
 

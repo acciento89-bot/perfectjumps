@@ -135,7 +135,7 @@ P02/P03 implementation note (2026-10-01): `main` now contains a per-player autho
 - [~] P12-T03 Position/teleport/NaN/extreme-value validation
 - [x] P12-T04 Economy/purchase mutation serialization — all profile/economy/receipt/save mutations now share a tested per-player `MutationGate`; 23-test suite and Studio smoke pass. Evidence: `docs/evidence/2026-10-05-profile-hardening.md`
 - [~] P12-T05 DataStore migration/lock/recovery — explicit profile migration plus tested lock construction/foreign-lock/expiry/malformed-lock recovery are implemented; real cross-session DataStore rejoin/recovery proof remains open. Evidence: `docs/evidence/2026-10-05-profile-hardening.md`
-- [ ] P12-T06 Structured diagnostic logging
+- [x] P12-T06 Structured diagnostic logging — stable single-line `PJ_DIAG` records now cover DataStore init, profile load/lock/save and receipt transaction failures; 24-test suite and fresh Studio server/client smoke pass. Evidence: `docs/evidence/2026-10-05-diagnostic-logging.md`
 
 ## P13 Mandatory full runtime journey
 - [ ] P13-T01 Fresh spawn/tutorial

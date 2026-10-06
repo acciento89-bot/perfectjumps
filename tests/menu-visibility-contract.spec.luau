@@ -6,6 +6,7 @@ local function run()
 	local art = fs.readFile("docs/ART-DIRECTION.md")
 
 	assert(string.find(hud, "conceptShowcase.Visible = false", 1, true), "concept montage must stay hidden in gameplay")
+	assert(string.find(hud, "stats.Visible = true", 1, true), "core gameplay stats must remain visible without the montage")
 	assert(
 		not string.find(hud, 'conceptShowcase.Visible = viewportClass ~= "compact"', 1, true),
 		"desktop must not force the concept montage visible"
